@@ -12,12 +12,25 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    dts()
+    dts({
+      entryRoot: 'src',
+      outDir: 'dist/types',
+      beforeWriteFile: (filePath, content) => {
+        // This function is called before writing each declaration file
+        return { filePath, content };
+      },
+      insertTypesEntry: true,
+      // Exclude tests and stories if any
+      exclude: ['src/**/*.test.ts', 'src/**/*.stories.ts']
+    })
   ],
   build: {
+    emptyOutDir: false,
     lib: {
       entry: resolve(__dirname, 'src/main.ts'),
+      name: 'ReactTableLibrary',
       formats: ['es'],
+      fileName: 'main'
     },
     rollupOptions: {
       external: ['react', 'react-dom', 'react/jsx-runtime'],
