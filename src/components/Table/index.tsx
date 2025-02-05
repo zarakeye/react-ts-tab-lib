@@ -22,8 +22,61 @@ function Table <T extends Record<string, any>>({ columns = [], rows = [] }: Tabl
   const [restOfEntries, setRestOfEntries] = useState<number>(0);
   const [displayedSample, setDisplayedSample] = useState<T[]>([]);
 
-  const alphabeticalSortButtonRef = useRef<HTMLButtonElement>(null);
-  const reverseAlphabeticalSortButtonRef = useRef<HTMLButtonElement>(null);
+  const ascFilteringButtonRef = useRef<HTMLButtonElement>(null);
+  const descFilteringButtonRef = useRef<HTMLButtonElement>(null);
+
+  const handleFilter = (e: React.MouseEvent<HTMLButtonElement>, property: keyof T, type: 'string' | 'number' | 'date' | 'boolean', filter: 'asc' | 'desc') => {
+    e.preventDefault();
+
+    const arrayOfPropertyValues = rows.map((row) => row[property]);
+    if (filter === 'asc') {
+      switch (type) {
+        case 'string':
+          arrayOfPropertyValues.sort((a, b) => a.localeCompare(b));
+          break;
+        case 'number':
+          arrayOfPropertyValues.sort((a, b) => a - b);
+          break;
+        case 'date':
+          arrayOfPropertyValues.sort((a, b) => {
+            if (typeof a === 'string' && typeof b === 'string') {
+              return new Date(a).getTime() - new Date(b).getTime();
+            } else {
+              throw new Error('Invalid date type');
+            }
+          });
+          break;
+        case 'boolean':
+          arrayOfPropertyValues.sort((a, b) => a - b);
+          break;
+      }
+    } else if (filter === 'desc') {
+      switch (type) {
+        case 'string':
+          arrayOfPropertyValues.sort((a, b) => b.localeCompare(a));
+          break;
+        case 'number':
+          arrayOfPropertyValues.sort((a, b) => b - a);
+          break;
+        case 'date':
+          arrayOfPropertyValues.sort((a, b) => {
+            if (typeof a === 'string' && typeof b === 'string') {
+              return new Date(b).getTime() - new Date(a).getTime();
+            } else {
+              throw new Error('Invalid date type');
+            }
+          });
+          break;
+        case 'boolean':
+          arrayOfPropertyValues.sort((a, b) => b - a);
+          break;
+      }
+    }
+
+    const sortedRows = arrayOfPropertyValues.map((value) => rows.find((row) => row[property] === value));
+
+    setDisplayedSample(sortedRows as T[]);
+  }
 
   const handleDisplayedEntriesChange = (e: ChangeEvent<HTMLSelectElement>) => {
     setSampleLength(parseInt(e.target.value));
@@ -78,12 +131,12 @@ function Table <T extends Record<string, any>>({ columns = [], rows = [] }: Tabl
                 <div className='flex items-center justify-between'>
                   <p className='mr-2'>{key.displayName}</p>
                   <div className='flex flex-col gap-1'>
-                    <button type='button' ref={alphabeticalSortButtonRef} >
+                    <button type='button' ref={ascFilteringButtonRef} onClick={(e) => handleFilter(e, key.property, key.type, 'asc')} className='cursor-pointer'>
                       <svg xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="10px" fill="#e8eaed">
                         <path d="M152-160q-23 0-35-20.5t1-40.5l328-525q12-19 34-19t34 19l328 525q13 20 1 40.5T808-160H152Z"/>
                       </svg>
                     </button>
-                    <button type='button' ref={reverseAlphabeticalSortButtonRef}>
+                    <button type='button' ref={descFilteringButtonRef} onClick={(e) => handleFilter(e, key.property, key.type, 'desc')} className='cursor-pointer'>
                       <svg className='rotate-180' xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="10px" fill="#e8eaed">
                         <path d="M152-160q-23 0-35-20.5t1-40.5l328-525q12-19 34-19t34 19l328 525q13 20 1 40.5T808-160H152Z"/>
                       </svg>
