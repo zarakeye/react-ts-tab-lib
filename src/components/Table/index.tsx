@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { type ChangeEvent, type ReactNode, useState, useRef, useEffect, JSX } from 'react';
 
-// Session mentorat:
 export type Column<T> = {
   displayName: string;
   property: keyof T;
@@ -14,11 +13,8 @@ export type TableProps<T> = {
   columns: Column<T>[];
   rows: T[];
 }
-// Session mentorat:
 
-// declare function Table <T>(props: TableProps<T>): JSX.Element;
-
-function Table <T extends Record<string, any>>({ columns, rows }: TableProps<T>): JSX.Element {
+function Table <T extends Record<string, any>>({ columns = [], rows = [] }: TableProps<T>): JSX.Element {
   const [sampleLength, setSampleLength] = useState<number>(10);
   const optionsOfNumberOfDisplayedEntries = [10, 20, 50, 100];
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -29,7 +25,6 @@ function Table <T extends Record<string, any>>({ columns, rows }: TableProps<T>)
   const alphabeticalSortButtonRef = useRef<HTMLButtonElement>(null);
   const reverseAlphabeticalSortButtonRef = useRef<HTMLButtonElement>(null);
 
-
   const handleDisplayedEntriesChange = (e: ChangeEvent<HTMLSelectElement>) => {
     setSampleLength(parseInt(e.target.value));
   }
@@ -37,7 +32,7 @@ function Table <T extends Record<string, any>>({ columns, rows }: TableProps<T>)
   useEffect(() => {
     setRestOfEntries(rows.length % sampleLength);
     setPagesNumber( Math.ceil(rows.length / sampleLength));
-  }, [rows.length, sampleLength, pagesNumber, restOfEntries]);
+  }, [ rows.length, sampleLength]);
 
   useEffect(() => {
     if (currentPage < pagesNumber) {
@@ -46,27 +41,33 @@ function Table <T extends Record<string, any>>({ columns, rows }: TableProps<T>)
       setDisplayedSample(rows.slice(sampleLength * (currentPage - 1)));
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, rows, sampleLength, pagesNumber]);
-
-  useEffect(() => {
-    console.log('displayedSample', displayedSample);
-  }, [displayedSample]);
-
-  // const handleAlphabeticalSort = () => {
-  //   const mapValues = displayedSample.map((item) => item)
+  }, [ rows, sampleLength, pagesNumber, restOfEntries]);
 
   return (
     <>
-      <div>
-        <select name="sampleLength" id="sampleLength" onChange={handleDisplayedEntriesChange}>
-          {optionsOfNumberOfDisplayedEntries.map((option, index) => (
-            <option key={index} value={option}>{option}</option>
-          ))}
-        </select>
-        <label htmlFor="sampleLength">Displayed entries</label>
+      <div className='flex justify-between mt-5 mb-2.5'>
+        <div>
+          <select
+            name="sampleLength"
+            id="sampleLength"
+            onChange={handleDisplayedEntriesChange}
+            className='border-1 border-black rounded-[5px] mr-1.5'
+          >
+            {optionsOfNumberOfDisplayedEntries.map((option, index) => (
+              <option key={index} value={option}>{option}</option>
+            ))}
+          </select>
+          <label htmlFor="sampleLength">displayed entries</label>
+        </div>
+
+        <div>
+          <label htmlFor="search">Search</label>
+          <input type="text" name="search" id="search" className='ml-1.5 border-1 border-black rounded-[5px]'/>
+        </div>
       </div>
+      
       <table className='w-full border-2'>
-        <thead>
+        <thead >
           <tr>
             {columns.map((key, index) => (
               <th 
@@ -110,7 +111,7 @@ function Table <T extends Record<string, any>>({ columns, rows }: TableProps<T>)
         </tbody>
       </table>
 
-      <div className='flex justify-between'>
+      <div className='flex justify-between mt-5'>
         <p>Showing entries {sampleLength * (currentPage - 1) + 1} to {sampleLength * currentPage > rows.length ? rows.length : sampleLength * currentPage} of {rows.length} entries</p>
         {currentPage >= 2 && <button type='button' onClick={() => setCurrentPage(currentPage - 1)}>Previous</button>}
         <p>Page {currentPage} of {pagesNumber}</p>

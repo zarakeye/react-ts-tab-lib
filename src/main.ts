@@ -1,3 +1,3 @@
-import Table from "./components/Table";
+import Table, { type Column, type TableProps } from "./components/Table";
 
-export default Table
+export { Table, type Column, type TableProps };

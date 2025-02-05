@@ -24,7 +24,7 @@
     /* Enable declaration files */
     "declaration": true,
     "emitDeclarationOnly": false,
-    "declarationDir": "./dist/types",
+    "declarationDir": "./dist",
     "outDir": "./dist"
   },
   "include": ["src"],
