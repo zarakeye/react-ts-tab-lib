@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { join } from 'path';
 import { type ChangeEvent, type ReactNode, useState, useRef, useEffect, JSX } from 'react';
 
 export type Column<T> = {
@@ -17,6 +18,7 @@ export type TableProps<T> = {
 function Table <T extends Record<string, any>>({ columns = [], rows = [] }: TableProps<T>): JSX.Element {
   const [sampleLength, setSampleLength] = useState<number>(10);
   const optionsOfNumberOfDisplayedEntries = [10, 20, 50, 100];
+  const [allRows, setAllRows] = useState<T[]>(rows);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pagesNumber, setPagesNumber] = useState<number>(1);
   const [restOfEntries, setRestOfEntries] = useState<number>(0);
@@ -90,23 +92,41 @@ function Table <T extends Record<string, any>>({ columns = [], rows = [] }: Tabl
 
   const handleInputBlur = () => setEditingColumn(null);
 
-  const handleSearch = (e: ChangeEvent<HTMLInputElement>, property: keyof T) => {
+  const handleFilter = (e: ChangeEvent<HTMLInputElement>, property: keyof T) => {
     setSearchQueries(prev => ({ ...prev, [property]: e.target.value }));
   }
 
+  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
+    const searchBaseArray: T[] = [];
+    rows.forEach(row => {
+      const mergedRow = Object.values(row).join(' ').toString().toLowerCase().trim();
+      // searchBaseArray.push(Object.values(row).join(' ').toString().toLowerCase().trim())
+      if (mergedRow.includes(e.target.value.trim().toLowerCase())) {
+        searchBaseArray.push(row);
+      }
+    });
+    // searchBaseArray.filter(row => row.includes(e.target.value.trim().toLowerCase()));
+    // const filteredRows =
+    // const filteredRows = searchBaseArray.findIndex((row) => row.includes(e.target.value.trim()));
+    // console.log('filteredRows', filteredRows);
+
+    setAllRows(searchBaseArray);
+
+  }
+
   useEffect(() => {
-    setRestOfEntries(rows.length % sampleLength);
-    setPagesNumber( Math.ceil(rows.length / sampleLength));
-  }, [ rows.length, sampleLength]);
+    setRestOfEntries(allRows.length % sampleLength);
+    setPagesNumber( Math.ceil(allRows.length / sampleLength));
+  }, [ allRows.length, sampleLength]);
 
   useEffect(() => {
     if (currentPage < pagesNumber) {
-      setDisplayedSample(rows.slice(sampleLength * (currentPage - 1), currentPage * sampleLength - 1));
+      setDisplayedSample(allRows.slice(sampleLength * (currentPage - 1), currentPage * sampleLength - 1));
     } else {
-      setDisplayedSample(rows.slice(sampleLength * (currentPage - 1)));
+      setDisplayedSample(allRows.slice(sampleLength * (currentPage - 1)));
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ rows, sampleLength, pagesNumber, restOfEntries]);
+  }, [ allRows, sampleLength, pagesNumber, restOfEntries]);
 
   return (
     <>
@@ -127,7 +147,7 @@ function Table <T extends Record<string, any>>({ columns = [], rows = [] }: Tabl
 
         <div>
           <label htmlFor="search">Search</label>
-          <input type="text" name="search" id="search" className='ml-1.5 border-1 border-black rounded-[5px]'/>
+          <input type="text" name="search" id="search" className='ml-1.5 border-1 border-black rounded-[5px]' onChange={(e) => handleSearch(e)}/>
         </div>
       </div>
       
@@ -147,7 +167,7 @@ function Table <T extends Record<string, any>>({ columns = [], rows = [] }: Tabl
                       <input
                         type="text"
                         className='border-1 border-black rounded-[5px] w-[100%]'
-                        onChange={(e) => handleSearch(e, key.property)}
+                        onChange={(e) => handleFilter(e, key.property)}
                         onBlur={handleInputBlur}
                         autoFocus
                         name={`search-${String(key.property)}`}
@@ -199,7 +219,7 @@ function Table <T extends Record<string, any>>({ columns = [], rows = [] }: Tabl
       </table>
 
       <div className='flex justify-between mt-5'>
-        <p>Showing entries {sampleLength * (currentPage - 1) + 1} to {sampleLength * currentPage > rows.length ? rows.length : sampleLength * currentPage} of {rows.length} entries</p>
+        <p>Showing entries {sampleLength * (currentPage - 1) + 1} to {sampleLength * currentPage > allRows.length ? allRows.length : sampleLength * currentPage} of {allRows.length} entries</p>
         {currentPage >= 2 && <button type='button' onClick={() => setCurrentPage(currentPage - 1)}>Previous</button>}
         <p>Page {currentPage} of {pagesNumber}</p>
         {pagesNumber && currentPage < pagesNumber && <button type='button' onClick={() => setCurrentPage(currentPage + 1)}>Next</button>}
