@@ -1,37 +1,58 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { join } from 'path';
-import { type ChangeEvent, type ReactNode, useState, useRef, useEffect, JSX } from 'react';
+import { type ChangeEvent, JSX, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+
+type SortType = 'string' | 'number' | 'date' | 'boolean' | 'custom';
 
 export type Column<T> = {
   displayName: string;
   property: keyof T;
-  filter?: 'asc' | 'desc' | 'default';
-  type: 'string' | 'number' | 'date' | 'boolean';
-  order?: number;
+  type: SortType;
+  renderer?: (value: T[keyof T]) => ReactNode;
+  className?: string;
 }
 
 export type TableProps<T> = {
   columns: Column<T>[];
   rows: T[];
+  onRowHover?: (row: T | null) => void;
+  columnsClassName?: string;
+  rowsClassName?: string;
+  cellClassName?: string;
+  numberOfDisplayedRows?: number[] | undefined;
 }
 
-function Table <T extends Record<string, any>>({ columns = [], rows = [] }: TableProps<T>): JSX.Element {
-  const [sampleLength, setSampleLength] = useState<number>(10);
-  const optionsOfNumberOfDisplayedEntries = [10, 20, 50, 100];
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function Table <T extends Record<string, any>>({ columns = [], rows = [], onRowHover, columnsClassName = '', rowsClassName = '', cellClassName = '', numberOfDisplayedRows = [10, 20, 50, 100]}: TableProps<T>): JSX.Element {
+  type DisplayedRows_Type = typeof numberOfDisplayedRows[number];
+  const [sampleLength, setSampleLength] = useState<DisplayedRows_Type>(numberOfDisplayedRows[0]);
   const [allRows, setAllRows] = useState<T[]>(rows);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pagesNumber, setPagesNumber] = useState<number>(1);
-  const [restOfEntries, setRestOfEntries] = useState<number>(0);
   const [displayedSample, setDisplayedSample] = useState<T[]>([]);
-  const [editingColumn, setEditingColumn] = useState<keyof T | null>(null);
-  const [searchQueries, setSearchQueries] = useState<{ [key in keyof T]: T[key] }[]>([]);
+  const [currentFilteredColumn, setCurrentFilteredColumn] = useState<keyof T | null>(null);
+  const [filteredColumns, setFilteredColumns] = useState<Partial<Record<keyof T, string>> | null>({});
+  
+  const [hoveredRow, setHoveredRow] = useState<T | null>(null);
+  console.log(hoveredRow);
 
   const ascFilteringButtonRef = useRef<HTMLButtonElement>(null);
   const descFilteringButtonRef = useRef<HTMLButtonElement>(null);
 
   const columnNameRef = useRef<HTMLDivElement>(null);
 
-  const handleSort = (e: React.MouseEvent<HTMLButtonElement>, property: keyof T, type: 'string' | 'number' | 'date' | 'boolean', sort: 'asc' | 'desc') => {
+  /**
+   * Sorts the rows based on the specified property and type in either ascending or descending order.
+   *
+   * @param e - The mouse event triggered by clicking the sort button.
+   * @param property - The property of the row by which to sort.
+   * @param type - The type of data to sort (e.g., 'string', 'number', 'date', 'boolean').
+   * @param sort - The sort direction, either 'asc' for ascending or 'desc' for descending.
+   *
+   * This function updates the displayed sample of rows by sorting them according to the provided
+   * property and type. It handles different data types by applying appropriate sorting logic.
+   * Throws an error if an invalid date is encountered.
+   */
+  const handleSort = (e: React.MouseEvent<HTMLButtonElement>, property: keyof T, type: SortType, sort: 'asc' | 'desc') => {
     e.preventDefault();
 
     const arrayOfPropertyValues = rows.map((row) => row[property]);
@@ -46,9 +67,14 @@ function Table <T extends Record<string, any>>({ columns = [], rows = [] }: Tabl
         case 'date':
           arrayOfPropertyValues.sort((a, b) => {
             if (typeof a === 'string' && typeof b === 'string') {
+              const dateA = new Date(a);
+              const dateB = new Date(b);
+              if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) {
+                throw new Error('Invalid date');
+              }
               return new Date(a).getTime() - new Date(b).getTime();
             } else {
-              throw new Error('Invalid date type');
+              throw new Error('Invalid date');
             }
           });
           break;
@@ -84,52 +110,128 @@ function Table <T extends Record<string, any>>({ columns = [], rows = [] }: Tabl
     setDisplayedSample(sortedRows as T[]);
   }
 
+  /**
+   * Updates the sample length when the user selects a new number of displayed entries.
+   * Resets the current page to 1.
+   * @param e The event triggered by the user selecting a new number of displayed entries.
+   */
   const handleDisplayedEntriesChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    setSampleLength(parseInt(e.target.value));
+    const newValue = parseInt(e.target.value);
+    setSampleLength(newValue);
+    setCurrentPage(1);
   }
 
-  const handleHeaderClick = (property: keyof T) => setEditingColumn(property);
+  const handleHeaderClick = (property: keyof T) => setCurrentFilteredColumn(property);
 
-  const handleInputBlur = () => setEditingColumn(null);
+  const handleInputBlur = (e: ChangeEvent<HTMLInputElement>, property: keyof T) => {
+    if (e.target.value.trim() === '' && !filteredColumns?.[property]) {
+      setFilteredColumns(null);
+    }
+  };
 
+  /**
+   * Updates the filtered columns when the user inputs a new filter value.
+   * The filter is case-insensitive and searches for the filter value within the
+   * entire value of the cell. If the filter value is empty, the row is considered
+   * a match.
+   * @param e The event triggered by the user inputting a new filter value.
+   * @param property The property of the row by which to filter.
+   */
   const handleFilter = (e: ChangeEvent<HTMLInputElement>, property: keyof T) => {
-    setSearchQueries(prev => ({ ...prev, [property]: e.target.value }));
+    const value = e.target.value;
+
+    const newFilters = {
+      ...filteredColumns,
+      [property]: value
+    };
+
+    const filteredRows = rows.filter(row => {
+      Object.entries(newFilters).every(([key, filterValue]) => {
+        if (!filterValue) return true;
+        const cellValue = String(row[key as keyof T]).toLocaleLowerCase();
+        return cellValue.includes(filterValue.toLocaleLowerCase());
+      })
+    });
+    
+    setAllRows(filteredRows);
   }
 
+  /**
+   * Filters the rows based on the search input value.
+   *
+   * @param e - The change event triggered by the search input field.
+   *
+   * This function iterates over all rows, concatenates the values of each row into a single
+   * string, and checks if this string includes the trimmed and lowercased value from the
+   * search input. If it does, the row is added to the searchBaseArray. Updates the state
+   * with the filtered rows.
+   */
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     const searchBaseArray: T[] = [];
     rows.forEach(row => {
       const mergedRow = Object.values(row).join(' ').toString().toLowerCase().trim();
-      // searchBaseArray.push(Object.values(row).join(' ').toString().toLowerCase().trim())
       if (mergedRow.includes(e.target.value.trim().toLowerCase())) {
         searchBaseArray.push(row);
       }
     });
-    // searchBaseArray.filter(row => row.includes(e.target.value.trim().toLowerCase()));
-    // const filteredRows =
-    // const filteredRows = searchBaseArray.findIndex((row) => row.includes(e.target.value.trim()));
-    // console.log('filteredRows', filteredRows);
 
     setAllRows(searchBaseArray);
+    setCurrentPage(1);
+  }
+  
+  /**
+   * Generates an array of page numbers for the pagination component.
+   * 
+   * The array will contain the first page number, the last page number, and the current page number, 
+   * as well as the two page numbers before and after the current page number. 
+   * If the total number of pages is greater than 5, the array will also contain the string '...' 
+   * to indicate that there are more pages.
+   *
+   * @param current - The current page number.
+   * @param total - The total number of pages.
+   * 
+   * @returns An array of page numbers and/or the string '...'.
+   */
+  const generatePagesNumbers = (current: number, total: number): (number | string)[] => {
+    if (total <= 1) return [];
+    
+    const delta = 2;
+    const pages = [];
 
+    for (let i = 1; i <= total; i++) {
+      if (i === 1 || i === total || (i >= current - delta && i <= current + delta)) {
+        pages.push(i);
+      } else if (i === current - delta - 1 || i === current + delta + 1) {
+        pages.push('...');
+      }
+    }
+
+    return pages.filter((page, index, array) => array.indexOf(page) === index)
   }
 
   useEffect(() => {
-    setRestOfEntries(allRows.length % sampleLength);
-    setPagesNumber( Math.ceil(allRows.length / sampleLength));
-  }, [ allRows.length, sampleLength]);
+    const newPagesNumber = Math.ceil(allRows.length / sampleLength);
+    setPagesNumber(newPagesNumber);
 
-  useEffect(() => {
-    if (currentPage < pagesNumber) {
-      setDisplayedSample(allRows.slice(sampleLength * (currentPage - 1), currentPage * sampleLength - 1));
-    } else {
-      setDisplayedSample(allRows.slice(sampleLength * (currentPage - 1)));
+    if (currentPage > newPagesNumber) {
+      setCurrentPage(newPagesNumber > 0 ? newPagesNumber : 1);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ allRows, sampleLength, pagesNumber, restOfEntries]);
+  }, [allRows.length, sampleLength]);
+
+  useEffect(() => {
+    const startIndex = sampleLength * (currentPage - 1);
+    const endIndex = startIndex + sampleLength;
+    setDisplayedSample(allRows.slice(startIndex, endIndex))
+  }, [allRows, currentPage, sampleLength])
+
+  const pagesNumbers = useMemo(
+    () => generatePagesNumbers(pagesNumber, currentPage),
+    [currentPage, pagesNumber]
+  );
 
   return (
-    <>
+    <div>
       <div className='flex justify-between mt-5 mb-2.5'>
         <div>
           <select
@@ -138,7 +240,7 @@ function Table <T extends Record<string, any>>({ columns = [], rows = [] }: Tabl
             onChange={handleDisplayedEntriesChange}
             className='border-1 border-black rounded-[5px] mr-1.5'
           >
-            {optionsOfNumberOfDisplayedEntries.map((option, index) => (
+            {numberOfDisplayedRows.map((option, index) => (
               <option key={index} value={option}>{option}</option>
             ))}
           </select>
@@ -147,29 +249,31 @@ function Table <T extends Record<string, any>>({ columns = [], rows = [] }: Tabl
 
         <div>
           <label htmlFor="search">Search</label>
-          <input type="text" name="search" id="search" className='ml-1.5 border-1 border-black rounded-[5px]' onChange={(e) => handleSearch(e)}/>
+          <input type="text" name="search" id="search" placeholder='Search' className='ml-1.5 border-1 border-black rounded-[5px]' onChange={(e) => handleSearch(e)}/>
         </div>
       </div>
       
-      <table className='w-full border-2'>
-        <thead >
-          <tr>
+      <table className='w-full' role='table'>
+        <thead>
+          <tr className={columnsClassName} role='row'>
             {columns.map((key, index) => (
               <th 
-                key={index} 
+                key={index}
+                role='columnheader'
                 style={{ width: `${100 / columns.length}%` }}
-                className='px-[10px] py-[5px] border-2 align-top'
+                className={`px-[10px] py-[5px] border-y-2 border-x-2 align-top ${key.className} first:border-l-2 fisrt:border-r-0 last:border-l-0 last:border-r-2`}
               >
                 <div className='flex items-center justify-between'>
-                  {editingColumn === key.property ? (
+                  {(currentFilteredColumn === key.property || filteredColumns?.[key.property]) ? (
                     <div className='flex flex-col h-[55px] gap-1'>
                       <label htmlFor={`search-${String(key.property)}`} className='pr-2.5'>{key.displayName} :</label>
                       <input
                         type="text"
+                        value={filteredColumns?.[key.property] || ''}
                         className='border-1 border-black rounded-[5px] w-[100%]'
-                        onChange={(e) => handleFilter(e, key.property)}
-                        onBlur={handleInputBlur}
-                        autoFocus
+                        onChange={e => handleFilter(e, key.property)}
+                        onBlur={e =>handleInputBlur(e, key.property)}
+                        autoFocus={currentFilteredColumn === key.property}
                         name={`search-${String(key.property)}`}
                       />
                     </div>
@@ -183,12 +287,24 @@ function Table <T extends Record<string, any>>({ columns = [], rows = [] }: Tabl
                         {key.displayName}
                       </p>
                       <div className='flex flex-col gap-1'>
-                        <button type='button' ref={ascFilteringButtonRef} onClick={(e) => handleSort(e, key.property, key.type, 'asc')} className='cursor-pointer'>
+                        <button
+                          type='button'
+                          ref={ascFilteringButtonRef}
+                          onClick={(e) => handleSort(e, key.property, key.type, 'asc')}
+                          className='cursor-pointer'
+                          role='button'
+                        >
                           <svg xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="10px" fill="#175729">
                             <path d="M152-160q-23 0-35-20.5t1-40.5l328-525q12-19 34-19t34 19l328 525q13 20 1 40.5T808-160H152Z"/>
                           </svg>
                         </button>
-                        <button type='button' ref={descFilteringButtonRef} onClick={(e) => handleSort(e, key.property, key.type, 'desc')} className='cursor-pointer'>
+                        <button
+                          type='button'
+                          ref={descFilteringButtonRef}
+                          onClick={(e) => handleSort(e, key.property, key.type, 'desc')}
+                          className='cursor-pointer'
+                          role='button'
+                        >
                           <svg className='rotate-180' xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="10px" fill="#175729">
                             <path d="M152-160q-23 0-35-20.5t1-40.5l328-525q12-19 34-19t34 19l328 525q13 20 1 40.5T808-160H152Z"/>
                           </svg>
@@ -203,14 +319,31 @@ function Table <T extends Record<string, any>>({ columns = [], rows = [] }: Tabl
         </thead>
         <tbody className='pb-2.5'>
           {displayedSample.map((row: T, rowIndex: number): ReactNode => (
-            <tr key={rowIndex}>
+            <tr
+              key={rowIndex}
+              role='row'
+              onMouseEnter={() => {
+                setHoveredRow(row);
+                if (onRowHover) {
+                  onRowHover(row);
+                }
+              }}
+              onMouseLeave={() => {
+                setHoveredRow(null);
+                if (onRowHover) {
+                  onRowHover(null);
+                }
+              }}
+              className={rowsClassName}
+            >
               {columns.map((column, colIndex) => (
                 <td title={`id: ${row.id}`}
                   key={colIndex}
-                  className='px-[15px] truncate'
+                  role='cell'
+                  className={`px-[15px] truncate ${cellClassName}`}
                   style={{ width: `${100 / columns.length}%` }}
                 >
-                  {row[column.property] as ReactNode}
+                  {columns[colIndex].renderer ? columns[colIndex].renderer(row[column.property]) : row[column.property] as ReactNode}
                 </td>
               ))}
             </tr>
@@ -219,12 +352,50 @@ function Table <T extends Record<string, any>>({ columns = [], rows = [] }: Tabl
       </table>
 
       <div className='flex justify-between mt-5'>
-        <p>Showing entries {sampleLength * (currentPage - 1) + 1} to {sampleLength * currentPage > allRows.length ? allRows.length : sampleLength * currentPage} of {allRows.length} entries</p>
-        {currentPage >= 2 && <button type='button' onClick={() => setCurrentPage(currentPage - 1)}>Previous</button>}
-        <p>Page {currentPage} of {pagesNumber}</p>
-        {pagesNumber && currentPage < pagesNumber && <button type='button' onClick={() => setCurrentPage(currentPage + 1)}>Next</button>}
+        <p>Showing entries {sampleLength * (currentPage - 1) + 1} to {Math.min(sampleLength * currentPage, allRows.length)} of {allRows.length} entries</p>
+
+        <div className='flex items-center gap-2'>
+          <button
+            onClick={() => setCurrentPage(currentPage - 1)}
+            disabled={currentPage === 1}
+            className='px-3 py-1 rounded border disabled:opacity-50 disabled:cursor-not-allowed'
+            aria-label='Previous page'
+          >
+            Previous
+          </button>
+
+          {pagesNumbers.map((page, index) =>
+            typeof page === 'number' ? (
+              <button
+                key={index}
+                onClick={() => setCurrentPage(page)}
+                className={`px-3 py-1 rounded ${
+                  page === currentPage
+                    ? 'bg-blue-600 text-white'
+                    : 'border hover:bg-gray-100'
+                }`}
+                aria-current={page === currentPage ? 'page' : undefined}
+              >
+                {page}
+              </button>
+            ) : (
+              <span key={index} className='px-2'>
+                ...
+              </span>
+            )
+          )}
+
+          <button
+            onClick={() => setCurrentPage(currentPage + 1)}
+            disabled={currentPage === pagesNumber}
+            className='px-3 py-1 rounded border disabled:opacity-50 disabled:cursor-not-allowed'
+            aria-label='Next page'
+          >
+            Next
+          </button>
+        </div>
       </div>
-    </>
+    </div>
   );
 }
 
