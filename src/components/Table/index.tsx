@@ -29,8 +29,6 @@ function Table <T extends Record<string, any>>({ columns = [], rows = [], onRowH
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pagesNumber, setPagesNumber] = useState<number>(1);
   const [displayedSample, setDisplayedSample] = useState<T[]>([]);
-  const [currentFilteredColumn, setCurrentFilteredColumn] = useState<keyof T | null>(null);
-  const [filteredColumns, setFilteredColumns] = useState<Partial<Record<keyof T, string>> | null>({});
   
   const [hoveredRow, setHoveredRow] = useState<T | null>(null);
   console.log(hoveredRow);
@@ -119,41 +117,6 @@ function Table <T extends Record<string, any>>({ columns = [], rows = [], onRowH
     const newValue = parseInt(e.target.value);
     setSampleLength(newValue);
     setCurrentPage(1);
-  }
-
-  const handleHeaderClick = (property: keyof T) => setCurrentFilteredColumn(property);
-
-  const handleInputBlur = (e: ChangeEvent<HTMLInputElement>, property: keyof T) => {
-    if (e.target.value.trim() === '' && !filteredColumns?.[property]) {
-      setFilteredColumns(null);
-    }
-  };
-
-  /**
-   * Updates the filtered columns when the user inputs a new filter value.
-   * The filter is case-insensitive and searches for the filter value within the
-   * entire value of the cell. If the filter value is empty, the row is considered
-   * a match.
-   * @param e The event triggered by the user inputting a new filter value.
-   * @param property The property of the row by which to filter.
-   */
-  const handleFilter = (e: ChangeEvent<HTMLInputElement>, property: keyof T) => {
-    const value = e.target.value;
-
-    const newFilters = {
-      ...filteredColumns,
-      [property]: value
-    };
-
-    const filteredRows = rows.filter(row => {
-      Object.entries(newFilters).every(([key, filterValue]) => {
-        if (!filterValue) return true;
-        const cellValue = String(row[key as keyof T]).toLocaleLowerCase();
-        return cellValue.includes(filterValue.toLocaleLowerCase());
-      })
-    });
-    
-    setAllRows(filteredRows);
   }
 
   /**
@@ -264,54 +227,38 @@ function Table <T extends Record<string, any>>({ columns = [], rows = [], onRowH
                 className={`px-[10px] py-[5px] border-y-2 border-x-2 align-top ${key.className} first:border-l-2 fisrt:border-r-0 last:border-l-0 last:border-r-2`}
               >
                 <div className='flex items-center justify-between'>
-                  {(currentFilteredColumn === key.property || filteredColumns?.[key.property]) ? (
-                    <div className='flex flex-col h-[55px] gap-1'>
-                      <label htmlFor={`search-${String(key.property)}`} className='pr-2.5'>{key.displayName} :</label>
-                      <input
-                        type="text"
-                        value={filteredColumns?.[key.property] || ''}
-                        className='border-1 border-black rounded-[5px] w-[100%]'
-                        onChange={e => handleFilter(e, key.property)}
-                        onBlur={e =>handleInputBlur(e, key.property)}
-                        autoFocus={currentFilteredColumn === key.property}
-                        name={`search-${String(key.property)}`}
-                      />
-                    </div>
-                  ) : (
-                    <div className='flex items-center w-[100%] h-[55px]'>
-                      <p
-                        ref={columnNameRef}
-                        className='mr-2 flex-1 cursor-pointer'
-                        onClick={() => handleHeaderClick(key.property) }                     
+                  <div className='flex items-center w-[100%] h-[55px]'>
+                    <p
+                      ref={columnNameRef}
+                      className='mr-2 flex-1 cursor-pointer'
+                    >
+                      {key.displayName}
+                    </p>
+                    <div className='flex flex-col gap-1'>
+                      <button
+                        type='button'
+                        ref={ascFilteringButtonRef}
+                        onClick={(e) => handleSort(e, key.property, key.type, 'asc')}
+                        className='cursor-pointer'
+                        role='button'
                       >
-                        {key.displayName}
-                      </p>
-                      <div className='flex flex-col gap-1'>
-                        <button
-                          type='button'
-                          ref={ascFilteringButtonRef}
-                          onClick={(e) => handleSort(e, key.property, key.type, 'asc')}
-                          className='cursor-pointer'
-                          role='button'
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="10px" fill="#175729">
-                            <path d="M152-160q-23 0-35-20.5t1-40.5l328-525q12-19 34-19t34 19l328 525q13 20 1 40.5T808-160H152Z"/>
-                          </svg>
-                        </button>
-                        <button
-                          type='button'
-                          ref={descFilteringButtonRef}
-                          onClick={(e) => handleSort(e, key.property, key.type, 'desc')}
-                          className='cursor-pointer'
-                          role='button'
-                        >
-                          <svg className='rotate-180' xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="10px" fill="#175729">
-                            <path d="M152-160q-23 0-35-20.5t1-40.5l328-525q12-19 34-19t34 19l328 525q13 20 1 40.5T808-160H152Z"/>
-                          </svg>
-                        </button>
-                      </div>
+                        <svg xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="10px" fill="#175729">
+                          <path d="M152-160q-23 0-35-20.5t1-40.5l328-525q12-19 34-19t34 19l328 525q13 20 1 40.5T808-160H152Z"/>
+                        </svg>
+                      </button>
+                      <button
+                        type='button'
+                        ref={descFilteringButtonRef}
+                        onClick={(e) => handleSort(e, key.property, key.type, 'desc')}
+                        className='cursor-pointer'
+                        role='button'
+                      >
+                        <svg className='rotate-180' xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="10px" fill="#175729">
+                          <path d="M152-160q-23 0-35-20.5t1-40.5l328-525q12-19 34-19t34 19l328 525q13 20 1 40.5T808-160H152Z"/>
+                        </svg>
+                      </button>
                     </div>
-                  )} 
+                  </div>
                 </div>
               </th>
             ))}
