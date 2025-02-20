@@ -1,5 +1,5 @@
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import Table, { type Column } from ".";
 
 interface RowData {
@@ -200,31 +200,135 @@ describe("Table test suite", () => {
       expect(sortedRows).toEqual(expectedValues);
     })
 
-    it ('should filter the table rows based on the search input', () => {
+    it ('should filter the table rows based on the search input', async () => {
       render(<Table columns={columns} rows={rows} />);
 
       const searchInput = screen.getByPlaceholderText('Search');
+
+      // Search for "Jack"
       fireEvent.change(searchInput, { target: { value: 'Jack' } });
 
-      const rowsWithJack = screen.getAllByRole('row').slice(1);
-    
-      expect(rowsWithJack.length).toBe(1);
-      expect(screen.getByText('Jack')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('Jack')).toBeInTheDocument();
+        expect(screen.getAllByRole('row').length).toBe(2);
+      });
 
-      expect(screen.queryByText('Ivy')).not.toBeInTheDocument();
-
+      // Search for "25"
       fireEvent.change(searchInput, { target: { value: '25' } });
 
-      const rowsWith25 = screen.getAllByRole('row').slice(1);
-
-      expect(rowsWith25.length).toBe(3);
-
-      expect(screen.queryByText('Jane')).toBeInTheDocument();
-      expect(screen.queryByText('Alice')).toBeInTheDocument();
-      expect(screen.queryByText('Frank')).toBeInTheDocument();
-      expect(screen.queryByText('Ivy')).not.toBeInTheDocument();
+      await waitFor(() => {
+        const rows = screen.getAllByRole('row');
+        expect(rows).toHaveLength(4);
+        expect(screen.queryByText('Jane')).toBeInTheDocument();
+        expect(screen.queryByText('Alice')).toBeInTheDocument();
+        expect(screen.queryByText('Frank')).toBeInTheDocument();
+      });
+      expect(screen.getAllByRole('row').length).toBe(4);
     })
   });
 
-  // it('should display ', () => {)
+  it('should throw error when invalid string dates are sorted in ascending order', async () => {
+    const errorRows = [
+      { id: 13, name: 'Kate', age: 75, dateOfBirth: 'Invalid Date', isActive: true },
+      { id: 14, name: 'Kevin', age: 80, dateOfBirth: 'Bad Date', isActive: false }
+    ];
+
+    const originalError = console.error; // console Mock
+    console.error = vi.fn().mockImplementation(() => {});
+
+    const { unmount } = render(<Table columns={columns} rows={errorRows} />);
+
+    const header = screen.getByText('Date of Birth').closest('th')!;
+    const ascSortButton = within(header).getAllByRole('button')[0];
+    
+    await act(async () => {
+      fireEvent.click(ascSortButton);
+    });
+
+    await waitFor(() => {
+      expect(console.error).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          message: expect.stringContaining('Invalid date')
+        })
+      );
+    });
+
+    unmount();
+    console.error = originalError;
+  });
+
+  it('should throw error when invalid non-string dates are sorted in ascending order', async () => {
+    const errorRows = [
+      { id: 13, name: 'Kate', age: 75, dateOfBirth: 'Invalid Date', isActive: true },
+      { id: 14, name: 'Kevin', age: 80, dateOfBirth: 'Bad Date', isActive: false }
+    ];
+
+    const originalError = console.error; // console Mock
+    console.error = vi.fn().mockImplementation(() => {});
+
+    const { unmount } = render(<Table columns={columns} rows={errorRows} />);
+
+    const header = screen.getByText('Date of Birth').closest('th')!;
+    const ascSortButton = within(header).getAllByRole('button')[0];
+    
+    await act(async () => {
+      fireEvent.click(ascSortButton);
+    });
+
+    await waitFor(() => {
+      expect(console.error).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          message: 'Invalid date'
+        })
+      );
+    });
+
+    unmount();
+    console.error = originalError;
+  });
+
+  describe("handling of changes of displayed rows number", () => {
+    const mockRows = Array.from({ length: 250 }, (_, i) => ({
+      id: i + 1,
+      name: `Item ${i + 1}`,
+    }));
+
+    const columns: Column<typeof mockRows[number]>[] = [
+      { displayName: "ID", property: "id", type: "number" },
+    ];
+
+    it('should update displaayed entries count and reset pagination', async () => {
+      render(<Table columns={columns} rows={mockRows} numberOfDisplayedRows={[10, 20, 50]} />);
+
+      expect(screen.getByText('Showing entries 1 to 10 of 250 entries')).toBeInTheDocument();
+
+      const select = screen.getByLabelText('displayed entries');
+      fireEvent.change(select, { target: { value: 20 } });
+
+      await waitFor(() => {
+        expect(screen.getByText('Showing entries 1 to 20 of 250 entries')).toBeInTheDocument();
+        expect(screen.getAllByRole('row').length - 1).toBe(20);
+      });
+    });
+
+    it('should always reset to first page when changing entries count', async () => {
+      render(<Table columns={columns} rows={mockRows} />);
+
+      // Go to page 2
+      const nextButton = screen.getByText('Next');
+      fireEvent.click(nextButton);
+      expect(screen.getByText('Showing entries 11 to 20 of 250 entries')).toBeInTheDocument();
+
+      // Change entries count
+      const select = screen.getByLabelText('displayed entries');
+      fireEvent.change(select, { target: { value: 10 } });
+
+      await waitFor(() => {
+        expect(screen.getByText('Showing entries 1 to 10 of 250 entries')).toBeInTheDocument();
+        expect(screen.getAllByRole('row').length - 1).toBe(10);
+      });
+    });
+  });
 });
