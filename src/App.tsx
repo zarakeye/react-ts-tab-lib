@@ -128,12 +128,12 @@ function App() {
       id: 12,
       name: 'Jack',
       age: 70,
-      dateOfBirth: '1953-09-05',
+      dateOfBirth: 'Invalid Date',
       isActive: false
     }
   ];
 
-  return <Table columns={columns} rows={rows} />
+  return <Table columns={columns} rows={rows} defaultSort={{ property: 'name', sort: 'asc' }}/>
 }
 
-export default App
+export default App;

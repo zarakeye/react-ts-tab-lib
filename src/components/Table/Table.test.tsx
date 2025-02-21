@@ -246,12 +246,7 @@ describe("Table test suite", () => {
     });
 
     await waitFor(() => {
-      expect(console.error).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.objectContaining({
-          message: expect.stringContaining('Invalid date')
-        })
-      );
+      expect(console.error).toHaveBeenCalledWith('Invalid date');
     });
 
     unmount();
@@ -278,10 +273,7 @@ describe("Table test suite", () => {
 
     await waitFor(() => {
       expect(console.error).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.objectContaining({
-          message: 'Invalid date'
-        })
+        'Invalid date'
       );
     });
 

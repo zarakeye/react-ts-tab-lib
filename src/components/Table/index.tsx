@@ -15,20 +15,39 @@ export type TableProps<T> = {
   rows: T[];
   onRowHover?: (row: T | null) => void;
   columnsClassName?: string;
+  sortButtonClassName?: {
+    style: string;
+    color: string;
+  };
   rowsClassName?: string;
   cellClassName?: string;
   numberOfDisplayedRows?: number[] | undefined;
+  defaultSort?: {
+    property: keyof T;
+    sort: 'asc' | 'desc';
+  } | null;
 }
 
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function Table <T extends Record<string, any>>({ columns = [], rows = [], onRowHover, columnsClassName = '', rowsClassName = '', cellClassName = '', numberOfDisplayedRows = [10, 20, 50, 100]}: TableProps<T>): JSX.Element {
+function Table <T extends Record<string, any>>({
+  columns = [],
+  rows = [],
+  onRowHover,
+  columnsClassName = '',
+  sortButtonClassName = { style: '', color: ''},
+  rowsClassName = '',
+  cellClassName = '',
+  numberOfDisplayedRows = [10, 20, 50, 100],
+  defaultSort= null
+}: TableProps<T>): JSX.Element {
   type DisplayedRows_Type = typeof numberOfDisplayedRows[number];
   const [sampleLength, setSampleLength] = useState<DisplayedRows_Type>(numberOfDisplayedRows[0]);
   const [allRows, setAllRows] = useState<T[]>(rows);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pagesNumber, setPagesNumber] = useState<number>(1);
   const [displayedSample, setDisplayedSample] = useState<T[]>([]);
+  const [activeSort, setActiveSort] = useState<{ property: keyof T; sort: 'asc' | 'desc' } | null>(defaultSort);
   
   const [hoveredRow, setHoveredRow] = useState<T | null>(null);
   console.log(hoveredRow);
@@ -36,7 +55,83 @@ function Table <T extends Record<string, any>>({ columns = [], rows = [], onRowH
   const ascFilteringButtonRef = useRef<HTMLButtonElement>(null);
   const descFilteringButtonRef = useRef<HTMLButtonElement>(null);
 
+  const columnHeaderRef = useRef<HTMLTableCellElement>(null);
   const columnNameRef = useRef<HTMLDivElement>(null);
+  const rowRef = useRef<HTMLTableRowElement>(null);
+
+  // useEffect(() => {
+    // if (defaultSort) {
+    //   const arrayOfPropertyValues = rows.map((row) => row[defaultSort.property]);
+    //   if (defaultSort.sort === 'asc') {
+    //     switch (defaultSort.property) {
+    //       case 'string':
+    //         arrayOfPropertyValues.sort((a, b) => a.localeCompare(b));
+    //         break;
+    //       case 'number':
+    //         arrayOfPropertyValues.sort((a, b) => a - b);
+    //         break;
+    //       case 'date':
+    //         arrayOfPropertyValues.sort((a, b) => {
+    //           if (typeof a === 'string' && typeof b === 'string') {
+    //             const dateA = new Date(a);
+    //             const dateB = new Date(b);
+    //             if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) {
+    //               console.error('Invalid date');
+    //               return 0;
+    //             }
+    //             return new Date(a).getTime() - new Date(b).getTime();
+    //           } else {
+    //             console.error('Invalid date');
+    //             return 0;
+    //           }
+    //         });
+    //         break;
+    //       case 'boolean':
+    //         arrayOfPropertyValues.sort((a, b) => a - b);
+    //         break;
+    //       default:
+    //         console.error('Invalid type');
+    //         break;
+    //     }
+    //   } else if (defaultSort.sort === 'desc') {
+    //     switch (defaultSort.property) {
+    //       case 'string':
+    //         arrayOfPropertyValues.sort((a, b) => b.localeCompare(a));
+    //         break;
+    //       case 'number':
+    //         arrayOfPropertyValues.sort((a, b) => b - a);
+    //         break;
+    //       case 'date':
+    //         arrayOfPropertyValues.sort((a, b) => {
+    //           if (typeof a === 'string' && typeof b === 'string') {
+    //             const dateA = new Date(a);
+    //             const dateB = new Date(b);
+    //             if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) {
+    //               console.error('Invalid date');
+    //               return 0;
+    //             }
+    //             return new Date(b).getTime() - new Date(a).getTime();
+    //           } else {
+    //             console.error('Invalid date');
+    //             return 0;
+    //           }
+    //         });
+    //         break;
+    //       case 'boolean':
+    //         arrayOfPropertyValues.sort((a, b) => b - a);
+    //         break;
+    //       default:
+    //         console.error('Invalid type');
+    //         break;
+    //     }
+    //   }
+
+    //   const sortedRows = arrayOfPropertyValues.map((value) => rows.find((row) => row[defaultSort.property] === value));
+
+    //   setDisplayedSample(sortedRows as T[]);
+    // }
+
+  // },[defaultSort, rows]);
 
   /**
    * Sorts the rows based on the specified property and type in either ascending or descending order.
@@ -68,11 +163,13 @@ function Table <T extends Record<string, any>>({ columns = [], rows = [], onRowH
               const dateA = new Date(a);
               const dateB = new Date(b);
               if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) {
-                throw new Error('Invalid date');
+                console.error('Invalid date');
+                return 0;
               }
               return new Date(a).getTime() - new Date(b).getTime();
             } else {
-              throw new Error('Invalid date');
+              console.error('Invalid date');
+              return 0;
             }
           });
           break;
@@ -80,6 +177,8 @@ function Table <T extends Record<string, any>>({ columns = [], rows = [], onRowH
           arrayOfPropertyValues.sort((a, b) => a - b);
           break;
       }
+
+      setActiveSort({ property, sort });
     } else if (sort === 'desc') {
       switch (type) {
         case 'string':
@@ -101,11 +200,14 @@ function Table <T extends Record<string, any>>({ columns = [], rows = [], onRowH
           arrayOfPropertyValues.sort((a, b) => b - a);
           break;
       }
+
+      setActiveSort({ property, sort });
     }
 
     const sortedRows = arrayOfPropertyValues.map((value) => rows.find((row) => row[property] === value));
 
-    setDisplayedSample(sortedRows as T[]);
+    // setDisplayedSample(sortedRows as T[]);
+    setAllRows(sortedRows as T[]);
   }
 
   /**
@@ -224,7 +326,8 @@ function Table <T extends Record<string, any>>({ columns = [], rows = [], onRowH
                 key={index}
                 role='columnheader'
                 style={{ width: `${100 / columns.length}%` }}
-                className={`px-[10px] py-[5px] border-y-2 border-x-2 align-top ${key.className} first:border-l-2 fisrt:border-r-0 last:border-l-0 last:border-r-2`}
+                className={`${columnsClassName} px-[10px] py-[5px] border-y-2 border-x-2 align-top ${key.className} first:border-l-2 fisrt:border-r-0 last:border-l-0 last:border-r-2`}
+                ref={columnHeaderRef}
               >
                 <div className='flex items-center justify-between'>
                   <div className='flex items-center w-[100%] h-[55px]'>
@@ -239,10 +342,10 @@ function Table <T extends Record<string, any>>({ columns = [], rows = [], onRowH
                         type='button'
                         ref={ascFilteringButtonRef}
                         onClick={(e) => handleSort(e, key.property, key.type, 'asc')}
-                        className='cursor-pointer'
+                        className={`cursor-pointer transition duration-500 hover:scale-250 hover:blur-[.6px] ${activeSort?.property === key.property && activeSort?.sort === 'asc' ? 'scale-250' : 'scale-100'}`}
                         role='button'
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="10px" fill="#175729">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="10px" fill={sortButtonClassName.color ? sortButtonClassName.color : '#000'} >
                           <path d="M152-160q-23 0-35-20.5t1-40.5l328-525q12-19 34-19t34 19l328 525q13 20 1 40.5T808-160H152Z"/>
                         </svg>
                       </button>
@@ -250,10 +353,10 @@ function Table <T extends Record<string, any>>({ columns = [], rows = [], onRowH
                         type='button'
                         ref={descFilteringButtonRef}
                         onClick={(e) => handleSort(e, key.property, key.type, 'desc')}
-                        className='cursor-pointer'
+                        className={`cursor-pointer transition duration-500 hover:scale-175 hover:blur-[.6px] ${activeSort?.property === key.property && activeSort?.sort === 'desc' ? 'scale-250' : 'scale-100'}`}
                         role='button'
                       >
-                        <svg className='rotate-180' xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="10px" fill="#175729">
+                        <svg className='rotate-180' xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="10px" fill={sortButtonClassName.color ? sortButtonClassName.color : '#000'}>
                           <path d="M152-160q-23 0-35-20.5t1-40.5l328-525q12-19 34-19t34 19l328 525q13 20 1 40.5T808-160H152Z"/>
                         </svg>
                       </button>
@@ -265,36 +368,49 @@ function Table <T extends Record<string, any>>({ columns = [], rows = [], onRowH
           </tr>
         </thead>
         <tbody className='pb-2.5'>
-          {displayedSample.map((row: T, rowIndex: number): ReactNode => (
-            <tr
-              key={rowIndex}
-              role='row'
-              onMouseEnter={() => {
-                setHoveredRow(row);
-                if (onRowHover) {
-                  onRowHover(row);
-                }
-              }}
-              onMouseLeave={() => {
-                setHoveredRow(null);
-                if (onRowHover) {
-                  onRowHover(null);
-                }
-              }}
-              className={rowsClassName}
-            >
-              {columns.map((column, colIndex) => (
-                <td title={`id: ${row.id}`}
-                  key={colIndex}
-                  role='cell'
-                  className={`px-[15px] truncate ${cellClassName}`}
-                  style={{ width: `${100 / columns.length}%` }}
-                >
-                  {columns[colIndex].renderer ? columns[colIndex].renderer(row[column.property]) : row[column.property] as ReactNode}
+          {displayedSample.length > 0
+            ? displayedSample.map((row: T, rowIndex: number): ReactNode => (
+              <tr
+                key={rowIndex}
+                ref={rowRef}
+                role='row'
+                onMouseEnter={() => {
+                  setHoveredRow(row);
+                  if (onRowHover) {
+                    onRowHover(row);
+                  }
+                }}
+                onMouseLeave={() => {
+                  setHoveredRow(null);
+                  if (onRowHover) {
+                    onRowHover(null);
+                  }
+                }}
+                className={rowsClassName}
+              >
+                {columns.map((column, colIndex) => (
+                  <td title={`id: ${row.id}`}
+                    key={colIndex}
+                    role='cell'
+                    className={`px-[15px] truncate ${cellClassName}`}
+                    style={{ width: `${100 / columns.length}%` }}
+                  >
+                    {columns[colIndex].renderer ? columns[colIndex].renderer(row[column.property]) : row[column.property] as ReactNode}
+                  </td>
+                ))}
+              </tr>
+              ))
+            : (
+              <tr
+                role='row'
+                className={rowsClassName}
+                ref={rowRef}
+              >
+                <td colSpan={columns.length} className='text-center py-[10px]'>
+                  No data available in table
                 </td>
-              ))}
-            </tr>
-          ))}
+              </tr>
+            )}
         </tbody>
       </table>
 
