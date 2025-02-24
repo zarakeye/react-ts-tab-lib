@@ -1,11 +1,24 @@
 import { type ChangeEvent, JSX, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 
-type SortType = 'string' | 'number' | 'date' | 'boolean' | 'custom';
+export type DataType = 'string' | 'number' | 'date' | 'boolean' | 'custom';
+export type OrderType = 'asc' | 'desc';
+export type DefaultOrderType<T> = {
+  property: keyof T;
+  order: OrderType;
+}
+export type TextContentType = {
+  searchLabel: string | null;
+  displayedEntriesLabel: string | null;
+  emptyTableText: string | null;
+  paginationTextContent: (sampleBegin: number, sampleEnd: number, sampleLength: number) => string | null;
+  previousPageButtonLabel: string | null;
+  nextPageButtonLabel: string | null;
+}
 
 export type Column<T> = {
   displayName: string;
   property: keyof T;
-  type: SortType;
+  type: DataType;
   renderer?: (value: T[keyof T]) => ReactNode;
   className?: string;
 }
@@ -22,10 +35,8 @@ export type TableProps<T> = {
   rowsClassName?: string;
   cellClassName?: string;
   numberOfDisplayedRows?: number[] | undefined;
-  defaultSort?: {
-    property: keyof T;
-    sort: 'asc' | 'desc';
-  } | null;
+  defaultOrder?: DefaultOrderType<T> | null;
+  textContent?: TextContentType | null;
 }
 
 
@@ -39,7 +50,8 @@ function Table <T extends Record<string, any>>({
   rowsClassName = '',
   cellClassName = '',
   numberOfDisplayedRows = [10, 20, 50, 100],
-  defaultSort= null
+  defaultOrder= null,
+  textContent = null
 }: TableProps<T>): JSX.Element {
   type DisplayedRows_Type = typeof numberOfDisplayedRows[number];
   const [sampleLength, setSampleLength] = useState<DisplayedRows_Type>(numberOfDisplayedRows[0]);
@@ -47,7 +59,7 @@ function Table <T extends Record<string, any>>({
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pagesNumber, setPagesNumber] = useState<number>(1);
   const [displayedSample, setDisplayedSample] = useState<T[]>([]);
-  const [activeSort, setActiveSort] = useState<{ property: keyof T; sort: 'asc' | 'desc' } | null>(defaultSort);
+  const [activeOrder, setActiveOrder] = useState<{ property: keyof T; order: OrderType } | null>(defaultOrder);
   
   const [hoveredRow, setHoveredRow] = useState<T | null>(null);
   console.log(hoveredRow);
@@ -60,14 +72,14 @@ function Table <T extends Record<string, any>>({
   const rowRef = useRef<HTMLTableRowElement>(null);
 
   useEffect(() => {
-    if (defaultSort) {
-      const valuesOfFilteredProperty = allRows.map((row) => row[defaultSort.property]);
+    if (defaultOrder) {
+      const valuesOfFilteredProperty = allRows.map((row) => row[defaultOrder.property]);
       console.log('valuesOfFilteredProperty', valuesOfFilteredProperty);
       
-      if (defaultSort.sort === 'asc') {
-        const col = columns.find((column) => column.property === defaultSort.property);
+      if (defaultOrder.order === 'asc') {
+        const col = columns.find((column) => column.property === defaultOrder.property);
         if (col) {
-          if (defaultSort.sort === 'asc') {
+          if (defaultOrder.order === 'asc') {
             switch (col.type) {
               case 'string':
                 valuesOfFilteredProperty.sort((a, b) => a.localeCompare(b));
@@ -98,7 +110,7 @@ function Table <T extends Record<string, any>>({
                 console.error('Invalid type');
                 break;
             }
-          } else if (defaultSort.sort === 'desc') {
+          } else if (defaultOrder.order === 'desc') {
             switch (col.type) {
               case 'string':
                 valuesOfFilteredProperty.sort((a, b) => b.localeCompare(a));
@@ -134,19 +146,18 @@ function Table <T extends Record<string, any>>({
       }
 
       const sortedRows: T[] = [];
-      console.log('valuesOfFilteredProperty after sort', valuesOfFilteredProperty);
       valuesOfFilteredProperty.forEach((value) => {
-        const row = allRows.find((row) => row[defaultSort.property] === value);
+        const row = allRows.find((row) => row[defaultOrder.property] === value);
         if (row) {
           sortedRows.push(row);
         }
       });
 
       setAllRows(sortedRows);
-
       setDisplayedSample(allRows);
     }
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   },[]);
 
   /**
@@ -161,11 +172,11 @@ function Table <T extends Record<string, any>>({
    * property and type. It handles different data types by applying appropriate sorting logic.
    * Throws an error if an invalid date is encountered.
    */
-  const handleSort = (e: React.MouseEvent<HTMLButtonElement>, property: keyof T, type: SortType, sort: 'asc' | 'desc') => {
+  const handleSort = (e: React.MouseEvent<HTMLButtonElement>, property: keyof T, type: DataType, order: OrderType) => {
     e.preventDefault();
 
     const valuesOfFilteredProperty = rows.map((row) => row[property]);
-    if (sort === 'asc') {
+    if (order === 'asc') {
       switch (type) {
         case 'string':
           valuesOfFilteredProperty.sort((a, b) => a.localeCompare(b));
@@ -194,8 +205,8 @@ function Table <T extends Record<string, any>>({
           break;
       }
 
-      setActiveSort({ property, sort });
-    } else if (sort === 'desc') {
+      setActiveOrder({ property, order });
+    } else if (order === 'desc') {
       switch (type) {
         case 'string':
           valuesOfFilteredProperty.sort((a, b) => b.localeCompare(a));
@@ -217,12 +228,11 @@ function Table <T extends Record<string, any>>({
           break;
       }
 
-      setActiveSort({ property, sort });
+      setActiveOrder({ property, order });
     }
 
     const sortedRows = valuesOfFilteredProperty.map((value) => rows.find((row) => row[property] === value));
 
-    // setDisplayedSample(sortedRows as T[]);
     setAllRows(sortedRows as T[]);
   }
 
@@ -325,12 +335,16 @@ function Table <T extends Record<string, any>>({
               <option key={index} value={option}>{option}</option>
             ))}
           </select>
-          <label htmlFor="sampleLength">displayed entries</label>
+          <label htmlFor="sampleLength">
+            {textContent?.displayedEntriesLabel ??'displayed entries'}
+          </label>
         </div>
 
         <div>
-          <label htmlFor="search">Search</label>
-          <input type="text" name="search" id="search" placeholder='Search' className='ml-1.5 border-1 border-black rounded-[5px]' onChange={(e) => handleSearch(e)}/>
+          <label htmlFor="search">
+            {textContent?.searchLabel ?? 'Search'}
+          </label>
+          <input type="text" name="search" id="search" className='ml-1.5 border-1 border-black rounded-[5px]' onChange={(e) => handleSearch(e)}/>
         </div>
       </div>
       
@@ -358,7 +372,7 @@ function Table <T extends Record<string, any>>({
                         type='button'
                         ref={ascFilteringButtonRef}
                         onClick={(e) => handleSort(e, key.property, key.type, 'asc')}
-                        className={`cursor-pointer transition duration-500 hover:scale-250 hover:blur-[.6px] ${activeSort?.property === key.property && activeSort?.sort === 'asc' ? 'scale-250' : 'scale-100'}`}
+                        className={`cursor-pointer transition duration-500 hover:scale-250 hover:blur-[.6px] ${activeOrder?.property === key.property && activeOrder?.order === 'asc' ? 'scale-250' : 'scale-100'}`}
                         role='button'
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="10px" fill={sortButtonClassName.color ? sortButtonClassName.color : '#000'} >
@@ -369,7 +383,7 @@ function Table <T extends Record<string, any>>({
                         type='button'
                         ref={descFilteringButtonRef}
                         onClick={(e) => handleSort(e, key.property, key.type, 'desc')}
-                        className={`cursor-pointer transition duration-500 hover:scale-175 hover:blur-[.6px] ${activeSort?.property === key.property && activeSort?.sort === 'desc' ? 'scale-250' : 'scale-100'}`}
+                        className={`cursor-pointer transition duration-500 hover:scale-175 hover:blur-[.6px] ${activeOrder?.property === key.property && activeOrder?.order === 'desc' ? 'scale-250' : 'scale-100'}`}
                         role='button'
                       >
                         <svg className='rotate-180' xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="10px" fill={sortButtonClassName.color ? sortButtonClassName.color : '#000'}>
@@ -431,7 +445,7 @@ function Table <T extends Record<string, any>>({
       </table>
 
       <div className='flex justify-between mt-5'>
-        <p>Showing entries {sampleLength * (currentPage - 1) + 1} to {Math.min(sampleLength * currentPage, allRows.length)} of {allRows.length} entries</p>
+        <p>{textContent?.paginationTextContent(sampleLength * (currentPage - 1) + 1, Math.min(sampleLength * currentPage, allRows.length), allRows.length) ?? `Showing entries ${sampleLength * (currentPage - 1) + 1} to ${Math.min(sampleLength * currentPage, allRows.length)} of ${allRows.length} entries`}</p>
 
         <div className='flex items-center gap-2'>
           <button
@@ -440,7 +454,7 @@ function Table <T extends Record<string, any>>({
             className='px-3 py-1 rounded border disabled:opacity-50 disabled:cursor-not-allowed'
             aria-label='Previous page'
           >
-            Previous
+            {textContent?.previousPageButtonLabel ?? 'Previous'}
           </button>
 
           {pagesNumbers.map((page, index) =>
@@ -470,7 +484,7 @@ function Table <T extends Record<string, any>>({
             className='px-3 py-1 rounded border disabled:opacity-50 disabled:cursor-not-allowed'
             aria-label='Next page'
           >
-            Next
+            {textContent?.nextPageButtonLabel ?? 'Next'}
           </button>
         </div>
       </div>

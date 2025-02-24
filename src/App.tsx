@@ -133,7 +133,28 @@ function App() {
     }
   ];
 
-  return <Table columns={columns} rows={rows} defaultSort={{ property: 'name', sort: 'asc' }}/>
+  return (
+    <Table
+      columns={columns}
+      rows={rows}
+      defaultOrder={
+        {
+          property: 'name',
+          order: 'asc'
+        }
+      }
+      textContent={{
+        searchLabel: 'Rechercher',
+        displayedEntriesLabel: 'employés affichés',
+        emptyTableText: 'Aucun employé',
+        paginationTextContent: (sampleBegin, sampleEnd, sampleLength) => {
+          return `Affichage des employés ${sampleBegin} à ${sampleEnd} sur ${sampleLength}`
+        },
+        previousPageButtonLabel: 'Page précédente',
+        nextPageButtonLabel: 'Page suivante'
+      }}
+    />
+  )
 }
 
 export default App;

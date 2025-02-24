@@ -203,7 +203,7 @@ describe("Table test suite", () => {
     it ('should filter the table rows based on the search input', async () => {
       render(<Table columns={columns} rows={rows} />);
 
-      const searchInput = screen.getByPlaceholderText('Search');
+      const searchInput = screen.getByLabelText('Search').closest('input')!;
 
       // Search for "Jack"
       fireEvent.change(searchInput, { target: { value: 'Jack' } });
