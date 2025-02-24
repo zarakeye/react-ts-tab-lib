@@ -59,79 +59,95 @@ function Table <T extends Record<string, any>>({
   const columnNameRef = useRef<HTMLDivElement>(null);
   const rowRef = useRef<HTMLTableRowElement>(null);
 
-  // useEffect(() => {
-    // if (defaultSort) {
-    //   const arrayOfPropertyValues = rows.map((row) => row[defaultSort.property]);
-    //   if (defaultSort.sort === 'asc') {
-    //     switch (defaultSort.property) {
-    //       case 'string':
-    //         arrayOfPropertyValues.sort((a, b) => a.localeCompare(b));
-    //         break;
-    //       case 'number':
-    //         arrayOfPropertyValues.sort((a, b) => a - b);
-    //         break;
-    //       case 'date':
-    //         arrayOfPropertyValues.sort((a, b) => {
-    //           if (typeof a === 'string' && typeof b === 'string') {
-    //             const dateA = new Date(a);
-    //             const dateB = new Date(b);
-    //             if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) {
-    //               console.error('Invalid date');
-    //               return 0;
-    //             }
-    //             return new Date(a).getTime() - new Date(b).getTime();
-    //           } else {
-    //             console.error('Invalid date');
-    //             return 0;
-    //           }
-    //         });
-    //         break;
-    //       case 'boolean':
-    //         arrayOfPropertyValues.sort((a, b) => a - b);
-    //         break;
-    //       default:
-    //         console.error('Invalid type');
-    //         break;
-    //     }
-    //   } else if (defaultSort.sort === 'desc') {
-    //     switch (defaultSort.property) {
-    //       case 'string':
-    //         arrayOfPropertyValues.sort((a, b) => b.localeCompare(a));
-    //         break;
-    //       case 'number':
-    //         arrayOfPropertyValues.sort((a, b) => b - a);
-    //         break;
-    //       case 'date':
-    //         arrayOfPropertyValues.sort((a, b) => {
-    //           if (typeof a === 'string' && typeof b === 'string') {
-    //             const dateA = new Date(a);
-    //             const dateB = new Date(b);
-    //             if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) {
-    //               console.error('Invalid date');
-    //               return 0;
-    //             }
-    //             return new Date(b).getTime() - new Date(a).getTime();
-    //           } else {
-    //             console.error('Invalid date');
-    //             return 0;
-    //           }
-    //         });
-    //         break;
-    //       case 'boolean':
-    //         arrayOfPropertyValues.sort((a, b) => b - a);
-    //         break;
-    //       default:
-    //         console.error('Invalid type');
-    //         break;
-    //     }
-    //   }
+  useEffect(() => {
+    if (defaultSort) {
+      const valuesOfFilteredProperty = allRows.map((row) => row[defaultSort.property]);
+      console.log('valuesOfFilteredProperty', valuesOfFilteredProperty);
+      
+      if (defaultSort.sort === 'asc') {
+        const col = columns.find((column) => column.property === defaultSort.property);
+        if (col) {
+          if (defaultSort.sort === 'asc') {
+            switch (col.type) {
+              case 'string':
+                valuesOfFilteredProperty.sort((a, b) => a.localeCompare(b));
+                break;
+              case 'number':
+                valuesOfFilteredProperty.sort((a, b) => a - b);
+                break;
+              case 'date':
+                valuesOfFilteredProperty.sort((a, b) => {
+                  if (typeof a === 'string' && typeof b === 'string') {
+                    const dateA = new Date(a);
+                    const dateB = new Date(b);
+                    if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) {
+                      console.error('Invalid date');
+                      return 0;
+                    }
+                    return new Date(a).getTime() - new Date(b).getTime();
+                  } else {
+                    console.error('Invalid date');
+                    return 0;
+                  }
+                });
+                break;
+              case 'boolean':
+                valuesOfFilteredProperty.sort((a, b) => a - b);
+                break;
+              default:
+                console.error('Invalid type');
+                break;
+            }
+          } else if (defaultSort.sort === 'desc') {
+            switch (col.type) {
+              case 'string':
+                valuesOfFilteredProperty.sort((a, b) => b.localeCompare(a));
+                break;
+              case 'number':
+                valuesOfFilteredProperty.sort((a, b) => b - a);
+                break;
+              case 'date':
+                valuesOfFilteredProperty.sort((a, b) => {
+                  if (typeof a === 'string' && typeof b === 'string') {
+                    const dateA = new Date(a);
+                    const dateB = new Date(b);
+                    if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) {
+                      console.error('Invalid date');
+                      return 0;
+                    }
+                    return new Date(b).getTime() - new Date(a).getTime();
+                  } else {
+                    console.error('Invalid date');
+                    return 0;
+                  }
+                });
+                break;
+              case 'boolean':
+                valuesOfFilteredProperty.sort((a, b) => b - a);
+                break;
+              default:
+                console.error('Invalid type');
+                break;
+            }
+          }
+        }
+      }
 
-    //   const sortedRows = arrayOfPropertyValues.map((value) => rows.find((row) => row[defaultSort.property] === value));
+      const sortedRows: T[] = [];
+      console.log('valuesOfFilteredProperty after sort', valuesOfFilteredProperty);
+      valuesOfFilteredProperty.forEach((value) => {
+        const row = allRows.find((row) => row[defaultSort.property] === value);
+        if (row) {
+          sortedRows.push(row);
+        }
+      });
 
-    //   setDisplayedSample(sortedRows as T[]);
-    // }
+      setAllRows(sortedRows);
 
-  // },[defaultSort, rows]);
+      setDisplayedSample(allRows);
+    }
+
+  },[]);
 
   /**
    * Sorts the rows based on the specified property and type in either ascending or descending order.
@@ -148,17 +164,17 @@ function Table <T extends Record<string, any>>({
   const handleSort = (e: React.MouseEvent<HTMLButtonElement>, property: keyof T, type: SortType, sort: 'asc' | 'desc') => {
     e.preventDefault();
 
-    const arrayOfPropertyValues = rows.map((row) => row[property]);
+    const valuesOfFilteredProperty = rows.map((row) => row[property]);
     if (sort === 'asc') {
       switch (type) {
         case 'string':
-          arrayOfPropertyValues.sort((a, b) => a.localeCompare(b));
+          valuesOfFilteredProperty.sort((a, b) => a.localeCompare(b));
           break;
         case 'number':
-          arrayOfPropertyValues.sort((a, b) => a - b);
+          valuesOfFilteredProperty.sort((a, b) => a - b);
           break;
         case 'date':
-          arrayOfPropertyValues.sort((a, b) => {
+          valuesOfFilteredProperty.sort((a, b) => {
             if (typeof a === 'string' && typeof b === 'string') {
               const dateA = new Date(a);
               const dateB = new Date(b);
@@ -174,7 +190,7 @@ function Table <T extends Record<string, any>>({
           });
           break;
         case 'boolean':
-          arrayOfPropertyValues.sort((a, b) => a - b);
+          valuesOfFilteredProperty.sort((a, b) => a - b);
           break;
       }
 
@@ -182,13 +198,13 @@ function Table <T extends Record<string, any>>({
     } else if (sort === 'desc') {
       switch (type) {
         case 'string':
-          arrayOfPropertyValues.sort((a, b) => b.localeCompare(a));
+          valuesOfFilteredProperty.sort((a, b) => b.localeCompare(a));
           break;
         case 'number':
-          arrayOfPropertyValues.sort((a, b) => b - a);
+          valuesOfFilteredProperty.sort((a, b) => b - a);
           break;
         case 'date':
-          arrayOfPropertyValues.sort((a, b) => {
+          valuesOfFilteredProperty.sort((a, b) => {
             if (typeof a === 'string' && typeof b === 'string') {
               return new Date(b).getTime() - new Date(a).getTime();
             } else {
@@ -197,14 +213,14 @@ function Table <T extends Record<string, any>>({
           });
           break;
         case 'boolean':
-          arrayOfPropertyValues.sort((a, b) => b - a);
+          valuesOfFilteredProperty.sort((a, b) => b - a);
           break;
       }
 
       setActiveSort({ property, sort });
     }
 
-    const sortedRows = arrayOfPropertyValues.map((value) => rows.find((row) => row[property] === value));
+    const sortedRows = valuesOfFilteredProperty.map((value) => rows.find((row) => row[property] === value));
 
     // setDisplayedSample(sortedRows as T[]);
     setAllRows(sortedRows as T[]);
