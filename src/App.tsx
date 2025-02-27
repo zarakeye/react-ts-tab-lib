@@ -1,8 +1,8 @@
 // import reactLogo from './assets/react.svg'
 // import viteLogo from '/vite.svg'
 import './App.css'
-import Table from './components/Table/index.jsx'
-import type { Column } from './components/Table/index.jsx'
+import Table from './components/Table/Table'
+import type { Column } from './components/Table'
 
 export interface Employee {
   id: string;

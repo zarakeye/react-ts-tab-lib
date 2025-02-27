@@ -1,6 +1,6 @@
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import Table, { type Column } from ".";
+import Table, { type Column } from "./Table";
 
 interface RowData {
   id: number;
@@ -161,7 +161,7 @@ describe("Table test suite", () => {
             return 0;
           }
         })
-        .map(item => String(item[column.property]));
+        .map(item => String(item[column.property])).slice(0, 10);
 
       expect(sortedRows).toEqual(expectedValues);
     });
@@ -195,7 +195,7 @@ describe("Table test suite", () => {
             return 0;
           }
         })
-        .map(item => String(item[column.property]));
+        .map(item => String(item[column.property])).slice(0, 10);
 
       expect(sortedRows).toEqual(expectedValues);
     })

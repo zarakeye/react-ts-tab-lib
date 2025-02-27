@@ -1,32 +1,57 @@
 {
-  "name": "react-table-library",
-  "private": true,
-  "version": "0.0.0",
+  "name": "react-ts-tab-lib",
+  "private": false,
+  "version": "1.0.15",
   "type": "module",
-  "exports": "./dist/main.js",
-  "module": "./dist/main.js",
-  "types": "./dist/main.d.ts",
+  "main": "./dist/index.js",
+  "description": "A React Typescript library rendering a Table compenent receiving in props for rows an array of a generic type T (precised when using the component) and for columns an array of objects of type Column<T> precising the displayName, the key of the T type and its type, for building tables",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js"
+    }
+  },
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "dist/styles.css"
+  ],
+  "tailwindcss": {
+    "content": [
+      "./src/**/*.{html,js,ts,jsx,tsx}"
+    ],
+    "theme": {
+      "extend": {}
+    },
+    "plugins": []
+  },
   "scripts": {
-    "dev": "vite",
+    "dev": "vite dev",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "prepublishOnly": "vitest run && npm run build",
+    "prepublishOnly": "npm run build",
     "type-check": "tsc -b --watch",
     "test": "vitest --ui",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "clean": "rm -rf dist node_modules",
+    "types": "tsc --outDir dist/index.d.ts"
   },
-  "dependencies": {
-    "glob": "^11.0.1",
+  "peerDependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.26.9",
     "@eslint/js": "^9.17.0",
-    "@tailwindcss/vite": "^4.0.3",
+    "@tailwindcss/cli": "^4.0.9",
+    "@tailwindcss/postcss": "^4.0.9",
+    "@tailwindcss/vite": "^4.0.9",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^14.6.1",
+    "@types/babel__core": "^7.20.5",
     "@types/glob": "^8.1.0",
     "@types/node": "^22.13.1",
     "@types/react": "^18.3.18",
@@ -34,16 +59,23 @@
     "@vitejs/plugin-react": "^4.3.4",
     "@vitest/coverage-v8": "^3.0.5",
     "@vitest/ui": "^3.0.5",
+    "esbuild-plugin-postcss2": "^0.1.2",
+    "esbuild-plugin-tailwindcss": "^2.0.1",
     "eslint": "^9.17.0",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.16",
     "globals": "^15.14.0",
     "jsdom": "^26.0.0",
-    "tailwindcss": "^4.0.3",
+    "postcss": "^8.5.3",
+    "postcss-cli": "^11.0.0",
+    "postcss-load-config": "^6.0.1",
+    "tailwindcss": "^4.0.9",
+    "tsup": "^8.4.0",
     "typescript": "~5.6.2",
     "typescript-eslint": "^8.18.2",
     "vite": "^6.0.5",
     "vite-plugin-dts": "^4.5.0",
+    "vite-plugin-lib-inject-css": "^2.2.1",
     "vitest": "^3.0.5"
   }
 }

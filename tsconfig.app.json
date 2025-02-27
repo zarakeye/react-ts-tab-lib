@@ -8,7 +8,7 @@
     "skipLibCheck": true,
 
     /* Bundler mode */
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     // "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "moduleDetection": "force",
@@ -30,3 +30,30 @@
   "include": ["src"],
   "exclude": ["node_modules", "dist", "src/**/*.test.ts", "src/**/*.stories.ts"]
 }
+
+
+// {
+//   "compilerOptions": {
+//     "outDir": "dist",
+//     "declaration": true,
+//     "declarationMap": true,
+//     "emitDeclarationOnly": false,
+//     "isolatedModules": false,
+//     "jsx": "react-jsx",
+//     "module": "ESNext",
+//     "moduleResolution": "node",
+//     "target": "ES2020",
+//     "esModuleInterop": true,
+//     "strict": true,
+//     "skipLibCheck": true,
+//     "forceConsistentCasingInFileNames": true,
+//     "baseUrl": ".",
+//     "paths": {
+//       "@/*": ["./src/*"]
+//     },
+//     "allowSyntheticDefaultImports": true,
+//     "types": ["vite/client"],
+//   },
+//   "include": ["src"],
+//   "exclude": ["node_modules", "dist", "src/**/*.test.ts", "src/**/*.stories.ts"]
+// }
