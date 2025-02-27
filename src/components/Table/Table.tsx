@@ -41,8 +41,6 @@ export type TableProps<T> = {
   textContent?: TextContentType | null;
 }
 
-
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function Table <T extends Record<string, any>>({
   columns = [],
@@ -451,14 +449,17 @@ function Table <T extends Record<string, any>>({
         <p>{textContent?.paginationTextContent(sampleLength * (currentPage - 1) + 1, Math.min(sampleLength * currentPage, allRows.length), allRows.length) ?? `Showing entries ${sampleLength * (currentPage - 1) + 1} to ${Math.min(sampleLength * currentPage, allRows.length)} of ${allRows.length} entries`}</p>
 
         <div className='flex items-center gap-2'>
-          <button
-            onClick={() => setCurrentPage(currentPage - 1)}
-            disabled={currentPage === 1}
-            className='px-3 py-1 rounded border disabled:opacity-50 disabled:cursor-not-allowed'
-            aria-label='Previous page'
-          >
-            {textContent?.previousPageButtonLabel ?? 'Previous'}
-          </button>
+          {currentPage - 1 >= 1 && (
+            <button
+              onClick={() => setCurrentPage(currentPage - 1)}
+              // disabled={currentPage === 1}
+              className='px-3 py-1 rounded border disabled:opacity-50 disabled:cursor-not-allowed'
+              aria-label='Previous page'
+            >
+              {textContent?.previousPageButtonLabel ?? 'Previous'}
+            </button>
+          )}
+          
 
           {pagesNumbers.map((page, index) =>
             typeof page === 'number' ? (
@@ -481,14 +482,17 @@ function Table <T extends Record<string, any>>({
             )
           )}
 
-          <button
-            onClick={() => setCurrentPage(currentPage + 1)}
-            disabled={currentPage === pagesNumber}
-            className='px-3 py-1 rounded border disabled:opacity-50 disabled:cursor-not-allowed'
-            aria-label='Next page'
-          >
-            {textContent?.nextPageButtonLabel ?? 'Next'}
-          </button>
+          {currentPage + 1 <= pagesNumber && (
+            <button
+              onClick={() => setCurrentPage(currentPage + 1)}
+              // disabled={currentPage === pagesNumber}
+              className='px-3 py-1 rounded border disabled:opacity-50 disabled:cursor-not-allowed'
+              aria-label='Next page'
+            >
+              {textContent?.nextPageButtonLabel ?? 'Next'}
+            </button>
+          )}
+          
         </div>
       </div>
     </div>

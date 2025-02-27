@@ -18,15 +18,6 @@
     "dist",
     "dist/styles.css"
   ],
-  "tailwindcss": {
-    "content": [
-      "./src/**/*.{html,js,ts,jsx,tsx}"
-    ],
-    "theme": {
-      "extend": {}
-    },
-    "plugins": []
-  },
   "scripts": {
     "dev": "vite dev",
     "build": "tsc -b && vite build",
@@ -76,5 +67,31 @@
     "vite-plugin-dts": "^4.5.0",
     "vite-plugin-lib-inject-css": "^2.2.1",
     "vitest": "^3.0.5"
-  }
+  },
+  "author": {
+    "name": "Stéphane BAZZÉ"
+  },
+  "keywords": [
+    "react",
+    "typescript",
+    "table",
+    "tab",
+    "component",
+    "library",
+    "tailwindcss",
+    "tailwind",
+    "tab-lib",
+    "tab-component",
+    "tab-lib-react",
+    "tab-component-react",
+    "tab-lib-typescript",
+    "tab-component-typescript",
+    "tab-lib-react-typescript",
+    "tab-component-react-typescript",
+    "tab-lib-react-tailwind",
+    "tab-component-react-tailwind",
+    "tab-lib-react-tailwind-typescript",
+    "tab-component-react-tailwind-typescript",
+    "tab-lib-react-tailwind-typescript"
+  ]
 }
