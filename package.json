@@ -1,7 +1,7 @@
 {
   "name": "react-ts-tab-lib",
   "private": false,
-  "version": "1.0.15",
+  "version": "1.0.18",
   "type": "module",
   "main": "./dist/index.js",
   "description": "A React Typescript library rendering a Table compenent receiving in props for rows an array of a generic type T (precised when using the component) and for columns an array of objects of type Column<T> precising the displayName, the key of the T type and its type, for building tables",
@@ -70,7 +70,6 @@
     "postcss-cli": "^11.0.0",
     "postcss-load-config": "^6.0.1",
     "tailwindcss": "^4.0.9",
-    "tsup": "^8.4.0",
     "typescript": "~5.6.2",
     "typescript-eslint": "^8.18.2",
     "vite": "^6.0.5",

@@ -5,14 +5,14 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import dts from 'vite-plugin-dts'
 import tailwindcss from '@tailwindcss/vite'
-import { libInjectCss} from 'vite-plugin-lib-inject-css'
+import { libInjectCss} from 'vite-plugin-lib-inject-css' // injecte le css dans le composant qui est exporté
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
-    tailwindcss(),
-    libInjectCss(),
+    tailwindcss(), // Permet de compiler les tailwindcss
+    libInjectCss(),  // injecte le css compilé dans le composant qui est exporté
     dts({
       insertTypesEntry: true,
       //Exclude tests and stories if any
@@ -33,14 +33,11 @@ export default defineConfig({
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'ReactTableLibrary',
       formats: ['es'],
-      // fileName: (format) => `index.${format === 'es' ? 'mjs' : 'cjs'}`,
     },
     rollupOptions: {
       external: ['react', 'react-dom', 'react/jsx-runtime'],
       output: {
         entryFileNames: 'index.js',
-        // assetFileNames: 'assets/index[extname]',
-        assetFileNames: 'index[extname]',
         globals: {
           react: 'React',
           'react-dom': 'ReactDOM',
