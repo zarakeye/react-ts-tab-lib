@@ -29,6 +29,7 @@ export type TableProps<T> = {
   columns: Column<T>[];
   rows: T[];
   onRowHover?: (row: T | null) => void;
+  onRowClick?: (row: T | null) => void;
   columnsClassName?: string;
   sortButtonClassName?: {
     style: string;
@@ -46,6 +47,7 @@ function Table <T extends Record<string, any>>({
   columns = [],
   rows = [],
   onRowHover,
+  onRowClick,
   columnsClassName = '',
   sortButtonClassName = { style: '', color: ''},
   rowsClassName = '',
@@ -417,6 +419,11 @@ function Table <T extends Record<string, any>>({
                   setHoveredRow(null);
                   if (onRowHover) {
                     onRowHover(null);
+                  }
+                }}
+                onClick={() => {
+                  if (onRowClick) {
+                    onRowClick(row);
                   }
                 }}
                 className={rowsClassName}
