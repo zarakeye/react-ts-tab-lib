@@ -357,26 +357,27 @@ function Table <T extends Record<string, any>>({
                 key={index}
                 role='columnheader'
                 style={{ width: `${100 / columns.length}%` }}
-                className={`${columnsClassName} px-[10px] py-[5px] border-y-2 border-x-2 align-top ${key.className} first:border-l-2 fisrt:border-r-0 last:border-l-0 last:border-r-2`}
+                className={`${columnsClassName} px-[20px] py-[20px] h-[100px] border-y-2 border-x-2 align-middle ${key.className} first:border-l-2 fisrt:border-r-0 last:border-l-0 last:border-r-2`}
                 ref={columnHeaderRef}
               >
-                <div className='flex justify-between items-center'>
-                  <div className='flex items-center w-[100%] h-[55px]'>
+                <div className='flex justify-between items-center gap-2.5'>
+                  <div className='flex t items-center w-[100%] h-[55px]'>
                     <p
                       ref={columnNameRef}
-                      className='mr-2 flex-1 cursor-pointer'
+                      className='flex-1 cursor-pointer'
                     >
                       {key.displayName}
                     </p>
-                    <div className='flex flex-col gap-1 mr-2'>
+                    <div className='flex flex-col justify-between gap-2.5'>
                       <button
                         type='button'
                         ref={ascFilteringButtonRef}
                         onClick={(e) => handleSort(e, key.property, key.type, 'asc')}
-                        className={`cursor-pointer transition duration-500 hover:scale-175 hover:blur-[.6px] ${activeOrder?.property === key.property && activeOrder?.order === 'asc' ? 'scale-220 blur-[.6px]' : 'scale-100'}`}
+                        className={`cursor-pointer w-[24px] h-[24px] transition duration-500 hover:scale-175 hover:blur-[.6px] m-[5px] ${activeOrder?.property === key.property && activeOrder?.order === 'asc' ? 'scale-200 blur-[.6px]' : 'scale-100'}`}
                         role='button'
+                        aria-label='ascending order button'
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="10px" fill={sortButtonClassName.color ? sortButtonClassName.color : '#000'} >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 -960 960 960" fill={sortButtonClassName.color ? sortButtonClassName.color : '#000'} >
                           <path d="M152-160q-23 0-35-20.5t1-40.5l328-525q12-19 34-19t34 19l328 525q13 20 1 40.5T808-160H152Z"/>
                         </svg>
                       </button>
@@ -384,10 +385,11 @@ function Table <T extends Record<string, any>>({
                         type='button'
                         ref={descFilteringButtonRef}
                         onClick={(e) => handleSort(e, key.property, key.type, 'desc')}
-                        className={`cursor-pointer transition duration-500 hover:scale-175 hover:blur-[.6px] ${activeOrder?.property === key.property && activeOrder?.order === 'desc' ? 'scale-220 blur-[.6px]' : 'scale-100'}`}
+                        className={`cursor-pointer w-[24px] h-[24px] transition duration-500 hover:scale-175 hover:blur-[.6px] m-[5px] ${activeOrder?.property === key.property && activeOrder?.order === 'desc' ? 'scale-200 blur-[.6px]' : 'scale-100'}`}
                         role='button'
+                        aria-label='descending order button'
                       >
-                        <svg className='rotate-180' xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="10px" fill={sortButtonClassName.color ? sortButtonClassName.color : '#000'}>
+                        <svg className='rotate-180' xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 -960 960 960" fill={sortButtonClassName.color ? sortButtonClassName.color : '#000'}>
                           <path d="M152-160q-23 0-35-20.5t1-40.5l328-525q12-19 34-19t34 19l328 525q13 20 1 40.5T808-160H152Z"/>
                         </svg>
                       </button>
@@ -446,7 +448,9 @@ function Table <T extends Record<string, any>>({
       </table>
 
       <div className='flex justify-between mt-5'>
-        <p>{textContent?.paginationTextContent(sampleLength * (currentPage - 1) + 1, Math.min(sampleLength * currentPage, allRows.length), allRows.length) ?? `Showing entries ${sampleLength * (currentPage - 1) + 1} to ${Math.min(sampleLength * currentPage, allRows.length)} of ${allRows.length} entries`}</p>
+        {rows.length > 0 && (
+          <p>{textContent?.paginationTextContent(sampleLength * (currentPage - 1) + 1, Math.min(sampleLength * currentPage, allRows.length), allRows.length) ?? `Showing entries ${sampleLength * (currentPage - 1) + 1} to ${Math.min(sampleLength * currentPage, allRows.length)} of ${allRows.length} entries`}</p>
+        )}
 
         <div className='flex items-center gap-2'>
           {currentPage - 1 >= 1 && (
