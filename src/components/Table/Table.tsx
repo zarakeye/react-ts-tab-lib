@@ -324,7 +324,7 @@ function Table <T extends Record<string, any>>({
 
   return (
     <div>
-      <div className='flex justify-between mt-5 mb-2.5'>
+      <div className='flex justify-between my-5'>
         <div>
           <select
             name="sampleLength"
@@ -336,13 +336,13 @@ function Table <T extends Record<string, any>>({
               <option key={index} value={option}>{option}</option>
             ))}
           </select>
-          <label htmlFor="sampleLength">
+          <label htmlFor="sampleLength" className='ml-2.5 '>
             {textContent?.displayedEntriesLabel ??'displayed entries'}
           </label>
         </div>
 
         <div>
-          <label htmlFor="search">
+          <label htmlFor="search" className='mr-2.5'>
             {textContent?.searchLabel ?? 'Search'}
           </label>
           <input type="text" name="search" id="search" className='ml-1.5 border-1 border-black rounded-[5px]' onChange={(e) => handleSearch(e)}/>
@@ -368,12 +368,12 @@ function Table <T extends Record<string, any>>({
                     >
                       {key.displayName}
                     </p>
-                    <div className='flex flex-col gap-1'>
+                    <div className='flex flex-col gap-1 mr-2'>
                       <button
                         type='button'
                         ref={ascFilteringButtonRef}
                         onClick={(e) => handleSort(e, key.property, key.type, 'asc')}
-                        className={`cursor-pointer transition duration-500 hover:scale-250 hover:blur-[.6px] ${activeOrder?.property === key.property && activeOrder?.order === 'asc' ? 'scale-250' : 'scale-100'}`}
+                        className={`cursor-pointer transition duration-500 hover:scale-175 hover:blur-[.6px] ${activeOrder?.property === key.property && activeOrder?.order === 'asc' ? 'scale-220 blur-[.6px]' : 'scale-100'}`}
                         role='button'
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="10px" fill={sortButtonClassName.color ? sortButtonClassName.color : '#000'} >
@@ -384,7 +384,7 @@ function Table <T extends Record<string, any>>({
                         type='button'
                         ref={descFilteringButtonRef}
                         onClick={(e) => handleSort(e, key.property, key.type, 'desc')}
-                        className={`cursor-pointer transition duration-500 hover:scale-175 hover:blur-[.6px] ${activeOrder?.property === key.property && activeOrder?.order === 'desc' ? 'scale-250' : 'scale-100'}`}
+                        className={`cursor-pointer transition duration-500 hover:scale-175 hover:blur-[.6px] ${activeOrder?.property === key.property && activeOrder?.order === 'desc' ? 'scale-220 blur-[.6px]' : 'scale-100'}`}
                         role='button'
                       >
                         <svg className='rotate-180' xmlns="http://www.w3.org/2000/svg" height="10px" viewBox="0 -960 960 960" width="10px" fill={sortButtonClassName.color ? sortButtonClassName.color : '#000'}>
