@@ -40,7 +40,7 @@ export type TableProps<T> = {
   currentPagePaginationButtonClassname?: string;
   pagesPaginationButtonsClassname?: string;
   paginationNavButtonsClassname?: string;
-  cellClassName?: string;
+  cellClassname?: string;
   numberOfDisplayedRows?: number[] | undefined;
   defaultOrder?: DefaultOrderType<T> | null;
   textContent?: TextContentType | null;
