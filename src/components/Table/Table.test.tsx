@@ -134,8 +134,14 @@ describe("Table test suite", () => {
     it(`should sort the table by ${column.displayName} in ascending order`, () => {
       render(<Table columns={columns} rows={rows} />);
 
-      const columnHeader = screen.getByText(column.displayName);
-      const sortAscButton = within(columnHeader.closest("th")!).getAllByRole("button")[0];
+      const columnHeaders = screen.getAllByRole('columnheader');
+      const columnHeader = columnHeaders.find(header => header.textContent === column.displayName);
+
+      if (!columnHeader) {
+        throw new Error(`Column header for ${column.displayName} not found`);
+      }
+
+      const sortAscButton = within(columnHeader).getAllByRole("button")[0];
       fireEvent.click(sortAscButton);
 
       const dataRows = screen.getAllByRole("row").slice(1);
@@ -169,7 +175,14 @@ describe("Table test suite", () => {
     it(`should sort the table by ${column.displayName} in descending order`, () => {
       render(<Table columns={columns} rows={rows} />);
 
-      const columnHeader = screen.getByText(column.displayName);
+      
+      const columnHeaders = screen.getAllByRole('columnheader');
+      const columnHeader = columnHeaders.find(header => header.textContent === column.displayName);
+
+      if (!columnHeader) {
+        throw new Error(`Column header for ${column.displayName} not found`);
+      }
+      
       const sortDescButton = within(columnHeader.closest("th")!).getAllByRole("button")[1];
       fireEvent.click(sortDescButton);
 

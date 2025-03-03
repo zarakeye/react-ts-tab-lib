@@ -30,12 +30,13 @@ export type TableProps<T> = {
   rows: T[];
   onRowHover?: (row: T | null) => void;
   onRowClick?: (row: T | null) => void;
-  globalColumnsClassName?: string;
-  sortButtonClassName?: {
+  componentGlobalClassname?: string;
+  globalColumnsClassname?: string;
+  sortButtonClassname?: {
     style: string;
     color: string;
   };
-  rowsClassName?: string;
+  rowsClassname?: string;
   currentPagePaginationButtonClassname?: string;
   pagesPaginationButtonsClassname?: string;
   paginationNavButtonsClassname?: string;
@@ -51,9 +52,10 @@ function Table <T extends Record<string, any>>({
   rows = [],
   onRowHover,
   onRowClick,
-  globalColumnsClassName = '',
-  sortButtonClassName = { style: '', color: ''},
-  rowsClassName = '',
+  componentGlobalClassname = '',
+  globalColumnsClassname = '',
+  sortButtonClassname = { style: '', color: ''},
+  rowsClassname = '',
   currentPagePaginationButtonClassname,
   pagesPaginationButtonsClassname,
   paginationNavButtonsClassname,
@@ -340,7 +342,7 @@ function Table <T extends Record<string, any>>({
   );
 
   return (
-    <div>
+    <div className={componentGlobalClassname ?? 'my-5'}>
       <div className='flex justify-between my-5'>
         <div>
           <select
@@ -368,13 +370,13 @@ function Table <T extends Record<string, any>>({
       
       <table className='w-full' role='table'>
         <thead>
-          <tr className={globalColumnsClassName} role='row'>
+          <tr className={globalColumnsClassname} role='row'>
             {columns.map((key, index) => (
               <th 
                 key={index}
                 role='columnheader'
                 style={{ width: `${100 / columns.length}%` }}
-                className={`${globalColumnsClassName} px-[20px] py-[20px] h-[100px] border-y-2 border-x-2 align-middle first:border-l-2 fisrt:border-r-0 last:border-l-0 last:border-r-2 ${key.specificColumnclassName ?? ''}`}
+                className={`${globalColumnsClassname} px-[20px] py-[20px] h-[100px] border-y-2 border-x-2 align-middle first:border-l-2 fisrt:border-r-0 last:border-l-0 last:border-r-2 ${key.specificColumnclassName ?? ''}`}
                 ref={columnHeaderRef}
               >
                 <div className='flex justify-between items-center gap-2.5'>
@@ -394,7 +396,7 @@ function Table <T extends Record<string, any>>({
                         role='button'
                         aria-label='ascending order button'
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 -960 960 960" fill={sortButtonClassName.color ? sortButtonClassName.color : '#000'} >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 -960 960 960" fill={sortButtonClassname.color ? sortButtonClassname.color : '#000'} >
                           <path d="M152-160q-23 0-35-20.5t1-40.5l328-525q12-19 34-19t34 19l328 525q13 20 1 40.5T808-160H152Z"/>
                         </svg>
                       </button>
@@ -406,7 +408,7 @@ function Table <T extends Record<string, any>>({
                         role='button'
                         aria-label='descending order button'
                       >
-                        <svg className='rotate-180' xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 -960 960 960" fill={sortButtonClassName.color ? sortButtonClassName.color : '#000'}>
+                        <svg className='rotate-180' xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 -960 960 960" fill={sortButtonClassname.color ? sortButtonClassname.color : '#000'}>
                           <path d="M152-160q-23 0-35-20.5t1-40.5l328-525q12-19 34-19t34 19l328 525q13 20 1 40.5T808-160H152Z"/>
                         </svg>
                       </button>
@@ -441,7 +443,7 @@ function Table <T extends Record<string, any>>({
                     onRowClick(row);
                   }
                 }}
-                className={rowsClassName}
+                className={rowsClassname ?? ''}
               >
                 {columns.map((column, colIndex) => (
                   <td title={`id: ${row.id}`}
@@ -458,7 +460,7 @@ function Table <T extends Record<string, any>>({
             : (
               <tr
                 role='row'
-                className={rowsClassName}
+                className={rowsClassname ?? ''}
                 ref={rowRef}
               >
                 <td colSpan={columns.length} className='text-center py-[10px]'>
