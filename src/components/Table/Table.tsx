@@ -31,16 +31,23 @@ export type TableProps<T> = {
   onRowHover?: (row: T | null) => void;
   onRowClick?: (row: T | null) => void;
   componentGlobalClassname?: string;
+  sampleLengthSelectorClassname?: string;
+  sampleTextClassname?: string;
+  searchLabelClassname?: string;
+  searchInputClassname?: string;
+  tableClassname?: string;
   globalColumnsClassname?: string;
   sortButtonClassname?: {
     style: string;
     color: string;
   };
   rowsClassname?: string;
+  sampleInfoClassname?: string;
   currentPagePaginationButtonClassname?: string;
   pagesPaginationButtonsClassname?: string;
   paginationNavButtonsClassname?: string;
   cellClassname?: string;
+
   numberOfDisplayedRows?: number[] | undefined;
   defaultOrder?: DefaultOrderType<T> | null;
   textContent?: TextContentType | null;
@@ -53,6 +60,12 @@ function Table <T extends Record<string, any>>({
   onRowHover,
   onRowClick,
   componentGlobalClassname = '',
+  sampleTextClassname = '',
+  sampleLengthSelectorClassname = '',
+  searchLabelClassname = '',
+  searchInputClassname = '',
+  sampleInfoClassname = '',
+  tableClassname = '',
   globalColumnsClassname = '',
   sortButtonClassname = { style: '', color: ''},
   rowsClassname = '',
@@ -349,26 +362,26 @@ function Table <T extends Record<string, any>>({
             name="sampleLength"
             id="sampleLength"
             onChange={handleDisplayedEntriesChange}
-            className='border-1 border-black rounded-[5px] mr-1.5'
+            className={sampleLengthSelectorClassname ?? 'border-1 border-black rounded-[5px] mr-1.5'}
           >
             {numberOfDisplayedRows.map((option, index) => (
               <option key={index} value={option}>{option}</option>
             ))}
           </select>
-          <label htmlFor="sampleLength" className='ml-2.5 '>
+          <label htmlFor="sampleLength" className={sampleTextClassname ?? 'ml-2.5 '}>
             {textContent?.displayedEntriesLabel ??'displayed entries'}
           </label>
         </div>
 
         <div>
-          <label htmlFor="search" className='mr-2.5'>
+          <label htmlFor="search" className={searchLabelClassname ?? 'mr-2.5'}>
             {textContent?.searchLabel ?? 'Search'}
           </label>
-          <input type="text" name="search" id="search" className='ml-1.5 border-1 border-black rounded-[5px]' onChange={(e) => handleSearch(e)}/>
+          <input type="text" name="search" id="search" className={searchInputClassname ?? 'ml-1.5 border-1 border-black rounded-[5px]'} onChange={(e) => handleSearch(e)}/>
         </div>
       </div>
       
-      <table className='w-full' role='table'>
+      <table className={`w-full ${tableClassname ?? ''}`}  role='table'>
         <thead>
           <tr className={globalColumnsClassname} role='row'>
             {columns.map((key, index) => (
@@ -471,7 +484,7 @@ function Table <T extends Record<string, any>>({
         </tbody>
       </table>
 
-      <div className='flex justify-between mt-5'>
+      <div className={sampleInfoClassname ?? 'flex justify-between mt-5'}>
         {rows.length > 0 && (
           <p>
             {
