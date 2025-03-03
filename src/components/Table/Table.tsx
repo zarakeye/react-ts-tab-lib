@@ -18,8 +18,8 @@ export type TextContentType = {
 }
 
 export type Column<T> = {
-  displayName: string;
   property: keyof T;
+  displayName: string;
   type: DataType;
   renderer?: (value: T[keyof T]) => ReactNode;
   className?: string;
@@ -289,18 +289,31 @@ function Table <T extends Record<string, any>>({
   const generatePagesNumbers = (current: number, total: number): (number | string)[] => {
     if (total <= 1) return [];
     
-    const delta = 2;
+    const delta = 1;
     const pages = [];
 
     for (let i = 1; i <= total; i++) {
       if (i === 1 || i === total || (i >= current - delta && i <= current + delta)) {
         pages.push(i);
-      } else if (i === current - delta - 1 || i === current + delta + 1) {
+      } else if (i !== 1 && i <= current - delta - 1 || i !== total && i >= current + delta + 1) {
         pages.push('...');
       }
     }
 
-    return pages.filter((page, index, array) => array.indexOf(page) === index)
+    console.log('pages', pages);
+
+    // return pages.filter((page, index, array) => array.indexOf(page) === index)
+    const uniquePages = [] as (number | string)[];
+    for (let i = 0; i < pages.length; i++) {
+      if (pages[i] !== '...') {
+        uniquePages.push(pages[i]);
+      } else if (pages[i] === '...' && pages[i - 1] !== '...') {
+        uniquePages.push(pages[i]);
+      }
+    }
+
+    // console.log('uniquePages', uniquePages);
+    return uniquePages;
   }
 
   useEffect(() => {
@@ -320,7 +333,7 @@ function Table <T extends Record<string, any>>({
   }, [allRows, currentPage, sampleLength])
 
   const pagesNumbers = useMemo(
-    () => generatePagesNumbers(pagesNumber, currentPage),
+    () => generatePagesNumbers(currentPage, pagesNumber),
     [currentPage, pagesNumber]
   );
 
@@ -463,7 +476,6 @@ function Table <T extends Record<string, any>>({
           {currentPage - 1 >= 1 && (
             <button
               onClick={() => setCurrentPage(currentPage - 1)}
-              // disabled={currentPage === 1}
               className='px-3 py-1 rounded border disabled:opacity-50 disabled:cursor-not-allowed'
               aria-label='Previous page'
             >
