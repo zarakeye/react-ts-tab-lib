@@ -22,7 +22,7 @@ export type Column<T> = {
   displayName?: string;
   type: DataType;
   renderer?: (value: T[keyof T]) => ReactNode;
-  className?: string;
+  specificColumnclassName?: string;
 }
 
 export type TableProps<T> = {
@@ -30,12 +30,15 @@ export type TableProps<T> = {
   rows: T[];
   onRowHover?: (row: T | null) => void;
   onRowClick?: (row: T | null) => void;
-  columnsClassName?: string;
+  globalColumnsClassName?: string;
   sortButtonClassName?: {
     style: string;
     color: string;
   };
   rowsClassName?: string;
+  currentPagePaginationButtonClassname?: string;
+  pagesPaginationButtonsClassname?: string;
+  paginationNavButtonsClassname?: string;
   cellClassName?: string;
   numberOfDisplayedRows?: number[] | undefined;
   defaultOrder?: DefaultOrderType<T> | null;
@@ -48,9 +51,12 @@ function Table <T extends Record<string, any>>({
   rows = [],
   onRowHover,
   onRowClick,
-  columnsClassName = '',
+  globalColumnsClassName = '',
   sortButtonClassName = { style: '', color: ''},
   rowsClassName = '',
+  currentPagePaginationButtonClassname,
+  pagesPaginationButtonsClassname,
+  paginationNavButtonsClassname,
   cellClassName = '',
   numberOfDisplayedRows = [10, 20, 50, 100],
   defaultOrder= null,
@@ -300,9 +306,6 @@ function Table <T extends Record<string, any>>({
       }
     }
 
-    console.log('pages', pages);
-
-    // return pages.filter((page, index, array) => array.indexOf(page) === index)
     const uniquePages = [] as (number | string)[];
     for (let i = 0; i < pages.length; i++) {
       if (pages[i] !== '...') {
@@ -312,7 +315,6 @@ function Table <T extends Record<string, any>>({
       }
     }
 
-    // console.log('uniquePages', uniquePages);
     return uniquePages;
   }
 
@@ -366,13 +368,13 @@ function Table <T extends Record<string, any>>({
       
       <table className='w-full' role='table'>
         <thead>
-          <tr className={columnsClassName} role='row'>
+          <tr className={globalColumnsClassName} role='row'>
             {columns.map((key, index) => (
               <th 
                 key={index}
                 role='columnheader'
                 style={{ width: `${100 / columns.length}%` }}
-                className={`${columnsClassName} px-[20px] py-[20px] h-[100px] border-y-2 border-x-2 align-middle ${key.className} first:border-l-2 fisrt:border-r-0 last:border-l-0 last:border-r-2`}
+                className={`${globalColumnsClassName} px-[20px] py-[20px] h-[100px] border-y-2 border-x-2 align-middle first:border-l-2 fisrt:border-r-0 last:border-l-0 last:border-r-2 ${key.specificColumnclassName ?? ''}`}
                 ref={columnHeaderRef}
               >
                 <div className='flex justify-between items-center gap-2.5'>
@@ -469,14 +471,19 @@ function Table <T extends Record<string, any>>({
 
       <div className='flex justify-between mt-5'>
         {rows.length > 0 && (
-          <p>{textContent?.paginationTextContent(sampleLength * (currentPage - 1) + 1, Math.min(sampleLength * currentPage, allRows.length), allRows.length) ?? `Showing entries ${sampleLength * (currentPage - 1) + 1} to ${Math.min(sampleLength * currentPage, allRows.length)} of ${allRows.length} entries`}</p>
+          <p>
+            {
+              textContent?.paginationTextContent(sampleLength * (currentPage - 1) + 1, Math.min(sampleLength * currentPage, allRows.length), allRows.length)
+              ?? `Showing entries ${sampleLength * (currentPage - 1) + 1} to ${Math.min(sampleLength * currentPage, allRows.length)} of ${allRows.length} entries`
+            }
+          </p>
         )}
 
         <div className='flex items-center gap-2'>
           {currentPage - 1 >= 1 && (
             <button
               onClick={() => setCurrentPage(currentPage - 1)}
-              className='px-3 py-1 rounded border disabled:opacity-50 disabled:cursor-not-allowed'
+              className={paginationNavButtonsClassname ?? 'px-3 py-1 rounded border disabled:opacity-50 disabled:cursor-not-allowed'}
               aria-label='Previous page'
             >
               {textContent?.previousPageButtonLabel ?? 'Previous'}
@@ -491,8 +498,8 @@ function Table <T extends Record<string, any>>({
                 onClick={() => setCurrentPage(page)}
                 className={`px-3 py-1 rounded ${
                   page === currentPage
-                    ? 'bg-blue-600 text-white'
-                    : 'border hover:bg-gray-100'
+                    ? currentPagePaginationButtonClassname ?? 'bg-blue-600 text-white '
+                    : pagesPaginationButtonsClassname ?? 'border hover:bg-gray-100'
                 }`}
                 aria-current={page === currentPage ? 'page' : undefined}
               >
@@ -508,8 +515,7 @@ function Table <T extends Record<string, any>>({
           {currentPage + 1 <= pagesNumber && (
             <button
               onClick={() => setCurrentPage(currentPage + 1)}
-              // disabled={currentPage === pagesNumber}
-              className='px-3 py-1 rounded border disabled:opacity-50 disabled:cursor-not-allowed'
+              className={paginationNavButtonsClassname ?? 'px-3 py-1 rounded border disabled:opacity-50 disabled:cursor-not-allowed'}
               aria-label='Next page'
             >
               {textContent?.nextPageButtonLabel ?? 'Next'}
