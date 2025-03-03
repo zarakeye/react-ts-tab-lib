@@ -59,7 +59,7 @@ function Table <T extends Record<string, any>>({
   currentPagePaginationButtonClassname,
   pagesPaginationButtonsClassname,
   paginationNavButtonsClassname,
-  cellClassName = '',
+  cellClassname = '',
   numberOfDisplayedRows = [10, 20, 50, 100],
   defaultOrder= null,
   textContent = null
@@ -449,7 +449,7 @@ function Table <T extends Record<string, any>>({
                   <td title={`id: ${row.id}`}
                     key={colIndex}
                     role='cell'
-                    className={`px-[15px] truncate ${cellClassName}`}
+                    className={`px-[15px] truncate ${cellClassname}`}
                     style={{ width: `${100 / columns.length}%` }}
                   >
                     {columns[colIndex].renderer ? columns[colIndex].renderer(row[column.property]) : row[column.property] as ReactNode}
