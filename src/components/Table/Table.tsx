@@ -19,7 +19,7 @@ export type TextContentType = {
 
 export type Column<T> = {
   property: keyof T;
-  displayName: string;
+  displayName?: string;
   type: DataType;
   renderer?: (value: T[keyof T]) => ReactNode;
   className?: string;
@@ -381,7 +381,7 @@ function Table <T extends Record<string, any>>({
                       ref={columnNameRef}
                       className='flex-1 cursor-pointer'
                     >
-                      {key.displayName}
+                      {key.displayName ? key.displayName : String(key.property)}
                     </p>
                     <div className='flex flex-col justify-between gap-2.5'>
                       <button
