@@ -393,7 +393,7 @@ function Table <T extends Record<string, any>>({
                 ref={columnHeaderRef}
               >
                 <div className='flex justify-between items-center gap-2.5'>
-                  <div className='flex t items-center w-[100%] h-[55px]'>
+                  <div className='flex t items-center w-[100%] h-[55px] gap-3'>
                     <p
                       ref={columnNameRef}
                       className='flex-1 cursor-pointer'
@@ -484,9 +484,9 @@ function Table <T extends Record<string, any>>({
         </tbody>
       </table>
 
-      <div className={sampleInfoClassname ?? 'flex justify-between mt-5'}>
+      <div className={`flex justify-between mt-5 ${sampleInfoClassname}`}>
         {rows.length > 0 && (
-          <p>
+          <p className='inline-block'>
             {
               textContent?.paginationTextContent(sampleLength * (currentPage - 1) + 1, Math.min(sampleLength * currentPage, allRows.length), allRows.length)
               ?? `Showing entries ${sampleLength * (currentPage - 1) + 1} to ${Math.min(sampleLength * currentPage, allRows.length)} of ${allRows.length} entries`
@@ -498,7 +498,7 @@ function Table <T extends Record<string, any>>({
           {currentPage - 1 >= 1 && (
             <button
               onClick={() => setCurrentPage(currentPage - 1)}
-              className={paginationNavButtonsClassname ?? 'px-3 py-1 rounded border disabled:opacity-50 disabled:cursor-not-allowed'}
+              className={`px-3 py-1 rounded border disabled:opacity-50 disabled:cursor-not-allowed ${paginationNavButtonsClassname}`}
               aria-label='Previous page'
             >
               {textContent?.previousPageButtonLabel ?? 'Previous'}
