@@ -355,29 +355,29 @@ function Table <T extends Record<string, any>>({
   );
 
   return (
-    <div className={componentGlobalClassname ?? 'my-5'}>
+    <div className={`my-5 ${componentGlobalClassname ?? ''}`}>
       <div className='flex justify-between my-5'>
         <div>
           <select
             name="sampleLength"
             id="sampleLength"
             onChange={handleDisplayedEntriesChange}
-            className={sampleLengthSelectorClassname ?? 'border-1 border-black rounded-[5px] mr-1.5'}
+            className={`border-1 border-black rounded-[5px] mr-1.5 ${sampleLengthSelectorClassname ?? ''}`}
           >
             {numberOfDisplayedRows.map((option, index) => (
               <option key={index} value={option}>{option}</option>
             ))}
           </select>
-          <label htmlFor="sampleLength" className={sampleTextClassname ?? 'ml-2.5 '}>
+          <label htmlFor="sampleLength" className={`ml-2.5 ${sampleTextClassname ?? ''}`}>
             {textContent?.displayedEntriesLabel ??'displayed entries'}
           </label>
         </div>
 
         <div>
-          <label htmlFor="search" className={searchLabelClassname ?? 'mr-2.5'}>
+          <label htmlFor="search" className={`mr-2.5 ${searchLabelClassname ?? ''}`}>
             {textContent?.searchLabel ?? 'Search'}
           </label>
-          <input type="text" name="search" id="search" className={searchInputClassname ?? 'ml-1.5 border-1 border-black rounded-[5px]'} onChange={(e) => handleSearch(e)}/>
+          <input type="text" name="search" id="search" className={`ml-1.5 border-1 border-black rounded-[5px] ${searchInputClassname ?? ''}`} onChange={(e) => handleSearch(e)}/>
         </div>
       </div>
       
