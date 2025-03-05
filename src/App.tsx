@@ -103,34 +103,34 @@ function App() {
       dateOfBirth: '1973-01-25',
       isActive: false
     },
-    {
-      id: 9,
-      name: 'Grace',
-      age: 55,
-      dateOfBirth: '1968-03-20',
-      isActive: true
-    },
-    {
-      id: 10,
-      name: 'Henry',
-      age: 60,
-      dateOfBirth: '1963-05-15',
-      isActive: false
-    },
-    {
-      id: 11,
-      name: 'Ivy',
-      age: 65,
-      dateOfBirth: '1958-07-10',
-      isActive: true
-    },
-    {
-      id: 12,
-      name: 'Jack',
-      age: 70,
-      dateOfBirth: 'Invalid Date',
-      isActive: false
-    }
+    // {
+    //   id: 9,
+    //   name: 'Grace',
+    //   age: 55,
+    //   dateOfBirth: '1968-03-20',
+    //   isActive: true
+    // },
+    // {
+    //   id: 10,
+    //   name: 'Henry',
+    //   age: 60,
+    //   dateOfBirth: '1963-05-15',
+    //   isActive: false
+    // },
+    // {
+    //   id: 11,
+    //   name: 'Ivy',
+    //   age: 65,
+    //   dateOfBirth: '1958-07-10',
+    //   isActive: true
+    // },
+    // {
+    //   id: 12,
+    //   name: 'Jack',
+    //   age: 70,
+    //   dateOfBirth: 'Invalid Date',
+    //   isActive: false
+    // }
   ];
 
   return (
@@ -148,7 +148,11 @@ function App() {
         displayedEntriesLabel: 'employés affichés',
         emptyTableText: 'Aucun employé',
         paginationTextContent: (sampleBegin, sampleEnd, sampleLength) => {
-          return `Affichage des employés ${sampleBegin} à ${sampleEnd} sur ${sampleLength}`
+          if (sampleLength > sampleEnd) {
+            return `Affichage des employés ${sampleBegin} à ${sampleEnd} sur ${sampleLength}`
+          } else {
+            return sampleLength !== 1 ? `Affichage des employés ${sampleBegin} à ${sampleEnd}`:''
+          }
         },
         previousPageButtonLabel: 'Page précédente',
         nextPageButtonLabel: 'Page suivante'

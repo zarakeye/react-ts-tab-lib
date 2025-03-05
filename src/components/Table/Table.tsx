@@ -1,5 +1,4 @@
 import { type ChangeEvent, JSX, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
-// import type { Column, DefaultOrderType, OrderType, TableProps, TextContentType, DataType } from './types.js';
 import '../../index.css';
 
 export type DataType = 'string' | 'number' | 'date' | 'boolean' | 'custom';
@@ -12,7 +11,7 @@ export type TextContentType = {
   searchLabel: string | null;
   displayedEntriesLabel: string | null;
   emptyTableText: string | null;
-  paginationTextContent: (sampleBegin: number, sampleEnd: number, sampleLength: number) => string | null;
+  paginationTextContent: (sampleBegin: number, sampleEnd: number, allRows: number) => string | null;
   previousPageButtonLabel: string | null;
   nextPageButtonLabel: string | null;
 }
@@ -485,11 +484,20 @@ function Table <T extends Record<string, any>>({
       </table>
 
       <div className={`flex justify-between mt-5 ${sampleInfoClassname}`}>
-        {rows.length > 0 && (
+        {sampleLength > 0 && (
           <p className='inline-block'>
             {
+              // textContent?.paginationTextContent(sampleLength * (currentPage - 1) + 1, Math.min(sampleLength * currentPage, allRows.length), allRows.length)
+              /** ?? `Showing entries ${sampleLength * (currentPage - 1) + 1} $ to ${Math.min(sampleLength * currentPage, allRows.length)} of ${allRows.length} entries`*/ 
+
               textContent?.paginationTextContent(sampleLength * (currentPage - 1) + 1, Math.min(sampleLength * currentPage, allRows.length), allRows.length)
-              ?? `Showing entries ${sampleLength * (currentPage - 1) + 1} to ${Math.min(sampleLength * currentPage, allRows.length)} of ${allRows.length} entries`
+              ? textContent?.paginationTextContent(sampleLength * (currentPage - 1) + 1, Math.min(sampleLength * currentPage, allRows.length), allRows.length)
+              : allRows.length > Math.min(sampleLength * currentPage, allRows.length)
+              /* ? sampleLength * (currentPage - 1) + 1 !== sampleLength * (currentPage - 1) + 1 && allRows.length > Math.min(sampleLength * currentPage )*/
+              ? `Showing entries ${sampleLength * (currentPage - 1) + 1} to ${Math.min(sampleLength * currentPage, allRows.length)} of ${allRows.length} entries`
+              : /*sampleLength * (currentPage - 1) !== Math.min(sampleLength * currentPage, allRows.length)*/ allRows.length !== 1
+              ? `Showing entries ${sampleLength * (currentPage - 1) + 1} to ${Math.min(sampleLength * currentPage, allRows.length)}`
+              : ''
             }
           </p>
         )}
