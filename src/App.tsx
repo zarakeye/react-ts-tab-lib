@@ -47,62 +47,62 @@ function App() {
   ];
   
   const rows: RowData[] = [
-    {
-      id: 1,
-      name: "John",
-      age: 30,
-      dateOfBirth: "1990-01-01",
-      isActive: true,
-    },
-    {
-      id: 2,
-      name: "Jane",
-      age: 25,
-      dateOfBirth: "1995-01-01",
-      isActive: false,
-    },
-    {
-      id: 3,
-      name: 'Alice',
-      age: 25,
-      dateOfBirth: '1998-01-01',
-      isActive: true
-    },
-    {
-      id: 4,
-      name: 'Bob',
-      age: 30,
-      dateOfBirth: '1993-05-15',
-      isActive: false
-    },
-    {
-      id: 5,
-      name: 'Charlie',
-      age: 35,
-      dateOfBirth: '1988-07-10',
-      isActive: true
-    },
-    {
-      id: 6,
-      name: 'David',
-      age: 40,
-      dateOfBirth: '1983-09-05',
-      isActive: false
-    },
-    {
-      id: 7,
-      name: 'Eve',
-      age: 45,
-      dateOfBirth: '1978-11-30',
-      isActive: true
-    },
-    {
-      id: 8,
-      name: 'Frank',
-      age: 50,
-      dateOfBirth: '1973-01-25',
-      isActive: false
-    },
+    // {
+    //   id: 1,
+    //   name: "John",
+    //   age: 30,
+    //   dateOfBirth: "1990-01-01",
+    //   isActive: true,
+    // },
+    // {
+    //   id: 2,
+    //   name: "Jane",
+    //   age: 25,
+    //   dateOfBirth: "1995-01-01",
+    //   isActive: false,
+    // },
+    // {
+    //   id: 3,
+    //   name: 'Alice',
+    //   age: 25,
+    //   dateOfBirth: '1998-01-01',
+    //   isActive: true
+    // },
+    // {
+    //   id: 4,
+    //   name: 'Bob',
+    //   age: 30,
+    //   dateOfBirth: '1993-05-15',
+    //   isActive: false
+    // },
+    // {
+    //   id: 5,
+    //   name: 'Charlie',
+    //   age: 35,
+    //   dateOfBirth: '1988-07-10',
+    //   isActive: true
+    // },
+    // {
+    //   id: 6,
+    //   name: 'David',
+    //   age: 40,
+    //   dateOfBirth: '1983-09-05',
+    //   isActive: false
+    // },
+    // {
+    //   id: 7,
+    //   name: 'Eve',
+    //   age: 45,
+    //   dateOfBirth: '1978-11-30',
+    //   isActive: true
+    // },
+    // {
+    //   id: 8,
+    //   name: 'Frank',
+    //   age: 50,
+    //   dateOfBirth: '1973-01-25',
+    //   isActive: false
+    // },
     // {
     //   id: 9,
     //   name: 'Grace',
@@ -151,7 +151,7 @@ function App() {
           if (sampleLength > sampleEnd) {
             return `Affichage des employés ${sampleBegin} à ${sampleEnd} sur ${sampleLength}`
           } else {
-            return sampleLength !== 1 ? `Affichage des employés ${sampleBegin} à ${sampleEnd}`:''
+            return sampleLength > 1 ? `Affichage des employés ${sampleBegin} à ${sampleEnd}`:''
           }
         },
         previousPageButtonLabel: 'Page précédente',

@@ -493,7 +493,7 @@ function Table <T extends Record<string, any>>({
               ? textContent?.paginationTextContent(sampleLength * (currentPage - 1) + 1, Math.min(sampleLength * currentPage, allRows.length), allRows.length)
               : allRows.length > Math.min(sampleLength * currentPage, allRows.length)
               ? `Showing entries ${sampleLength * (currentPage - 1) + 1} to ${Math.min(sampleLength * currentPage, allRows.length)} of ${allRows.length} entries`
-              : allRows.length !== 1
+              : allRows.length >1
               ? `Showing entries ${sampleLength * (currentPage - 1) + 1} to ${Math.min(sampleLength * currentPage, allRows.length)}`
               : ''
             }
