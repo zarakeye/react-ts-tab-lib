@@ -9,7 +9,8 @@ export type DefaultOrderType<T> = {
 }
 export type TextContentType = {
   searchLabel: string | null;
-  displayedEntriesLabel: string | null;
+  entriesLabel_showReplace: string | null;
+  entriesLabel_entriesReplace: string | null;
   emptyTableText: string | null;
   paginationTextContent: (sampleBegin: number, sampleEnd: number, allRows: number) => string | null;
   previousPageButtonLabel: string | null;
@@ -355,8 +356,12 @@ function Table <T extends Record<string, any>>({
 
   return (
     <div className={`my-5 ${componentGlobalClassname ?? ''}`}>
-      <div className='flex justify-between my-5'>
+      <div className='flex flex-col lg:flex-row items-center justify-between my-5 gap-y-3.5'>
         <div>
+          <label htmlFor="sampleLength" className={`mr-2.5 ${sampleTextClassname ?? ''}`}>
+            {textContent?.entriesLabel_showReplace ?? 'Show' }
+          </label>
+
           <select
             name="sampleLength"
             id="sampleLength"
@@ -367,8 +372,9 @@ function Table <T extends Record<string, any>>({
               <option key={index} value={option}>{option}</option>
             ))}
           </select>
+
           <label htmlFor="sampleLength" className={`ml-2.5 ${sampleTextClassname ?? ''}`}>
-            {textContent?.displayedEntriesLabel ??'displayed entries'}
+            {textContent?.entriesLabel_entriesReplace ??' entries'}
           </label>
         </div>
 
@@ -376,26 +382,27 @@ function Table <T extends Record<string, any>>({
           <label htmlFor="search" className={`mr-2.5 ${searchLabelClassname ?? ''}`}>
             {textContent?.searchLabel ?? 'Search'}
           </label>
+
           <input type="text" name="search" id="search" className={`ml-1.5 border-1 border-black rounded-[5px] ${searchInputClassname ?? ''}`} onChange={(e) => handleSearch(e)}/>
         </div>
       </div>
       
-      <table className={`w-full ${tableClassname ?? ''}`}  role='table'>
+      <table className={`w-full overflow-x-auto ${tableClassname ?? ''}`} role='table'>
         <thead>
           <tr className={globalColumnsClassname} role='row'>
             {columns.map((key, index) => (
               <th 
                 key={index}
                 role='columnheader'
-                // style={{ width: `${100 / columns.length}%` }}
-                className={`${globalColumnsClassname} px-[20px] py-[20px] h-[100px] border-y-2 border-x-2 align-middle first:border-l-2 fisrt:border-r-0 last:border-l-0 last:border-r-2 ${key.specificColumnclassName ?? ''}`}
+                className={`${globalColumnsClassname} px-[5px] py-[5px] h-[100px] border-b-2 border-gray overflow-hidden ${key.specificColumnclassName ?? ''}`}
                 ref={columnHeaderRef}
               >
                 <div className='flex justify-between items-center gap-2.5'>
                   <div className='flex items-center w-[100%] h-[55px] gap-3'>
-                    <div className='flex-1 text-center'>
+                    <div className='flex-1 text-center overflow-hidden'>
                       <p
                         ref={columnNameRef}
+                        // className='truncate max-w-full sm:max-w-[150px] block cursor-pointer'
                         className='cursor-pointer'
                       >
                         {key.displayName ? key.displayName : String(key.property)}
@@ -406,7 +413,7 @@ function Table <T extends Record<string, any>>({
                         type='button'
                         ref={ascFilteringButtonRef}
                         onClick={(e) => handleSort(e, key.property, key.type, 'asc')}
-                        className={`cursor-pointer w-[24px] h-[24px] transition duration-500 hover:scale-175 hover:blur-[.6px] m-[5px] ${activeOrder?.property === key.property && activeOrder?.order === 'asc' ? 'scale-200 blur-[.6px]' : 'scale-100'}`}
+                        className={`cursor-pointer w-[24px] h-[24px] transition duration-500 hover:scale-175 hover:blur-[.6px] m-[5px] ${activeOrder?.property === key.property && activeOrder?.order === 'asc' ? 'scale-180 blur-[.6px]' : 'scale-100'}`}
                         role='button'
                         aria-label='ascending order button'
                       >
@@ -418,7 +425,7 @@ function Table <T extends Record<string, any>>({
                         type='button'
                         ref={descFilteringButtonRef}
                         onClick={(e) => handleSort(e, key.property, key.type, 'desc')}
-                        className={`cursor-pointer w-[24px] h-[24px] transition duration-500 hover:scale-175 hover:blur-[.6px] m-[5px] ${activeOrder?.property === key.property && activeOrder?.order === 'desc' ? 'scale-200 blur-[.6px]' : 'scale-100'}`}
+                        className={`cursor-pointer w-[24px] h-[24px] transition duration-500 hover:scale-175 hover:blur-[.6px] m-[5px] ${activeOrder?.property === key.property && activeOrder?.order === 'desc' ? 'scale-180 blur-[.6px]' : 'scale-100'}`}
                         role='button'
                         aria-label='descending order button'
                       >
@@ -463,8 +470,7 @@ function Table <T extends Record<string, any>>({
                   <td title={`id: ${row.id}`}
                     key={colIndex}
                     role='cell'
-                    className={`px-[15px] truncate ${cellClassname}`}
-                    style={{ width: `${100 / columns.length}%` }}
+                    className={`px-[5px] truncate ${cellClassname}`}
                   >
                     {columns[colIndex].renderer ? columns[colIndex].renderer(row[column.property]) : row[column.property] as ReactNode}
                   </td>
@@ -477,7 +483,7 @@ function Table <T extends Record<string, any>>({
                 className={rowsClassname ?? ''}
                 ref={rowRef}
               >
-                <td colSpan={columns.length} className='text-center py-[10px]'>
+                <td colSpan={columns.length} className='text-center truncate py-[10px]'>
                   No data available in table
                 </td>
               </tr>
@@ -485,7 +491,7 @@ function Table <T extends Record<string, any>>({
         </tbody>
       </table>
 
-      <div className={`flex justify-between mt-5 ${sampleInfoClassname}`}>
+      <div className={`flex flex-col lg:flex-row gap-y-3.5 justify-between items-center mt-5 ${sampleInfoClassname}`}>
         {sampleLength > 0 && (
           <p className='inline-block'>
             {
