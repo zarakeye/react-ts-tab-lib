@@ -387,18 +387,20 @@ function Table <T extends Record<string, any>>({
               <th 
                 key={index}
                 role='columnheader'
-                style={{ width: `${100 / columns.length}%` }}
+                // style={{ width: `${100 / columns.length}%` }}
                 className={`${globalColumnsClassname} px-[20px] py-[20px] h-[100px] border-y-2 border-x-2 align-middle first:border-l-2 fisrt:border-r-0 last:border-l-0 last:border-r-2 ${key.specificColumnclassName ?? ''}`}
                 ref={columnHeaderRef}
               >
                 <div className='flex justify-between items-center gap-2.5'>
-                  <div className='flex t items-center w-[100%] h-[55px] gap-3'>
-                    <p
-                      ref={columnNameRef}
-                      className='flex-1 cursor-pointer'
-                    >
-                      {key.displayName ? key.displayName : String(key.property)}
-                    </p>
+                  <div className='flex items-center w-[100%] h-[55px] gap-3'>
+                    <div className='flex-1 text-center'>
+                      <p
+                        ref={columnNameRef}
+                        className='cursor-pointer'
+                      >
+                        {key.displayName ? key.displayName : String(key.property)}
+                      </p>
+                    </div>
                     <div className='flex flex-col justify-between gap-2.5'>
                       <button
                         type='button'
@@ -487,15 +489,11 @@ function Table <T extends Record<string, any>>({
         {sampleLength > 0 && (
           <p className='inline-block'>
             {
-              // textContent?.paginationTextContent(sampleLength * (currentPage - 1) + 1, Math.min(sampleLength * currentPage, allRows.length), allRows.length)
-              /** ?? `Showing entries ${sampleLength * (currentPage - 1) + 1} $ to ${Math.min(sampleLength * currentPage, allRows.length)} of ${allRows.length} entries`*/ 
-
               textContent?.paginationTextContent(sampleLength * (currentPage - 1) + 1, Math.min(sampleLength * currentPage, allRows.length), allRows.length)
               ? textContent?.paginationTextContent(sampleLength * (currentPage - 1) + 1, Math.min(sampleLength * currentPage, allRows.length), allRows.length)
               : allRows.length > Math.min(sampleLength * currentPage, allRows.length)
-              /* ? sampleLength * (currentPage - 1) + 1 !== sampleLength * (currentPage - 1) + 1 && allRows.length > Math.min(sampleLength * currentPage )*/
               ? `Showing entries ${sampleLength * (currentPage - 1) + 1} to ${Math.min(sampleLength * currentPage, allRows.length)} of ${allRows.length} entries`
-              : /*sampleLength * (currentPage - 1) !== Math.min(sampleLength * currentPage, allRows.length)*/ allRows.length !== 1
+              : allRows.length !== 1
               ? `Showing entries ${sampleLength * (currentPage - 1) + 1} to ${Math.min(sampleLength * currentPage, allRows.length)}`
               : ''
             }
