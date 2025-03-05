@@ -394,7 +394,7 @@ function Table <T extends Record<string, any>>({
               <th 
                 key={index}
                 role='columnheader'
-                className={`${globalColumnsClassname} px-[5px] py-[5px] h-[100px] border-b-2 border-gray overflow-hidden ${key.specificColumnclassName ?? ''}`}
+                className={`${globalColumnsClassname} px-[5px] py-[5px] h-[100px] border-b-2 border-b-gray overflow-hidden ${key.specificColumnclassName ?? ''}`}
                 ref={columnHeaderRef}
               >
                 <div className='flex justify-between items-center gap-2.5'>
@@ -402,7 +402,6 @@ function Table <T extends Record<string, any>>({
                     <div className='flex-1 text-center overflow-hidden'>
                       <p
                         ref={columnNameRef}
-                        // className='truncate max-w-full sm:max-w-[150px] block cursor-pointer'
                         className='cursor-pointer'
                       >
                         {key.displayName ? key.displayName : String(key.property)}
@@ -480,7 +479,7 @@ function Table <T extends Record<string, any>>({
             : (
               <tr
                 role='row'
-                className={rowsClassname ?? ''}
+                className={rowsClassname ?? 'border-b-gray'}
                 ref={rowRef}
               >
                 <td colSpan={columns.length} className='text-center truncate py-[10px]'>
