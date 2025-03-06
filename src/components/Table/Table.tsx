@@ -3,7 +3,7 @@ import '../../index.css';
 
 export type DataType = 'string' | 'number' | 'date' | 'boolean' | 'custom';
 export type OrderType = 'asc' | 'desc';
-export type DefaultOrderType<T> = {
+export type ActiveOrderType<T> = {
   property: keyof T;
   order: OrderType;
 }
@@ -41,6 +41,10 @@ export type TableProps<T> = {
     style: string;
     color: string;
   };
+  activeSortButtonClassname?: {
+    style: string;
+    color: string;
+  };
   rowsClassname?: string;
   sampleInfoClassname?: string;
   currentPagePaginationButtonClassname?: string;
@@ -49,7 +53,7 @@ export type TableProps<T> = {
   cellClassname?: string;
 
   numberOfDisplayedRows?: number[] | undefined;
-  defaultOrder?: DefaultOrderType<T> | null;
+  defaultOrder?: ActiveOrderType<T> | null;
   textContent?: TextContentType | null;
 }
 
@@ -68,6 +72,7 @@ function Table <T extends Record<string, any>>({
   tableClassname = '',
   globalColumnsClassname = '',
   sortButtonClassname = { style: '', color: ''},
+  activeSortButtonClassname = { style: '', color: ''},
   rowsClassname = '',
   currentPagePaginationButtonClassname,
   pagesPaginationButtonsClassname,
@@ -83,125 +88,27 @@ function Table <T extends Record<string, any>>({
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pagesNumber, setPagesNumber] = useState<number>(1);
   const [displayedSample, setDisplayedSample] = useState<T[]>([]);
-  const [activeOrder, setActiveOrder] = useState<{ property: keyof T; order: OrderType } | null>(defaultOrder);
-  
+  const [activeOrder, setActiveOrder] = useState<{ property: keyof T; order: OrderType }>({
+    property: defaultOrder?.property ?? columns[0].property,
+    order: defaultOrder?.order ?? 'asc'
+  });
   const [hoveredRow, setHoveredRow] = useState<T | null>(null);
   console.log(hoveredRow);
 
-  const ascFilteringButtonRef = useRef<HTMLButtonElement>(null);
-  const descFilteringButtonRef = useRef<HTMLButtonElement>(null);
+  const ascFilteringButtonRef = useRef<HTMLDivElement>(null);
+  const descFilteringButtonRef = useRef<HTMLDivElement>(null);
 
   const columnHeaderRef = useRef<HTMLTableCellElement>(null);
   const columnNameRef = useRef<HTMLDivElement>(null);
   const rowRef = useRef<HTMLTableRowElement>(null);
 
   useEffect(() => {
-    if (defaultOrder) {
-      const valuesOfFilteredProperty = allRows.map((row) => row[defaultOrder.property]);
-      console.log('valuesOfFilteredProperty', valuesOfFilteredProperty);
-      
-      if (defaultOrder.order === 'asc') {
-        const col = columns.find((column) => column.property === defaultOrder.property);
-        if (col) {
-          if (defaultOrder.order === 'asc') {
-            switch (col.type) {
-              case 'string':
-                valuesOfFilteredProperty.sort((a, b) => a.localeCompare(b));
-                break;
-              case 'number':
-                valuesOfFilteredProperty.sort((a, b) => a - b);
-                break;
-              case 'date':
-                valuesOfFilteredProperty.sort((a, b) => {
-                  if (typeof a === 'string' && typeof b === 'string') {
-                    const dateA = new Date(a);
-                    const dateB = new Date(b);
-                    if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) {
-                      console.error('Invalid date');
-                      return 0;
-                    }
-                    return new Date(a).getTime() - new Date(b).getTime();
-                  } else {
-                    console.error('Invalid date');
-                    return 0;
-                  }
-                });
-                break;
-              case 'boolean':
-                valuesOfFilteredProperty.sort((a, b) => a - b);
-                break;
-              default:
-                console.error('Invalid type');
-                break;
-            }
-          } else if (defaultOrder.order === 'desc') {
-            switch (col.type) {
-              case 'string':
-                valuesOfFilteredProperty.sort((a, b) => b.localeCompare(a));
-                break;
-              case 'number':
-                valuesOfFilteredProperty.sort((a, b) => b - a);
-                break;
-              case 'date':
-                valuesOfFilteredProperty.sort((a, b) => {
-                  if (typeof a === 'string' && typeof b === 'string') {
-                    const dateA = new Date(a);
-                    const dateB = new Date(b);
-                    if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) {
-                      console.error('Invalid date');
-                      return 0;
-                    }
-                    return new Date(b).getTime() - new Date(a).getTime();
-                  } else {
-                    console.error('Invalid date');
-                    return 0;
-                  }
-                });
-                break;
-              case 'boolean':
-                valuesOfFilteredProperty.sort((a, b) => b - a);
-                break;
-              default:
-                console.error('Invalid type');
-                break;
-            }
-          }
-        }
-      }
+    const valuesOfFilteredProperty = allRows.map((row) => row[activeOrder.property]);
+    const order = activeOrder.order;
+    const col = columns.find((column) => column.property === activeOrder.property);
 
-      const sortedRows: T[] = [];
-      valuesOfFilteredProperty.forEach((value) => {
-        const row = allRows.find((row) => row[defaultOrder.property] === value);
-        if (row) {
-          sortedRows.push(row);
-        }
-      });
-
-      setAllRows(sortedRows);
-      setDisplayedSample(allRows);
-    }
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[]);
-
-  /**
-   * Sorts the rows based on the specified property and type in either ascending or descending order.
-   *
-   * @param e - The mouse event triggered by clicking the sort button.
-   * @param property - The property of the row by which to sort.
-   * @param type - The type of data to sort (e.g., 'string', 'number', 'date', 'boolean').
-   * @param sort - The sort direction, either 'asc' for ascending or 'desc' for descending.
-   *
-   * This function updates the displayed sample of rows by sorting them according to the provided
-   * property and type. It handles different data types by applying appropriate sorting logic.
-   * Throws an error if an invalid date is encountered.
-   */
-  const handleSort = (e: React.MouseEvent<HTMLButtonElement>, property: keyof T, type: DataType, order: OrderType) => {
-    e.preventDefault();
-
-    const valuesOfFilteredProperty = rows.map((row) => row[property]);
-    if (order === 'asc') {
-      switch (type) {
+    if (activeOrder.order === 'asc') {
+      switch (col?.type) {
         case 'string':
           valuesOfFilteredProperty.sort((a, b) => a.localeCompare(b));
           break;
@@ -228,10 +135,8 @@ function Table <T extends Record<string, any>>({
           valuesOfFilteredProperty.sort((a, b) => a - b);
           break;
       }
-
-      setActiveOrder({ property, order });
     } else if (order === 'desc') {
-      switch (type) {
+      switch (col?.type) {
         case 'string':
           valuesOfFilteredProperty.sort((a, b) => b.localeCompare(a));
           break;
@@ -251,13 +156,35 @@ function Table <T extends Record<string, any>>({
           valuesOfFilteredProperty.sort((a, b) => b - a);
           break;
       }
-
-      setActiveOrder({ property, order });
     }
 
-    const sortedRows = valuesOfFilteredProperty.map((value) => rows.find((row) => row[property] === value));
+    const sortedRows = valuesOfFilteredProperty.map((value) => rows.find((row) => row[activeOrder.property] === value));
 
     setAllRows(sortedRows as T[]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[ activeOrder]);
+
+  /**
+   * Handles the click event on the sort button of a column.
+   *
+   * Toggles the sort order between 'asc' and 'desc' if the column is already sorted,
+   * or sets the sort order to 'asc' if the column was not sorted.
+   *
+   * @param e - The click event.
+   * @param property - The property of the column to sort.
+   */
+  const handleOrder = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, property: keyof T) => {
+    e.preventDefault();
+
+    if (activeOrder?.property === property) {
+      if (activeOrder?.order === 'asc') {
+        setActiveOrder({ property, order: 'desc' });
+      } else {
+        setActiveOrder({ property, order: 'asc' });
+      }
+    } else {
+      setActiveOrder({ property, order: 'asc' });
+    }
   }
 
   /**
@@ -387,18 +314,21 @@ function Table <T extends Record<string, any>>({
         </div>
       </div>
       
-      <table className={`w-full overflow-x-auto ${tableClassname ?? ''}`} role='table'>
+      <table className={`w-full ${tableClassname ?? ''}`} role='table'>
         <thead>
           <tr className={globalColumnsClassname} role='row'>
             {columns.map((key, index) => (
               <th 
                 key={index}
                 role='columnheader'
-                className={`${globalColumnsClassname} px-[5px] py-[5px] h-[100px] border-b-2 border-b-gray overflow-hidden ${key.specificColumnclassName ?? ''}`}
+                className={`pl-[18px] pr-[5px] py-[10px] border-b-2 border-b-gray ${globalColumnsClassname}  ${key.specificColumnclassName ?? ''}`}
                 ref={columnHeaderRef}
               >
-                <div className='flex justify-between items-center gap-2.5'>
-                  <div className='flex items-center w-[100%] h-[55px] gap-3'>
+                <div
+                  className='flex justify-between items-center gap-2.5'
+                  onClick={e => handleOrder(e, key.property)}
+                >
+                  <div className='flex items-center w-[100%]'>
                     <div className='flex-1 text-center overflow-hidden'>
                       <p
                         ref={columnNameRef}
@@ -407,31 +337,25 @@ function Table <T extends Record<string, any>>({
                         {key.displayName ? key.displayName : String(key.property)}
                       </p>
                     </div>
-                    <div className='flex flex-col justify-between gap-2.5'>
-                      <button
-                        type='button'
+                    <div className='flex flex-col justify-between'>
+                      <div
                         ref={ascFilteringButtonRef}
-                        onClick={(e) => handleSort(e, key.property, key.type, 'asc')}
-                        className={`cursor-pointer w-[24px] h-[24px] transition duration-500 hover:scale-175 hover:blur-[.6px] m-[5px] ${activeOrder?.property === key.property && activeOrder?.order === 'asc' ? 'scale-180 blur-[.6px]' : 'scale-100'}`}
-                        role='button'
-                        aria-label='ascending order button'
+                        className={`w-[12px] h-[12px] transition duration-500 m-[5px]`}
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 -960 960 960" fill={sortButtonClassname.color ? sortButtonClassname.color : '#000'} >
+                        <svg className={activeOrder?.property === key.property && activeOrder?.order !== 'asc' ? 'hidden' : ''} xmlns="http://www.w3.org/2000/svg" width="12px" height="12px" viewBox="0 -960 960 960" fill={activeOrder?.property === key.property ? activeOrder?.order === 'asc' ? (activeSortButtonClassname.color ?? '#000') : (sortButtonClassname.color ?? '') : '#b3b2b2'} >
                           <path d="M152-160q-23 0-35-20.5t1-40.5l328-525q12-19 34-19t34 19l328 525q13 20 1 40.5T808-160H152Z"/>
                         </svg>
-                      </button>
-                      <button
-                        type='button'
+                      </div>
+                      <div
                         ref={descFilteringButtonRef}
-                        onClick={(e) => handleSort(e, key.property, key.type, 'desc')}
-                        className={`cursor-pointer w-[24px] h-[24px] transition duration-500 hover:scale-175 hover:blur-[.6px] m-[5px] ${activeOrder?.property === key.property && activeOrder?.order === 'desc' ? 'scale-180 blur-[.6px]' : 'scale-100'}`}
+                        className={`w-[12px] h-[12px] transition duration-500 m-[5px]`}
                         role='button'
                         aria-label='descending order button'
                       >
-                        <svg className='rotate-180' xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 -960 960 960" fill={sortButtonClassname.color ? sortButtonClassname.color : '#000'}>
+                        <svg className={`rotate-180 ${activeOrder?.property === key.property && activeOrder?.order !== 'desc' ? 'hidden' : ''}`} xmlns="http://www.w3.org/2000/svg" width="12px" height="12px" viewBox="0 -960 960 960" fill={activeOrder?.property === key.property ? (activeOrder?.order === 'desc' ? (activeSortButtonClassname.color ?? '#000') : (sortButtonClassname.color ?? '')) : '#b3b2b2'}>
                           <path d="M152-160q-23 0-35-20.5t1-40.5l328-525q12-19 34-19t34 19l328 525q13 20 1 40.5T808-160H152Z"/>
                         </svg>
-                      </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -439,7 +363,7 @@ function Table <T extends Record<string, any>>({
             ))}
           </tr>
         </thead>
-        <tbody className='pb-2.5'>
+        <tbody className='pb-2.5 overflow-y-auto'>
           {displayedSample.length > 0
             ? displayedSample.map((row: T, rowIndex: number): ReactNode => (
               <tr
