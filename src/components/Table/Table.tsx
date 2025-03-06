@@ -285,7 +285,7 @@ function Table <T extends Record<string, any>>({
     <div className={`my-5 ${componentGlobalClassname ?? ''}`}>
       <div className='flex flex-col lg:flex-row items-center justify-between my-5 gap-y-3.5'>
         <div>
-          <label htmlFor="sampleLength" className={`mr-2.5 ${sampleTextClassname ?? ''}`}>
+          <label htmlFor="sampleLength" className={sampleTextClassname ?? 'mr-2.5'}>
             {textContent?.entriesLabel_showReplace ?? 'Show' }
           </label>
 
@@ -293,24 +293,24 @@ function Table <T extends Record<string, any>>({
             name="sampleLength"
             id="sampleLength"
             onChange={handleDisplayedEntriesChange}
-            className={`border-1 border-black rounded-[5px] mr-1.5 ${sampleLengthSelectorClassname ?? ''}`}
+            className={ sampleLengthSelectorClassname ?? `border-1 border-black rounded-[5px]`}
           >
             {numberOfDisplayedRows.map((option, index) => (
               <option key={index} value={option}>{option}</option>
             ))}
           </select>
 
-          <label htmlFor="sampleLength" className={`ml-2.5 ${sampleTextClassname ?? ''}`}>
+          <label htmlFor="sampleLength" className={sampleTextClassname ?? 'ml-2.5'}>
             {textContent?.entriesLabel_entriesReplace ??' entries'}
           </label>
         </div>
 
         <div>
-          <label htmlFor="search" className={`mr-2.5 ${searchLabelClassname ?? ''}`}>
+          <label htmlFor="search" className={searchLabelClassname ?? 'mr-2.5'}>
             {textContent?.searchLabel ?? 'Search'}
           </label>
 
-          <input type="text" name="search" id="search" className={`ml-1.5 border-1 border-black rounded-[5px] ${searchInputClassname ?? ''}`} onChange={(e) => handleSearch(e)}/>
+          <input type="text" name="search" id="search" className={searchInputClassname ?? 'ml-1.5 border-1 border-black rounded-[5px]'} onChange={(e) => handleSearch(e)}/>
         </div>
       </div>
       
@@ -321,7 +321,7 @@ function Table <T extends Record<string, any>>({
               <th 
                 key={index}
                 role='columnheader'
-                className={`pl-[18px] pr-[5px] py-[10px] border-b-2 border-b-gray ${globalColumnsClassname}  ${key.specificColumnclassName ?? ''}`}
+                className={`${globalColumnsClassname ?? 'pl-[18px] pr-[5px] py-[10px] border-b-2 border-b-gray'} ${key.specificColumnclassName ?? ''}`}
                 ref={columnHeaderRef}
               >
                 <div
