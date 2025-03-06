@@ -1,5 +1,6 @@
 import { type ChangeEvent, JSX, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import '../../index.css';
+import { Select } from 'antd';
 
 export type DataType = 'string' | 'number' | 'date' | 'boolean' | 'custom';
 export type OrderType = 'asc' | 'desc';
@@ -25,6 +26,10 @@ export type Column<T> = {
   specificColumnclassName?: string;
 }
 
+type CSSInlineType = {
+  [key: string]: string
+}
+
 export type TableProps<T> = {
   columns: Column<T>[];
   rows: T[];
@@ -33,7 +38,10 @@ export type TableProps<T> = {
   componentGlobalClassname?: string;
   sampleLengthSelectorClassname?: string;
   sampleLengthOptionClassname?: string;
-  sampleTextClassname?: string;
+  sampleLabelPrefix?: string;
+  sampleLabelSuffix?: string;
+  sampleOptionsClassname?: string;
+  sampleSelectStyle?: CSSInlineType | null;
   searchLabelClassname?: string;
   searchInputClassname?: string;
   tableClassname?: string;
@@ -65,9 +73,10 @@ function Table <T extends Record<string, any>>({
   onRowHover,
   onRowClick,
   componentGlobalClassname = '',
-  sampleTextClassname = '',
-  sampleLengthSelectorClassname = '',
-  sampleLengthOptionClassname = '',
+  sampleLabelPrefix = '',
+  sampleLabelSuffix = '',
+  sampleOptionsClassname = '',
+  sampleSelectStyle = null,
   searchLabelClassname = '',
   searchInputClassname = '',
   sampleInfoClassname = '',
@@ -194,8 +203,8 @@ function Table <T extends Record<string, any>>({
    * Resets the current page to 1.
    * @param e The event triggered by the user selecting a new number of displayed entries.
    */
-  const handleDisplayedEntriesChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    const newValue = parseInt(e.target.value);
+  const handleDisplayedEntriesChange = (/*e: ChangeEvent<HTMLSelectElement>*/ value: string) => {
+    const newValue = parseInt(/*e.target.value*/ value);
     setSampleLength(newValue);
     setCurrentPage(1);
   }
@@ -283,28 +292,20 @@ function Table <T extends Record<string, any>>({
     [currentPage, pagesNumber]
   );
 
+  const sampleLengthOptions = numberOfDisplayedRows.map((option) => (
+    { value: option, label: <span className={sampleOptionsClassname}>{sampleLabelPrefix ?? 'Show'} {option} {sampleLabelSuffix ?? 'entries'}</span> }
+  ))
+
   return (
     <div className={`my-5 ${componentGlobalClassname ?? ''}`}>
       <div className='flex flex-col lg:flex-row items-center justify-between my-5 gap-y-3.5'>
         <div>
-          <label htmlFor="sampleLength" className={sampleTextClassname ?? 'mr-2.5'}>
-            {textContent?.entriesLabel_showReplace ?? 'Show' }
-          </label>
-
-          <select
-            name="sampleLength"
-            id="sampleLength"
+          <Select
+            defaultValue={numberOfDisplayedRows[0].toString()}
+            style={sampleSelectStyle ?? { width: 170 }}
             onChange={handleDisplayedEntriesChange}
-            className={ sampleLengthSelectorClassname ?? `border-1 border-black rounded-[5px]`}
-          >
-            {numberOfDisplayedRows.map((option, index) => (
-              <option key={index} value={option} className={sampleLengthOptionClassname ?? ''}>{option}</option>
-            ))}
-          </select>
-
-          <label htmlFor="sampleLength" className={sampleTextClassname ?? 'ml-2.5'}>
-            {textContent?.entriesLabel_entriesReplace ??' entries'}
-          </label>
+            options={sampleLengthOptions}
+          />
         </div>
 
         <div>
