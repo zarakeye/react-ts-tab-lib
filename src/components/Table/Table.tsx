@@ -32,6 +32,7 @@ export type TableProps<T> = {
   onRowClick?: (row: T | null) => void;
   componentGlobalClassname?: string;
   sampleLengthSelectorClassname?: string;
+  sampleLengthOptionClassname?: string;
   sampleTextClassname?: string;
   searchLabelClassname?: string;
   searchInputClassname?: string;
@@ -66,6 +67,7 @@ function Table <T extends Record<string, any>>({
   componentGlobalClassname = '',
   sampleTextClassname = '',
   sampleLengthSelectorClassname = '',
+  sampleLengthOptionClassname = '',
   searchLabelClassname = '',
   searchInputClassname = '',
   sampleInfoClassname = '',
@@ -296,7 +298,7 @@ function Table <T extends Record<string, any>>({
             className={ sampleLengthSelectorClassname ?? `border-1 border-black rounded-[5px]`}
           >
             {numberOfDisplayedRows.map((option, index) => (
-              <option key={index} value={option}>{option}</option>
+              <option key={index} value={option} className={sampleLengthOptionClassname ?? ''}>{option}</option>
             ))}
           </select>
 
