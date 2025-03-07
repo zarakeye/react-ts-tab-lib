@@ -143,7 +143,7 @@ function App() {
           order: 'asc'
         }
       }
-      globalColumnsClassname='bg-[#105924]/90 hover:bg-[#105924]/60 text-white  overflow-hidden text-ellipsis max-w-xs'
+      // globalColumnsClassname='bg-gray/0 hover:bg-gray/30 overflow-hidden text-ellipsis max-w-xs'
       textContent={{
         searchLabel: 'Rechercher',
         entriesLabel_showReplace: 'Affiche ',

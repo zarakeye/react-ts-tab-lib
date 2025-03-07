@@ -23,11 +23,7 @@ export type Column<T> = {
   displayName?: string;
   type: DataType;
   renderer?: (value: T[keyof T]) => ReactNode;
-  specificColumnclassName?: string;
-}
-
-type CSSInlineType = {
-  [key: string]: string
+  specificColumnClassname?: string;
 }
 
 export type TableProps<T> = {
@@ -36,12 +32,11 @@ export type TableProps<T> = {
   onRowHover?: (row: T | null) => void;
   onRowClick?: (row: T | null) => void;
   componentGlobalClassname?: string;
-  sampleLengthSelectorClassname?: string;
   sampleLengthOptionClassname?: string;
   sampleLabelPrefix?: string;
   sampleLabelSuffix?: string;
   sampleOptionsClassname?: string;
-  sampleSelectStyle?: CSSInlineType | null;
+  customSelect?: string;
   searchLabelClassname?: string;
   searchInputClassname?: string;
   tableClassname?: string;
@@ -72,16 +67,16 @@ function Table <T extends Record<string, any>>({
   rows = [],
   onRowHover,
   onRowClick,
-  componentGlobalClassname = '',
-  sampleLabelPrefix = '',
-  sampleLabelSuffix = '',
-  sampleOptionsClassname = '',
-  sampleSelectStyle = null,
-  searchLabelClassname = '',
-  searchInputClassname = '',
-  sampleInfoClassname = '',
-  tableClassname = '',
-  globalColumnsClassname = '',
+  componentGlobalClassname,
+  sampleLabelPrefix = 'Show ',
+  sampleLabelSuffix = ' entries',
+  sampleOptionsClassname,
+  customSelect,
+  searchLabelClassname,
+  searchInputClassname,
+  sampleInfoClassname,
+  tableClassname,
+  globalColumnsClassname,
   sortButtonClassname = { style: '', color: ''},
   activeSortButtonClassname = { style: '', color: ''},
   rowsClassname = '',
@@ -293,7 +288,7 @@ function Table <T extends Record<string, any>>({
   );
 
   const sampleLengthOptions = numberOfDisplayedRows.map((option) => (
-    { value: option, label: <span className={sampleOptionsClassname}>{sampleLabelPrefix ?? 'Show'} {option} {sampleLabelSuffix ?? 'entries'}</span> }
+    { value: option, label: <span className={sampleOptionsClassname}> {`${sampleLabelPrefix ?? 'Show '} ${option} ${sampleLabelSuffix ?? ' entries'}`} </span> }
   ))
 
   return (
@@ -301,8 +296,9 @@ function Table <T extends Record<string, any>>({
       <div className='flex flex-col lg:flex-row items-center justify-between my-5 gap-y-3.5'>
         <div>
           <Select
-            defaultValue={numberOfDisplayedRows[0].toString()}
-            style={sampleSelectStyle ?? { width: 170 }}
+            defaultValue={`Show ${numberOfDisplayedRows[0]} entries`}
+            className={customSelect}
+            // style={sampleSelectStyle ?? { width: 170 }}
             onChange={handleDisplayedEntriesChange}
             options={sampleLengthOptions}
           />
@@ -319,23 +315,24 @@ function Table <T extends Record<string, any>>({
       
       <table className={`w-full ${tableClassname ?? ''}`} role='table'>
         <thead>
-          <tr className={globalColumnsClassname} role='row'>
+          <tr role='row'>
             {columns.map((key, index) => (
               <th 
                 key={index}
                 role='columnheader'
-                className={`${globalColumnsClassname ?? 'pl-[18px] pr-[5px] py-[10px] border-b-2 border-b-gray'} ${key.specificColumnclassName ?? ''}`}
+                // className={`${key.specificColumnClassname ?? ''} ${globalColumnsClassname ? globalColumnsClassname : 'pl-[18px] pr-[5px] py-[10px] border-b-2 border-b-gray bg-gray/0 hover:bg-gray/40 '}`}
+
                 ref={columnHeaderRef}
               >
                 <div
-                  className='flex justify-between items-center gap-2.5'
+                  className={`flex justify-between items-center gap-2.5`}
                   onClick={e => handleOrder(e, key.property)}
                 >
-                  <div className='flex items-center w-[100%]'>
+                  <div className={`flex items-center w-[100%] ${key.specificColumnClassname ?? ''} ${globalColumnsClassname ? globalColumnsClassname : 'pl-[18px] pr-[5px] py-[10px] border-b-2 border-b-[#878787]'}  ${globalColumnsClassname ? '' : 'bg-gray/0 hover:bg-[#878787]'}`}>
                     <div className='flex-1 text-center overflow-hidden'>
                       <p
                         ref={columnNameRef}
-                        className='cursor-pointer'
+                        className='whitespace-nowrap cursor-pointer'
                       >
                         {key.displayName ? key.displayName : String(key.property)}
                       </p>
@@ -345,7 +342,7 @@ function Table <T extends Record<string, any>>({
                         ref={ascFilteringButtonRef}
                         className={`w-[12px] h-[12px] transition duration-500 m-[5px]`}
                       >
-                        <svg className={activeOrder?.property === key.property && activeOrder?.order !== 'asc' ? 'hidden' : ''} xmlns="http://www.w3.org/2000/svg" width="12px" height="12px" viewBox="0 -960 960 960" fill={activeOrder?.property === key.property ? activeOrder?.order === 'asc' ? (activeSortButtonClassname.color ?? '#000') : (sortButtonClassname.color ?? '') : '#b3b2b2'} >
+                        <svg className={activeOrder?.property === key.property && activeOrder?.order !== 'asc' ? 'hidden' : ''} xmlns="http://www.w3.org/2000/svg" width="12px" height="12px" viewBox="0 -960 960 960" fill={activeOrder?.property === key.property ? activeOrder?.order === 'asc' ? (activeSortButtonClassname.color ?? '#000') :  '' : '#b3b2b2'} >
                           <path d="M152-160q-23 0-35-20.5t1-40.5l328-525q12-19 34-19t34 19l328 525q13 20 1 40.5T808-160H152Z"/>
                         </svg>
                       </div>
@@ -366,7 +363,7 @@ function Table <T extends Record<string, any>>({
             ))}
           </tr>
         </thead>
-        <tbody className='pb-2.5 overflow-y-auto'>
+        <tbody className='pb-2.5 overflow-y-auto border-b-[#878787]'>
           {displayedSample.length > 0
             ? displayedSample.map((row: T, rowIndex: number): ReactNode => (
               <tr
@@ -396,9 +393,13 @@ function Table <T extends Record<string, any>>({
                   <td title={`id: ${row.id}`}
                     key={colIndex}
                     role='cell'
-                    className={`px-[5px] truncate ${cellClassname}`}
+                    className={cellClassname ?? 'px-[5px] border-b-solid last:border-b-2 last:border-[#878787]'}
                   >
-                    {columns[colIndex].renderer ? columns[colIndex].renderer(row[column.property]) : row[column.property] as ReactNode}
+                    <div
+                      
+                    >
+                      {columns[colIndex].renderer ? columns[colIndex].renderer(row[column.property]) : row[column.property] as ReactNode}
+                    </div>
                   </td>
                 ))}
               </tr>
