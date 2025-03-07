@@ -393,7 +393,7 @@ function Table <T extends Record<string, any>>({
                   <td title={`id: ${row.id}`}
                     key={colIndex}
                     role='cell'
-                    className={cellClassname ?? 'px-[5px] border-b-solid last:border-b-2 last:border-[#878787]'}
+                    className={cellClassname ?? 'px-[5px] whitespace-nowrap border-b-solid last:border-b-2 last:border-[#878787]'}
                   >
                     <div
                       
