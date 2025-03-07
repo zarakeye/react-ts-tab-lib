@@ -329,7 +329,7 @@ function Table <T extends Record<string, any>>({
                   onClick={e => handleOrder(e, key.property)}
                 >
                   <div className={`flex items-center w-[100%] ${key.specificColumnClassname ?? ''} ${globalColumnsClassname ? globalColumnsClassname : 'pl-[18px] pr-[5px] py-[10px] border-b-2 border-b-[#878787]'}  ${globalColumnsClassname ? '' : 'bg-gray/0 hover:bg-[#878787]'}`}>
-                    <div className='flex-1 text-center overflow-hidden'>
+                    <div className='flex-1 text-center overflow-hidden mr-[5px]'>
                       <p
                         ref={columnNameRef}
                         className='whitespace-nowrap cursor-pointer'
