@@ -9,13 +9,13 @@ export type ActiveOrderType<T> = {
   order: OrderType;
 }
 export type TextContentType = {
-  searchLabel: string | null;
-  entriesLabel_showReplace: string | null;
-  entriesLabel_entriesReplace: string | null;
-  emptyTableText: string | null;
-  paginationTextContent: (sampleBegin: number, sampleEnd: number, allRows: number) => string | null;
-  previousPageButtonLabel: string | null;
-  nextPageButtonLabel: string | null;
+  searchLabel?: string | null;
+  sampleLabelPrefix?: string | null;
+  sampleLabelSuffix?: string | null;
+  emptyTableText?: string | null;
+  custtomizeSampleInfoTextContent?: (sampleBegin: number, sampleEnd: number, allRows: number) => string | null;
+  previousPageButtonLabel?: string | null;
+  nextPageButtonLabel?: string | null;
 }
 
 export type Column<T> = {
@@ -33,8 +33,6 @@ export type TableProps<T> = {
   onRowClick?: (row: T | null) => void;
   componentGlobalClassname?: string;
   sampleLengthOptionClassname?: string;
-  sampleLabelPrefix?: string;
-  sampleLabelSuffix?: string;
   sampleOptionsClassname?: string;
   customSelect?: string;
   searchLabelClassname?: string;
@@ -68,8 +66,6 @@ function Table <T extends Record<string, any>>({
   onRowHover,
   onRowClick,
   componentGlobalClassname,
-  sampleLabelPrefix = 'Show ',
-  sampleLabelSuffix = ' entries',
   sampleOptionsClassname,
   customSelect,
   searchLabelClassname,
@@ -77,7 +73,7 @@ function Table <T extends Record<string, any>>({
   sampleInfoClassname,
   tableClassname,
   globalColumnsClassname,
-  sortButtonClassname = { style: '', color: ''},
+  sortButtonClassname,
   activeSortButtonClassname = { style: '', color: ''},
   rowsClassname = '',
   currentPagePaginationButtonClassname,
@@ -85,7 +81,7 @@ function Table <T extends Record<string, any>>({
   paginationNavButtonsClassname,
   cellClassname = '',
   numberOfDisplayedRows = [10, 20, 50, 100],
-  defaultOrder= null,
+  defaultOrder,
   textContent = null
 }: TableProps<T>): JSX.Element {
   type DisplayedRows_Type = typeof numberOfDisplayedRows[number];
@@ -95,9 +91,11 @@ function Table <T extends Record<string, any>>({
   const [pagesNumber, setPagesNumber] = useState<number>(1);
   const [displayedSample, setDisplayedSample] = useState<T[]>([]);
   const [activeOrder, setActiveOrder] = useState<{ property: keyof T; order: OrderType }>({
-    property: defaultOrder?.property ?? columns[0].property,
+    property: defaultOrder?.property ?? columns[0].property satisfies keyof T,
     order: defaultOrder?.order ?? 'asc'
   });
+console.log('initial activeOrder.property', activeOrder.property);
+
   const [hoveredRow, setHoveredRow] = useState<T | null>(null);
   console.log(hoveredRow);
 
@@ -288,17 +286,18 @@ function Table <T extends Record<string, any>>({
   );
 
   const sampleLengthOptions = numberOfDisplayedRows.map((option) => (
-    { value: option, label: <span className={sampleOptionsClassname}> {`${sampleLabelPrefix ?? 'Show '} ${option} ${sampleLabelSuffix ?? ' entries'}`} </span> }
+    { value: option, label: <span className={sampleOptionsClassname}> {`${textContent?.sampleLabelPrefix ?? 'Show '} ${option} ${textContent?.sampleLabelSuffix ?? ' entries'}`} </span> }
   ))
 
   return (
     <div className={`my-5 ${componentGlobalClassname ?? ''}`}>
       <div className='flex flex-col lg:flex-row items-center justify-between my-5 gap-y-3.5'>
         <div>
+          <label htmlFor="sampleLength" className='sr-only'>Displayed entries</label>
           <Select
-            defaultValue={`Show ${numberOfDisplayedRows[0]} entries`}
+            id="sampleLength"
+            defaultValue={`${textContent?.sampleLabelPrefix ?? 'Show'} ${numberOfDisplayedRows[0]} ${textContent?.sampleLabelSuffix ?? 'entries'}`}
             className={customSelect}
-            // style={sampleSelectStyle ?? { width: 170 }}
             onChange={handleDisplayedEntriesChange}
             options={sampleLengthOptions}
           />
@@ -352,7 +351,7 @@ function Table <T extends Record<string, any>>({
                         role='button'
                         aria-label='descending order button'
                       >
-                        <svg className={`rotate-180 ${activeOrder?.property === key.property && activeOrder?.order !== 'desc' ? 'hidden' : ''}`} xmlns="http://www.w3.org/2000/svg" width="12px" height="12px" viewBox="0 -960 960 960" fill={activeOrder?.property === key.property ? (activeOrder?.order === 'desc' ? (activeSortButtonClassname.color ?? '#000') : (sortButtonClassname.color ?? '')) : '#b3b2b2'}>
+                        <svg className={`rotate-180 ${activeOrder?.property === key.property && activeOrder?.order !== 'desc' ? 'hidden' : ''}`} xmlns="http://www.w3.org/2000/svg" width="12px" height="12px" viewBox="0 -960 960 960" fill={activeOrder?.property === key.property ? (activeOrder?.order === 'desc' ? (activeSortButtonClassname.color ?? '#000') : (sortButtonClassname?.color ?? '')) : '#b3b2b2'}>
                           <path d="M152-160q-23 0-35-20.5t1-40.5l328-525q12-19 34-19t34 19l328 525q13 20 1 40.5T808-160H152Z"/>
                         </svg>
                       </div>
@@ -422,8 +421,8 @@ function Table <T extends Record<string, any>>({
         {sampleLength > 0 && (
           <p className='inline-block'>
             {
-              textContent?.paginationTextContent(sampleLength * (currentPage - 1) + 1, Math.min(sampleLength * currentPage, allRows.length), allRows.length)
-              ? textContent?.paginationTextContent(sampleLength * (currentPage - 1) + 1, Math.min(sampleLength * currentPage, allRows.length), allRows.length)
+              textContent?.custtomizeSampleInfoTextContent && textContent?.custtomizeSampleInfoTextContent(sampleLength * (currentPage - 1) + 1, Math.min(sampleLength * currentPage, allRows.length), allRows.length)
+              ? textContent?.custtomizeSampleInfoTextContent(sampleLength * (currentPage - 1) + 1, Math.min(sampleLength * currentPage, allRows.length), allRows.length)
               : allRows.length > Math.min(sampleLength * currentPage, allRows.length)
               ? `Showing entries ${sampleLength * (currentPage - 1) + 1} to ${Math.min(sampleLength * currentPage, allRows.length)} of ${allRows.length} entries`
               : allRows.length >1
