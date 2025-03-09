@@ -7,12 +7,12 @@
     **react-ts-tab-lib** requires react version 18.3.1 or later and can be used in your project by running the following command at the root of your project:
 
 ```bash
-npm install react-ts-tab-lib -D
+npm install react-ts-tab-lib
 ```
 
 To integrate the Table component from react-ts-tab-lib into a component or page in your project, start by importing the Table component at the top of their codebase (/src/MyPage/MyPage.jsx, /src/MyPage/MyPage.tsx, /src/MyPage/index.jsx ou /src/MyPage/index.tsx) :
 
-```tsx
+```ts
 import { Table } from 'react-ts-tab-lib'
 ```
 
@@ -113,8 +113,6 @@ return (
 > Note that it is necessary to add a **key** attribute to which you will give the value **rows.length** if the **rows** array is likely to see its size change. The **rows.length** value assigned to the **key** attribute will therefore change dynamically, which will force React to re-render the component.
 > In any case, adding it but when it is not necessary will not change the behavior of the component in any way, so we strongly recommend doing it for safety: it is a **good practice**!
 
-
-
 From 2 entries, you are given, at the bottom left of the table, the number of the first and last entries currently displayed.
 But if we have a large number of entries, it is more judicious to browse them by samples: for this, the select at the top left allows you to define the number of entries that we want to display at a time. When the number of lines is greater than the number selected for sampling, the table is paginated and navigation buttons and the current page appear at the bottom right while we have at the bottom left additional information on the total number of entries.
 And here is our table now hydrated with enough entries to display all types of information and possible actions :
@@ -128,7 +126,6 @@ On the other hand, when you see a single black triangle, it means that the entri
 By default, the order is ascending (points upward) and is done on the first column. When you click on the header of another column, it is on that one that the order is done.
 When you click on the same header multiple times in a row, the order is toggled with each click.
 
-
 The search bar at the top right, which allows you to filter the displayed entries. Indeed, when you enter something in the bar, a case-insensitive match search is immediately launched on each property of each entry in the table and all those whose at least one of the properties contains the entry will be displayed.
 
 We have shown you the default behavior of our Table component so far and, we must admit, it has a rather minimalist and spartan style for now. But, good news, our component is almost entirely customizable with a multitude of props to change the style of each element thanks to Tailwindcss or even change the texts. Let's see together how through common use cases.
@@ -136,8 +133,6 @@ We have shown you the default behavior of our Table component so far and, we mus
 ### Use cases :
 
 > *I want to modify words and texts in the component*
-
-
 
 Ok. The words and the content of the component texts are customizable thanks to the **textContent** prop which is a **TextContentType** object type containing only optional keys:
 
@@ -170,8 +165,6 @@ You will need to define the different possible properties of textContent:
 
 - **nextPageButtonLabel** : modifies the text displayed by the Next button
 
-
-
 In the tableProps prop, add the object :
 
 ```ts
@@ -200,11 +193,7 @@ There you go! Mission accomplished!!... Next?...
 
 -----------------------------------------------------------
 
-
-
 > *I would like to customize the display name of my columns*
-
-
 
 To do that, you must enter, for each column whose display name you want to customize, the displayName key of the object that corresponds to it in the columns table.
 
@@ -237,8 +226,6 @@ Now you have completely customized the component texts !!!
 ------------------------------------------------------------
 
 > *Now I would like to make the component more visually appealing and to respect the graphic charter of my page.*
-
-
 
 To do this, you will use Tailwindcss to define the styles you want to apply to the component. Tailwind is a dependency of the library. You can define your own Tailwindcss themes and classes in your project; they will be usable for the component of our library.
 

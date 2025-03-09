@@ -1,6 +1,7 @@
 import { type ChangeEvent, JSX, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import '../../index.css';
 import { Select } from 'antd';
+import * as React from 'react';
 
 export type DataType = 'string' | 'number' | 'date' | 'boolean' | 'custom';
 export type OrderType = 'asc' | 'desc';
@@ -58,6 +59,8 @@ export type TableProps<T> = {
   defaultOrder?: ActiveOrderType<T> | null;
   textContent?: TextContentType | null;
 }
+
+
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function Table <T extends Record<string, any>>({

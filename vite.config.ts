@@ -6,6 +6,7 @@ import react from '@vitejs/plugin-react'
 import dts from 'vite-plugin-dts'
 import tailwindcss from '@tailwindcss/vite'
 import { libInjectCss} from 'vite-plugin-lib-inject-css' // injecte le css dans le composant qui est exporté
+import { visualizer } from 'rollup-plugin-visualizer';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -21,6 +22,9 @@ export default defineConfig({
       tsconfigPath: 'tsconfig.app.json',
       outDir: 'dist/types',
     }),
+    visualizer({
+      open: true
+    })
   ],
   resolve: {
     alias: {
@@ -45,6 +49,7 @@ export default defineConfig({
         },
       },
     },
+    minify:'esbuild',
   },
   test: {
     globals: true,
