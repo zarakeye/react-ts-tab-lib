@@ -60,7 +60,9 @@ export type TableProps<T> = {
   textContent?: TextContentType | null;
 }
 
-
+type ColumnsWitdthType<T> = {
+  [K in keyof T]: number
+}
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function Table <T extends Record<string, any>>({
@@ -77,7 +79,7 @@ function Table <T extends Record<string, any>>({
   tableClassname,
   globalColumnsClassname,
   sortButtonClassname,
-  activeSortButtonClassname = { style: '', color: ''},
+  activeSortButtonClassname,
   rowsClassname = '',
   currentPagePaginationButtonClassname,
   pagesPaginationButtonsClassname,
@@ -97,8 +99,7 @@ function Table <T extends Record<string, any>>({
     property: defaultOrder?.property ?? columns[0].property satisfies keyof T,
     order: defaultOrder?.order ?? 'asc'
   });
-console.log('initial activeOrder.property', activeOrder.property);
-
+  const [columnsWidth, setColumnsWidth] = useState<number[]>([]);
   const [hoveredRow, setHoveredRow] = useState<T | null>(null);
   console.log(hoveredRow);
 
@@ -292,6 +293,16 @@ console.log('initial activeOrder.property', activeOrder.property);
     { value: option, label: <span className={sampleOptionsClassname}> {`${textContent?.sampleLabelPrefix ?? 'Show '} ${option} ${textContent?.sampleLabelSuffix ?? ' entries'}`} </span> }
   ))
 
+  // const columnsWidth: ColumnsWitdthType<T>[] = [];
+
+  useEffect(() => {
+    const firstRow = document.getElementsByTagName('tbody')[0].children[0];
+    const cells = firstRow.getElementsByTagName('td');
+    for (let i = 0; i < cells.length; i++) {
+      setColumnsWidth(  [...columnsWidth, cells[i].offsetWidth]);
+    }
+  }, [columns]);
+
   return (
     <div className={`my-5 ${componentGlobalClassname ?? ''}`}>
       <div className='flex flex-col lg:flex-row items-center justify-between my-5 gap-y-3.5'>
@@ -317,17 +328,17 @@ console.log('initial activeOrder.property', activeOrder.property);
       
       <table className={`w-full ${tableClassname ?? ''}`} role='table'>
         <thead>
-          <tr role='row'>
+          <tr role='row' className="">
             {columns.map((key, index) => (
               <th 
                 key={index}
                 role='columnheader'
                 // className={`${key.specificColumnClassname ?? ''} ${globalColumnsClassname ? globalColumnsClassname : 'pl-[18px] pr-[5px] py-[10px] border-b-2 border-b-gray bg-gray/0 hover:bg-gray/40 '}`}
-
+                className="sticky top-0 z-10"
                 ref={columnHeaderRef}
               >
                 <div
-                  className={`flex justify-between items-center gap-2.5`}
+                  className={`flex justify-between items-center gap-2.5 bg-blue-500 ${columnsWidth[index] ? `w-[${columnsWidth[index]}px]` : ''} ${index === 0 ? 'rounded-tl-[20px] rounded-bl-[20px]' : ''} ${index === columns.length - 1 ? 'rounded-tr-[20px] rounded-br-[20px]' : ''}`}
                   onClick={e => handleOrder(e, key.property)}
                 >
                   <div className={`flex items-center w-[100%] ${key.specificColumnClassname ?? ''} ${globalColumnsClassname ? globalColumnsClassname : 'pl-[18px] pr-[5px] py-[10px] border-b-2 border-b-[#878787]'}  ${globalColumnsClassname ? '' : 'bg-gray/0 hover:bg-[#878787]'}`}>
@@ -339,30 +350,24 @@ console.log('initial activeOrder.property', activeOrder.property);
                         {key.displayName ? key.displayName : String(key.property)}
                       </p>
                     </div>
-                    <div className='flex flex-col justify-between'>
+                    <div>
                       <div
-                        ref={ascFilteringButtonRef}
-                        className={`w-[12px] h-[12px] transition duration-500 m-[5px]`}
+                        className={`flex items-center justify-center w-[12px] h-[12px] m-[5px]`}
                       >
-                        <svg className={activeOrder?.property === key.property && activeOrder?.order !== 'asc' ? 'hidden' : ''} xmlns="http://www.w3.org/2000/svg" width="12px" height="12px" viewBox="0 -960 960 960" fill={activeOrder?.property === key.property ? activeOrder?.order === 'asc' ? (activeSortButtonClassname.color ?? '#000') :  '' : '#b3b2b2'} >
-                          <path d="M152-160q-23 0-35-20.5t1-40.5l328-525q12-19 34-19t34 19l328 525q13 20 1 40.5T808-160H152Z"/>
-                        </svg>
-                      </div>
-                      <div
-                        ref={descFilteringButtonRef}
-                        className={`w-[12px] h-[12px] transition duration-500 m-[5px]`}
-                        role='button'
-                        aria-label='descending order button'
-                      >
-                        <svg className={`rotate-180 ${activeOrder?.property === key.property && activeOrder?.order !== 'desc' ? 'hidden' : ''}`} xmlns="http://www.w3.org/2000/svg" width="12px" height="12px" viewBox="0 -960 960 960" fill={activeOrder?.property === key.property ? (activeOrder?.order === 'desc' ? (activeSortButtonClassname.color ?? '#000') : (sortButtonClassname?.color ?? '')) : '#b3b2b2'}>
-                          <path d="M152-160q-23 0-35-20.5t1-40.5l328-525q12-19 34-19t34 19l328 525q13 20 1 40.5T808-160H152Z"/>
+                        <svg
+                          className={`${!(activeOrder?.property === key.property)? 'hidden' : ''} ${activeOrder?.property === key.property && activeOrder?.order !== 'asc' ? 'rotate-90' : '-rotate-90'}`}
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 320 512"
+                          fill={activeSortButtonClassname?.color ?? '#FFF'}
+                        >
+                          <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/>
                         </svg>
                       </div>
                     </div>
                   </div>
                 </div>
-              </th>
-            ))}
+              </th>)
+            )}
           </tr>
         </thead>
         <tbody className='pb-2.5 overflow-y-auto border-b-[#878787]'>

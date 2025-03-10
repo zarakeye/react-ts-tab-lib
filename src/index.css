@@ -1,1 +1,11 @@
 @import 'tailwindcss';
+
+.first-column {
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+}
+
+.last-column {
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
