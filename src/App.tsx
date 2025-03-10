@@ -792,9 +792,9 @@ function App() {
         emptyTableText: 'Aucun employé',
         custtomizeSampleInfoTextContent: (sampleBegin, sampleEnd, sampleLength) => {
           if (sampleLength > sampleEnd) {
-            return `Affichage des employés ${sampleBegin} à ${sampleEnd} sur ${sampleLength}`
+            return <span>Affichage des employés <span className='font-bold'>{sampleBegin}</span> à <span className='font-bold'>{sampleEnd}</span> sur <span className='font-bold'>{sampleLength}</span></span>
           } else {
-            return sampleLength > 1 ? `Affichage des employés ${sampleBegin} à ${sampleEnd}`:''
+            return sampleLength > 1 ? <span>Affichage des employés <span className='font-bold'>'${sampleBegin}</span> à <span className='font-bold'>'${sampleEnd}</span></span>:''
           }
         },
         previousPageButtonLabel: 'Page précédente',

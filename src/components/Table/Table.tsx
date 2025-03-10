@@ -1,7 +1,9 @@
+import { Button } from '@heroui/button';
+import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@heroui/dropdown";
+import type { Selection } from '@heroui/react';
+import * as React from 'react';
 import { type ChangeEvent, JSX, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import '../../index.css';
-import { Select } from 'antd';
-import * as React from 'react';
 
 export type DataType = 'string' | 'number' | 'date' | 'boolean' | 'custom';
 export type OrderType = 'asc' | 'desc';
@@ -14,7 +16,7 @@ export type TextContentType = {
   sampleLabelPrefix?: string | null;
   sampleLabelSuffix?: string | null;
   emptyTableText?: string | null;
-  custtomizeSampleInfoTextContent?: (sampleBegin: number, sampleEnd: number, allRows: number) => string | null;
+  custtomizeSampleInfoTextContent?: (sampleBegin: number, sampleEnd: number, allRows: number) => ReactNode | null;
   previousPageButtonLabel?: string | null;
   nextPageButtonLabel?: string | null;
 }
@@ -35,15 +37,10 @@ export type TableProps<T> = {
   componentGlobalClassname?: string;
   sampleLengthOptionClassname?: string;
   sampleOptionsClassname?: string;
-  customSelect?: string;
   searchLabelClassname?: string;
   searchInputClassname?: string;
   tableClassname?: string;
   globalColumnsClassname?: string;
-  sortButtonClassname?: {
-    style: string;
-    color: string;
-  };
   activeSortButtonClassname?: {
     style: string;
     color: string;
@@ -60,10 +57,6 @@ export type TableProps<T> = {
   textContent?: TextContentType | null;
 }
 
-type ColumnsWitdthType<T> = {
-  [K in keyof T]: number
-}
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function Table <T extends Record<string, any>>({
   columns = [],
@@ -72,13 +65,11 @@ function Table <T extends Record<string, any>>({
   onRowClick,
   componentGlobalClassname,
   sampleOptionsClassname,
-  customSelect,
   searchLabelClassname,
   searchInputClassname,
   sampleInfoClassname,
   tableClassname,
   globalColumnsClassname,
-  sortButtonClassname,
   activeSortButtonClassname,
   rowsClassname = '',
   currentPagePaginationButtonClassname,
@@ -102,14 +93,12 @@ function Table <T extends Record<string, any>>({
   const [columnsWidth, setColumnsWidth] = useState<number[]>([]);
   const [hoveredRow, setHoveredRow] = useState<T | null>(null);
   console.log(hoveredRow);
-
-  const ascFilteringButtonRef = useRef<HTMLDivElement>(null);
-  const descFilteringButtonRef = useRef<HTMLDivElement>(null);
+  const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([10]));
 
   const columnHeaderRef = useRef<HTMLTableCellElement>(null);
   const columnNameRef = useRef<HTMLDivElement>(null);
   const rowRef = useRef<HTMLTableRowElement>(null);
-
+  
   useEffect(() => {
     const valuesOfFilteredProperty = allRows.map((row) => row[activeOrder.property]);
     const order = activeOrder.order;
@@ -303,18 +292,45 @@ function Table <T extends Record<string, any>>({
     }
   }, [columns]);
 
+  const selectedValue = useMemo(
+    () => Array.from(selectedKeys).join(', ').replace(/_/g, ''),
+    [selectedKeys]
+  )
+
   return (
     <div className={`my-5 ${componentGlobalClassname ?? ''}`}>
       <div className='flex flex-col lg:flex-row items-center justify-between my-5 gap-y-3.5'>
         <div>
           <label htmlFor="sampleLength" className='sr-only'>Displayed entries</label>
-          <Select
-            id="sampleLength"
-            defaultValue={`${textContent?.sampleLabelPrefix ?? 'Show'} ${numberOfDisplayedRows[0]} ${textContent?.sampleLabelSuffix ?? 'entries'}`}
-            className={customSelect}
-            onChange={handleDisplayedEntriesChange}
-            options={sampleLengthOptions}
-          />
+          <Dropdown>
+            <DropdownTrigger>
+              <Button
+                variant='bordered'
+                className='border-4 border-gray-300 rounded-[20px] text-center text-white bg-gray-800 hover:bg-gray-700 px-[10px]'
+              >
+                {`${textContent?.sampleLabelPrefix ?? 'Show'} ${selectedValue} ${textContent?.sampleLabelSuffix ?? 'entries'}`}
+              </Button>
+            </DropdownTrigger>
+            <DropdownMenu
+              disallowEmptySelection
+              aria-labelledby="Sample Length"
+              selectedKeys={selectedKeys}
+              selectionMode='single'
+              variant='flat'
+              onSelectionChange={e => {
+                if (!e.currentKey) return
+                setSelectedKeys(new Set([e.currentKey]))
+                handleDisplayedEntriesChange(e.currentKey)
+              }}
+              className='border-4 border-gray-300 rounded-[20px] p-[10px] text-white bg-gray-800 hover:bg-gray-600'
+            >
+              {sampleLengthOptions.map(option => (
+                <DropdownItem key={option.value}>
+                  {`${textContent?.sampleLabelPrefix ?? 'Show'} ${option.value} ${textContent?.sampleLabelSuffix ?? 'entries'}`}
+                </DropdownItem>
+              ))}
+            </DropdownMenu>
+          </Dropdown>
         </div>
 
         <div>
@@ -322,108 +338,110 @@ function Table <T extends Record<string, any>>({
             {textContent?.searchLabel ?? 'Search'}
           </label>
 
-          <input type="text" name="search" id="search" className={searchInputClassname ?? 'ml-1.5 border-1 border-black rounded-[5px]'} onChange={(e) => handleSearch(e)}/>
+          <input type="text" name="search" id="search" className={searchInputClassname ?? 'ml-1.5 py-[5px] px-[10px] border-3 border-gray-300 hover:border-gray-400 rounded-[20px] focus:outline-sky-400'} onChange={(e) => handleSearch(e)}/>
         </div>
       </div>
       
-      <table className={`w-full ${tableClassname ?? ''}`} role='table'>
-        <thead>
-          <tr role='row' className="">
-            {columns.map((key, index) => (
-              <th 
-                key={index}
-                role='columnheader'
-                // className={`${key.specificColumnClassname ?? ''} ${globalColumnsClassname ? globalColumnsClassname : 'pl-[18px] pr-[5px] py-[10px] border-b-2 border-b-gray bg-gray/0 hover:bg-gray/40 '}`}
-                className="sticky top-0 z-10"
-                ref={columnHeaderRef}
-              >
-                <div
-                  className={`flex justify-between items-center gap-2.5 bg-blue-500 ${columnsWidth[index] ? `w-[${columnsWidth[index]}px]` : ''} ${index === 0 ? 'rounded-tl-[20px] rounded-bl-[20px]' : ''} ${index === columns.length - 1 ? 'rounded-tr-[20px] rounded-br-[20px]' : ''}`}
-                  onClick={e => handleOrder(e, key.property)}
+      <div className='border-4 border-gray-300 rounded-[23px] p-[5px]'>
+        <table className={`w-full ${tableClassname ?? ''}`} role='table'>
+          <thead>
+            <tr role='row' className="">
+              {columns.map((key, index) => (
+                <th 
+                  key={index}
+                  role='columnheader'
+                  // className={`${key.specificColumnClassname ?? ''} ${globalColumnsClassname ? globalColumnsClassname : 'pl-[18px] pr-[5px] py-[10px] border-b-2 border-b-gray bg-gray/0 hover:bg-gray/40 '}`}
+                  className="sticky top-0 z-10"
+                  ref={columnHeaderRef}
                 >
-                  <div className={`flex items-center w-[100%] ${key.specificColumnClassname ?? ''} ${globalColumnsClassname ? globalColumnsClassname : 'pl-[18px] pr-[5px] py-[10px] border-b-2 border-b-[#878787]'}  ${globalColumnsClassname ? '' : 'bg-gray/0 hover:bg-[#878787]'}`}>
-                    <div className='flex-1 text-center overflow-hidden mr-[5px]'>
-                      <p
-                        ref={columnNameRef}
-                        className='whitespace-nowrap cursor-pointer'
-                      >
-                        {key.displayName ? key.displayName : String(key.property)}
-                      </p>
-                    </div>
-                    <div>
-                      <div
-                        className={`flex items-center justify-center w-[12px] h-[12px] m-[5px]`}
-                      >
-                        <svg
-                          className={`${!(activeOrder?.property === key.property)? 'hidden' : ''} ${activeOrder?.property === key.property && activeOrder?.order !== 'asc' ? 'rotate-90' : '-rotate-90'}`}
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 320 512"
-                          fill={activeSortButtonClassname?.color ?? '#FFF'}
+                  <div
+                    className={`flex justify-between items-center gap-2.5 py-[5px] text-white bg-gray-800 hover:bg-gray-700 border-t-4 border-b-4 border-gray-300  ${columnsWidth[index] ? `w-[${columnsWidth[index]}px]` : ''} ${index === 0 ? 'rounded-tl-[20px] rounded-bl-[20px] border-l-4' : ''} ${index === columns.length - 1 ? 'rounded-tr-[20px] rounded-br-[20px] border-r-4' : ''}`}
+                    onClick={e => handleOrder(e, key.property)}
+                  >
+                    <div className={`flex items-center justify-between w-[100%] ${key.specificColumnClassname ?? ''} ${globalColumnsClassname ? globalColumnsClassname : 'pl-[18px] pr-[5px] py-[10px] border-b-2 border-b-[#878787]'}  ${globalColumnsClassname ? '' : 'bg-gray/0 hover:bg-[#878787]'}`}>
+                      <div className='flex-1 text-center overflow-hidden mr-[5px]'>
+                        <p
+                          ref={columnNameRef}
+                          className='whitespace-nowrap cursor-pointer'
                         >
-                          <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/>
-                        </svg>
+                          {key.displayName ? key.displayName : String(key.property)}
+                        </p>
+                      </div>
+                      <div>
+                        <div
+                          className={`flex items-center justify-center w-[12px] h-[12px] m-[5px] mr-[10px]`}
+                        >
+                          <svg
+                            className={`${!(activeOrder?.property === key.property)? 'hidden' : ''} ${activeOrder?.property === key.property && activeOrder?.order !== 'asc' ? 'rotate-90' : '-rotate-90'}`}
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 320 512"
+                            fill={activeSortButtonClassname?.color ?? '#FFF'}
+                          >
+                            <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/>
+                          </svg>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </th>)
-            )}
-          </tr>
-        </thead>
-        <tbody className='pb-2.5 overflow-y-auto border-b-[#878787]'>
-          {displayedSample.length > 0
-            ? displayedSample.map((row: T, rowIndex: number): ReactNode => (
-              <tr
-                key={rowIndex}
-                ref={rowRef}
-                role='row'
-                onMouseEnter={() => {
-                  setHoveredRow(row);
-                  if (onRowHover) {
-                    onRowHover(row);
-                  }
-                }}
-                onMouseLeave={() => {
-                  setHoveredRow(null);
-                  if (onRowHover) {
-                    onRowHover(null);
-                  }
-                }}
-                onClick={() => {
-                  if (onRowClick) {
-                    onRowClick(row);
-                  }
-                }}
-                className={rowsClassname ?? ''}
-              >
-                {columns.map((column, colIndex) => (
-                  <td title={`id: ${row.id}`}
-                    key={colIndex}
-                    role='cell'
-                    className={cellClassname ?? 'px-[5px] whitespace-nowrap border-b-solid last:border-b-2 last:border-[#878787]'}
-                  >
-                    <div
-                      
+                </th>)
+              )}
+            </tr>
+          </thead>
+          <tbody className='pb-2.5 overflow-y-auto border-b-[#878787]'>
+            {displayedSample.length > 0
+              ? displayedSample.map((row: T, rowIndex: number): ReactNode => (
+                <tr
+                  key={rowIndex}
+                  ref={rowRef}
+                  role='row'
+                  onMouseEnter={() => {
+                    setHoveredRow(row);
+                    if (onRowHover) {
+                      onRowHover(row);
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    setHoveredRow(null);
+                    if (onRowHover) {
+                      onRowHover(null);
+                    }
+                  }}
+                  onClick={() => {
+                    if (onRowClick) {
+                      onRowClick(row);
+                    }
+                  }}
+                  className={rowsClassname ?? ''}
+                >
+                  {columns.map((column, colIndex) => (
+                    <td title={`id: ${row.id}`}
+                      key={colIndex}
+                      role='cell'
+                      className={cellClassname ?? 'px-[5px] whitespace-nowrap border-b-solid last:border-b-2 last:border-[#878787]'}
                     >
-                      {columns[colIndex].renderer ? columns[colIndex].renderer(row[column.property]) : row[column.property] as ReactNode}
-                    </div>
+                      <div
+                        
+                      >
+                        {columns[colIndex].renderer ? columns[colIndex].renderer(row[column.property]) : row[column.property] as ReactNode}
+                      </div>
+                    </td>
+                  ))}
+                </tr>
+                ))
+              : (
+                <tr
+                  role='row'
+                  className={rowsClassname ?? 'border-b-gray'}
+                  ref={rowRef}
+                >
+                  <td colSpan={columns.length} className='text-center truncate py-[10px]'>
+                    No data available in table
                   </td>
-                ))}
-              </tr>
-              ))
-            : (
-              <tr
-                role='row'
-                className={rowsClassname ?? 'border-b-gray'}
-                ref={rowRef}
-              >
-                <td colSpan={columns.length} className='text-center truncate py-[10px]'>
-                  No data available in table
-                </td>
-              </tr>
-            )}
-        </tbody>
-      </table>
+                </tr>
+              )}
+          </tbody>
+        </table>
+      </div>
 
       <div className={`flex flex-col lg:flex-row gap-y-3.5 justify-between items-center mt-5 ${sampleInfoClassname}`}>
         {sampleLength > 0 && (
@@ -432,7 +450,7 @@ function Table <T extends Record<string, any>>({
               textContent?.custtomizeSampleInfoTextContent && textContent?.custtomizeSampleInfoTextContent(sampleLength * (currentPage - 1) + 1, Math.min(sampleLength * currentPage, allRows.length), allRows.length)
               ? textContent?.custtomizeSampleInfoTextContent(sampleLength * (currentPage - 1) + 1, Math.min(sampleLength * currentPage, allRows.length), allRows.length)
               : allRows.length > Math.min(sampleLength * currentPage, allRows.length)
-              ? `Showing entries ${sampleLength * (currentPage - 1) + 1} to ${Math.min(sampleLength * currentPage, allRows.length)} of ${allRows.length} entries`
+              ? <span>Showing entries <span className='font-bold'>${sampleLength * (currentPage - 1) + 1}</span> to <span className='font-bold'>${Math.min(sampleLength * currentPage, allRows.length)}</span> of <span className='font-bold'>${allRows.length} entries</span></span>
               : allRows.length >1
               ? `Showing entries ${sampleLength * (currentPage - 1) + 1} to ${Math.min(sampleLength * currentPage, allRows.length)}`
               : ''
@@ -440,14 +458,17 @@ function Table <T extends Record<string, any>>({
           </p>
         )}
 
-        <div className='flex items-center gap-2'>
+        <div className='flex items-center border-2 border-gray-300 rounded-[20px] bg-gray-800'>
           {currentPage - 1 >= 1 && (
             <button
               onClick={() => setCurrentPage(currentPage - 1)}
-              className={`px-3 py-1 rounded border disabled:opacity-50 disabled:cursor-not-allowed ${paginationNavButtonsClassname}`}
+              className={`px-3 text-white hover:bg-gray-500 py-[9px] first:pl-[20px] first:rounded-l-[20px] disabled:opacity-50 disabled:cursor-not-allowed ${paginationNavButtonsClassname}`}
               aria-label='Previous page'
             >
-              {textContent?.previousPageButtonLabel ?? 'Previous'}
+              {/* {textContent?.previousPageButtonLabel ?? 'Previous'} */}
+              <svg className='rotate-180 h-[15px]' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill='#fff'>
+                <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/>
+              </svg>
             </button>
           )}
           
@@ -457,29 +478,34 @@ function Table <T extends Record<string, any>>({
               <button
                 key={index}
                 onClick={() => setCurrentPage(page)}
-                className={`px-3 py-1 rounded ${
+                className={`px-3 py-[5px] ${
                   page === currentPage
-                    ? currentPagePaginationButtonClassname ?? 'bg-blue-600 text-white '
-                    : pagesPaginationButtonsClassname ?? 'border hover:bg-gray-100'
+                    ? currentPagePaginationButtonClassname ?? 'bg-blue-500 text-white first:rounded-l-[20px] last:rounded-r-[20px]'
+                    : pagesPaginationButtonsClassname ?? 'text-white hover:bg-gray-500 first:rounded-l-[20px] last:rounded-r-[20px]'
                 }`}
                 aria-current={page === currentPage ? 'page' : undefined}
               >
                 {page}
               </button>
             ) : (
-              <span key={index} className='px-2'>
-                ...
-              </span>
+              <div className='flex items-start justify-start '>
+                <span key={index} className='px-2 pb-2 text-white align-top'>
+                  ...
+                </span>
+              </div>
             )
           )}
 
           {currentPage + 1 <= pagesNumber && (
             <button
               onClick={() => setCurrentPage(currentPage + 1)}
-              className={paginationNavButtonsClassname ?? 'px-3 py-1 rounded border disabled:opacity-50 disabled:cursor-not-allowed'}
+              className={paginationNavButtonsClassname ?? 'text-white hover:bg-gray-500 px-3 py-[9px]  last:pr-[20px] last:rounded-r-[20px] disabled:opacity-50 disabled:cursor-not-allowed'}
               aria-label='Next page'
             >
-              {textContent?.nextPageButtonLabel ?? 'Next'}
+              {/* {textContent?.nextPageButtonLabel ?? 'Next'} */}
+              <svg className='h-[15px]' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill='#fff'>
+                <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/>
+              </svg>
             </button>
           )}
           

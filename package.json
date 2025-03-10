@@ -96,5 +96,10 @@
     "tab-lib-react-tailwind-typescript",
     "tab-component-react-tailwind-typescript",
     "tab-lib-react-tailwind-typescript"
-  ]
+  ],
+  "dependencies": {
+    "@heroui/button": "^2.2.16",
+    "@heroui/dropdown": "^2.3.16",
+    "@heroui/react": "^2.7.5"
+  }
 }
