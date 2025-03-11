@@ -4,6 +4,7 @@ import type { Selection } from '@heroui/react';
 import * as React from 'react';
 import { type ChangeEvent, JSX, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import '../../index.css';
+import { S } from 'vitest/dist/chunks/config.BRtC-JeT';
 
 export type DataType = 'string' | 'number' | 'date' | 'boolean' | 'custom';
 export type OrderType = 'asc' | 'desc';
@@ -29,30 +30,74 @@ export type Column<T> = {
   specificColumnClassname?: string;
 }
 
+type TableHeadersClassNames = {
+  font?: string;
+  backgroundColor?: string;
+  backgroundColorHover?: string;
+  color?: string;
+  borders: string;
+  bordersHover?: string;
+  rounded?: string;
+  padding?: string;
+  margin?: string;
+}
+
+type SamplingOptionsClassNames = {
+  buttonBackgroundColor?: string;
+  buttonText?: string;
+  buttonBorders?: string;
+  buttonBordersHover?: string;
+  buttonRounded?: string;
+  buttonPadding?: string;
+  buttonMargin?: string;
+  menuBorders?: string;
+  menuRounded?: string;
+  menuPadding?: string;
+  menuMargin?: string;
+  menuText?: string;
+  menuBackgroundColor?: string;
+}
+
+type SearchBarClassNames = {
+  label: string;
+  input: string;
+}
+
+type PaginationClassNames = {
+  buttonBackgroundColor?: string;
+  borders?: string;
+  rounded?: string;
+  padding?: string;
+  margin?: string;
+  currentPageButton?: string;
+  otherpages?: string;
+  navButtons?: string;
+}
+
+type ClassNames = {
+  tableBackgroundColor?: string;
+  tableBackgroundColorHover?: string;
+  tableBorders?: string;
+  tableBordersHover?: string;
+  tablePaddings?: string;
+  tableMargin?: string;
+  tableRounded?: string;
+  tableHeaders?: TableHeadersClassNames,
+  samplingOptions?: SamplingOptionsClassNames
+  searchBar?: SearchBarClassNames
+  sortIndicatorColor?: string;
+  rows?: string;
+  cells?: string;
+  pagination?: PaginationClassNames
+}
+
 export type TableProps<T> = {
   columns: Column<T>[];
   rows: T[];
   onRowHover?: (row: T | null) => void;
   onRowClick?: (row: T | null) => void;
-  componentGlobalClassname?: string;
-  sampleLengthOptionClassname?: string;
-  sampleOptionsClassname?: string;
-  searchLabelClassname?: string;
-  searchInputClassname?: string;
-  tableClassname?: string;
-  globalColumnsClassname?: string;
-  activeSortButtonClassname?: {
-    style: string;
-    color: string;
-  };
-  rowsClassname?: string;
-  sampleInfoClassname?: string;
-  currentPagePaginationButtonClassname?: string;
-  pagesPaginationButtonsClassname?: string;
-  paginationNavButtonsClassname?: string;
-  cellClassname?: string;
-
-  numberOfDisplayedRows?: number[] | undefined;
+  classNames?: ClassNames;
+  defaultSamplingOptions?: number[] | undefined;
   defaultOrder?: ActiveOrderType<T> | null;
   textContent?: TextContentType | null;
 }
@@ -63,25 +108,13 @@ function Table <T extends Record<string, any>>({
   rows = [],
   onRowHover,
   onRowClick,
-  componentGlobalClassname,
-  sampleOptionsClassname,
-  searchLabelClassname,
-  searchInputClassname,
-  sampleInfoClassname,
-  tableClassname,
-  globalColumnsClassname,
-  activeSortButtonClassname,
-  rowsClassname = '',
-  currentPagePaginationButtonClassname,
-  pagesPaginationButtonsClassname,
-  paginationNavButtonsClassname,
-  cellClassname = '',
-  numberOfDisplayedRows = [10, 20, 50, 100],
+  classNames,
+  defaultSamplingOptions = [10, 20, 50, 100],
   defaultOrder,
-  textContent = null
+  textContent
 }: TableProps<T>): JSX.Element {
-  type DisplayedRows_Type = typeof numberOfDisplayedRows[number];
-  const [sampleLength, setSampleLength] = useState<DisplayedRows_Type>(numberOfDisplayedRows[0]);
+  type DisplayedRows_Type = typeof defaultSamplingOptions[number];
+  const [sampleLength, setSampleLength] = useState<DisplayedRows_Type>(defaultSamplingOptions[0]);
   const [allRows, setAllRows] = useState<T[]>(rows);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pagesNumber, setPagesNumber] = useState<number>(1);
@@ -278,8 +311,8 @@ function Table <T extends Record<string, any>>({
     [currentPage, pagesNumber]
   );
 
-  const sampleLengthOptions = numberOfDisplayedRows.map((option) => (
-    { value: option, label: <span className={sampleOptionsClassname}> {`${textContent?.sampleLabelPrefix ?? 'Show '} ${option} ${textContent?.sampleLabelSuffix ?? ' entries'}`} </span> }
+  const sampleLengthOptions = defaultSamplingOptions.map((option) => (
+    { value: option, label: <span className={`${classNames?.samplingOptions?.menuText ?? 'text-white'} ${classNames?.samplingOptions?.menuBackgroundColor ?? 'bg-gray-800 hover:bg-gray-700'}`}>{`${textContent?.sampleLabelPrefix ?? 'Show '} ${option} ${textContent?.sampleLabelSuffix ?? ' entries'}`} </span> }
   ))
 
   // const columnsWidth: ColumnsWitdthType<T>[] = [];
@@ -298,7 +331,7 @@ function Table <T extends Record<string, any>>({
   )
 
   return (
-    <div className={`my-5 ${componentGlobalClassname ?? ''}`}>
+    <div className={`my-5 `}>
       <div className='flex flex-col lg:flex-row items-center justify-between my-5 gap-y-3.5'>
         <div>
           <label htmlFor="sampleLength" className='sr-only'>Displayed entries</label>
@@ -306,7 +339,7 @@ function Table <T extends Record<string, any>>({
             <DropdownTrigger>
               <Button
                 variant='bordered'
-                className='border-4 border-gray-300 rounded-[20px] text-center text-white bg-gray-800 hover:bg-gray-700 px-[10px]'
+                className={`${classNames?.samplingOptions?.buttonBorders ?? 'border-4 border-gray-300'} ${classNames?.samplingOptions?.buttonRounded ?? 'rounded-[20px]'} ${classNames?.samplingOptions?.buttonText ?? 'text-center text-white'} ${classNames?.samplingOptions?.buttonBackgroundColor ?? 'bg-gray-800 hover:bg-gray-700'} ${classNames?.samplingOptions?.buttonPadding ?? 'px-[10px]'}`}
               >
                 {`${textContent?.sampleLabelPrefix ?? 'Show'} ${selectedValue} ${textContent?.sampleLabelSuffix ?? 'entries'}`}
               </Button>
@@ -334,16 +367,16 @@ function Table <T extends Record<string, any>>({
         </div>
 
         <div>
-          <label htmlFor="search" className={searchLabelClassname ?? 'mr-2.5'}>
+          <label htmlFor="search" className={classNames?.searchBar?.label ?? 'mr-2.5'}>
             {textContent?.searchLabel ?? 'Search'}
           </label>
 
-          <input type="text" name="search" id="search" className={searchInputClassname ?? 'ml-1.5 py-[5px] px-[10px] border-3 border-gray-300 hover:border-gray-400 rounded-[20px] focus:outline-sky-400'} onChange={(e) => handleSearch(e)}/>
+          <input type="text" name="search" id="search" className={classNames?.searchBar?.input ?? 'ml-1.5 py-[5px] px-[10px] border-3 border-gray-300 hover:border-gray-400 rounded-[20px] focus:outline-sky-400'} onChange={(e) => handleSearch(e)}/>
         </div>
       </div>
       
-      <div className='border-4 border-gray-300 rounded-[23px] p-[5px]'>
-        <table className={`w-full ${tableClassname ?? ''}`} role='table'>
+      <div className={`${classNames?.tableBorders ?? 'border-4 border-gray-300'} ${classNames?.tableBordersHover ?? ''} ${classNames?.tableRounded ?? 'rounded-[23px]'} ${ classNames?.tablePaddings ?? 'p-[5px]'}  ${ classNames?.tableMargin ?? ''} ${classNames?.tableBackgroundColor ?? ''}`}>
+        <table className={`w-full`} role='table'>
           <thead>
             <tr role='row' className="">
               {columns.map((key, index) => (
@@ -358,7 +391,7 @@ function Table <T extends Record<string, any>>({
                     className={`flex justify-between items-center gap-2.5 py-[5px] text-white bg-gray-800 hover:bg-gray-700 border-t-4 border-b-4 border-gray-300  ${columnsWidth[index] ? `w-[${columnsWidth[index]}px]` : ''} ${index === 0 ? 'rounded-tl-[20px] rounded-bl-[20px] border-l-4' : ''} ${index === columns.length - 1 ? 'rounded-tr-[20px] rounded-br-[20px] border-r-4' : ''}`}
                     onClick={e => handleOrder(e, key.property)}
                   >
-                    <div className={`flex items-center justify-between w-[100%] ${key.specificColumnClassname ?? ''} ${globalColumnsClassname ? globalColumnsClassname : 'pl-[18px] pr-[5px] py-[10px] border-b-2 border-b-[#878787]'}  ${globalColumnsClassname ? '' : 'bg-gray/0 hover:bg-[#878787]'}`}>
+                    <div className={`flex items-center justify-between w-[100%] pl-[18px] pr-[5px] py-[10px]`}>
                       <div className='flex-1 text-center overflow-hidden mr-[5px]'>
                         <p
                           ref={columnNameRef}
@@ -375,7 +408,7 @@ function Table <T extends Record<string, any>>({
                             className={`${!(activeOrder?.property === key.property)? 'hidden' : ''} ${activeOrder?.property === key.property && activeOrder?.order !== 'asc' ? 'rotate-90' : '-rotate-90'}`}
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 320 512"
-                            fill={activeSortButtonClassname?.color ?? '#FFF'}
+                            fill={classNames?.sortIndicatorColor ?? '#FFF'}
                           >
                             <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/>
                           </svg>
@@ -411,13 +444,13 @@ function Table <T extends Record<string, any>>({
                       onRowClick(row);
                     }
                   }}
-                  className={rowsClassname ?? ''}
+                  className={classNames?.rows ?? ''}
                 >
                   {columns.map((column, colIndex) => (
                     <td title={`id: ${row.id}`}
                       key={colIndex}
                       role='cell'
-                      className={cellClassname ?? 'px-[5px] whitespace-nowrap border-b-solid last:border-b-2 last:border-[#878787]'}
+                      className={classNames?.cells ?? 'px-[5px] whitespace-nowrap border-b-solid last:border-b-2 last:border-[#878787]'}
                     >
                       <div
                         
@@ -431,7 +464,7 @@ function Table <T extends Record<string, any>>({
               : (
                 <tr
                   role='row'
-                  className={rowsClassname ?? 'border-b-gray'}
+                  className={classNames?.rows ?? 'border-b-gray'}
                   ref={rowRef}
                 >
                   <td colSpan={columns.length} className='text-center truncate py-[10px]'>
@@ -443,7 +476,7 @@ function Table <T extends Record<string, any>>({
         </table>
       </div>
 
-      <div className={`flex flex-col lg:flex-row gap-y-3.5 justify-between items-center mt-5 ${sampleInfoClassname}`}>
+      <div className={`flex flex-col lg:flex-row gap-y-3.5 justify-between items-center mt-5`}>
         {sampleLength > 0 && (
           <p className='inline-block'>
             {
@@ -462,7 +495,7 @@ function Table <T extends Record<string, any>>({
           {currentPage - 1 >= 1 && (
             <button
               onClick={() => setCurrentPage(currentPage - 1)}
-              className={`px-3 text-white hover:bg-gray-500 py-[9px] first:pl-[20px] first:rounded-l-[20px] disabled:opacity-50 disabled:cursor-not-allowed ${paginationNavButtonsClassname}`}
+              className={`px-3 text-white hover:bg-gray-500 py-[9px] first:pl-[20px] first:rounded-l-[20px] disabled:opacity-50 disabled:cursor-not-allowed ${classNames?.pagination?.navButtons ?? ''}`}
               aria-label='Previous page'
             >
               {/* {textContent?.previousPageButtonLabel ?? 'Previous'} */}
@@ -480,8 +513,8 @@ function Table <T extends Record<string, any>>({
                 onClick={() => setCurrentPage(page)}
                 className={`px-3 py-[5px] ${
                   page === currentPage
-                    ? currentPagePaginationButtonClassname ?? 'bg-blue-500 text-white first:rounded-l-[20px] last:rounded-r-[20px]'
-                    : pagesPaginationButtonsClassname ?? 'text-white hover:bg-gray-500 first:rounded-l-[20px] last:rounded-r-[20px]'
+                    ? classNames?.pagination?.currentPageButton ?? 'bg-blue-500 text-white first:rounded-l-[20px] last:rounded-r-[20px]'
+                    : classNames?.pagination?.otherpages ?? 'text-white hover:bg-gray-500 first:rounded-l-[20px] last:rounded-r-[20px]'
                 }`}
                 aria-current={page === currentPage ? 'page' : undefined}
               >
@@ -499,7 +532,7 @@ function Table <T extends Record<string, any>>({
           {currentPage + 1 <= pagesNumber && (
             <button
               onClick={() => setCurrentPage(currentPage + 1)}
-              className={paginationNavButtonsClassname ?? 'text-white hover:bg-gray-500 px-3 py-[9px]  last:pr-[20px] last:rounded-r-[20px] disabled:opacity-50 disabled:cursor-not-allowed'}
+              className={classNames?.pagination?.navButtons ?? 'text-white hover:bg-gray-500 px-3 py-[9px]  last:pr-[20px] last:rounded-r-[20px] disabled:opacity-50 disabled:cursor-not-allowed'}
               aria-label='Next page'
             >
               {/* {textContent?.nextPageButtonLabel ?? 'Next'} */}
