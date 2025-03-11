@@ -4,7 +4,6 @@ import type { Selection } from '@heroui/react';
 import * as React from 'react';
 import { type ChangeEvent, JSX, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import '../../index.css';
-import { S } from 'vitest/dist/chunks/config.BRtC-JeT';
 
 export type DataType = 'string' | 'number' | 'date' | 'boolean' | 'custom';
 export type OrderType = 'asc' | 'desc';
@@ -30,23 +29,24 @@ export type Column<T> = {
   specificColumnClassname?: string;
 }
 
-type TableHeadersClassNames = {
+export type TableHeadersClassNames = {
   font?: string;
   backgroundColor?: string;
-  backgroundColorHover?: string;
   color?: string;
-  borders: string;
+  borders?: string;
+  borderLeft?: string;
+  borderRight?: string;
   bordersHover?: string;
-  rounded?: string;
+  roundedLeft?: string;
+  roundedRight?: string;
   padding?: string;
   margin?: string;
 }
 
-type SamplingOptionsClassNames = {
+export type SamplingOptionsClassNames = {
   buttonBackgroundColor?: string;
   buttonText?: string;
   buttonBorders?: string;
-  buttonBordersHover?: string;
   buttonRounded?: string;
   buttonPadding?: string;
   buttonMargin?: string;
@@ -58,12 +58,12 @@ type SamplingOptionsClassNames = {
   menuBackgroundColor?: string;
 }
 
-type SearchBarClassNames = {
+export type SearchBarClassNames = {
   label: string;
   input: string;
 }
 
-type PaginationClassNames = {
+export type PaginationClassNames = {
   buttonBackgroundColor?: string;
   borders?: string;
   rounded?: string;
@@ -74,7 +74,7 @@ type PaginationClassNames = {
   navButtons?: string;
 }
 
-type ClassNames = {
+export type ClassNames = {
   tableBackgroundColor?: string;
   tableBackgroundColorHover?: string;
   tableBorders?: string;
@@ -378,21 +378,22 @@ function Table <T extends Record<string, any>>({
       <div className={`${classNames?.tableBorders ?? 'border-4 border-gray-300'} ${classNames?.tableBordersHover ?? ''} ${classNames?.tableRounded ?? 'rounded-[23px]'} ${ classNames?.tablePaddings ?? 'p-[5px]'}  ${ classNames?.tableMargin ?? ''} ${classNames?.tableBackgroundColor ?? ''}`}>
         <table className={`w-full`} role='table'>
           <thead>
-            <tr role='row' className="">
+            <tr role='row' className={`sticky top-0 z-10`}>
               {columns.map((key, index) => (
                 <th 
                   key={index}
                   role='columnheader'
                   // className={`${key.specificColumnClassname ?? ''} ${globalColumnsClassname ? globalColumnsClassname : 'pl-[18px] pr-[5px] py-[10px] border-b-2 border-b-gray bg-gray/0 hover:bg-gray/40 '}`}
-                  className="sticky top-0 z-10"
+                  className=""
                   ref={columnHeaderRef}
                 >
                   <div
-                    className={`flex justify-between items-center gap-2.5 py-[5px] text-white bg-gray-800 hover:bg-gray-700 border-t-4 border-b-4 border-gray-300  ${columnsWidth[index] ? `w-[${columnsWidth[index]}px]` : ''} ${index === 0 ? 'rounded-tl-[20px] rounded-bl-[20px] border-l-4' : ''} ${index === columns.length - 1 ? 'rounded-tr-[20px] rounded-br-[20px] border-r-4' : ''}`}
+                    key={index}
+                    className={`flex justify-between items-center gap-2.5 py-[5px] text-white ${classNames?.tableHeaders?.backgroundColor ?? 'bg-gray-800 hover:bg-gray-700'} ${classNames?.tableHeaders?.borders ?? `border-t-4 border-b-4 border-gray-300`}  ${columnsWidth[index] ? `w-[${columnsWidth[index]}px]` : ''} ${index === 0 ? (classNames?.tableHeaders?.borderLeft ?? 'border-l-4') : ''} ${index === 0 ? classNames?.tableHeaders?.roundedLeft ?? 'rounded-tl-[20px] rounded-bl-[20px]': ''} ${index === columns.length - 1 ? classNames?.tableHeaders?.borderRight ?? 'border-r-4' : ''} ${index === columns.length - 1 ? classNames?.tableHeaders?.roundedRight ?? 'rounded-tr-[20px] rounded-br-[20px]' : ''}`}
                     onClick={e => handleOrder(e, key.property)}
                   >
-                    <div className={`flex items-center justify-between w-[100%] pl-[18px] pr-[5px] py-[10px]`}>
-                      <div className='flex-1 text-center overflow-hidden mr-[5px]'>
+                    <div className={`flex items-center justify-between w-[100%] pl-[18px] pr-[5px]`}>
+                      <div className='flex-1 text-center overflow-hidden mr-[10px]'>
                         <p
                           ref={columnNameRef}
                           className='whitespace-nowrap cursor-pointer'
@@ -464,7 +465,7 @@ function Table <T extends Record<string, any>>({
               : (
                 <tr
                   role='row'
-                  className={classNames?.rows ?? 'border-b-gray'}
+                  className={classNames?.rows ?? ''}
                   ref={rowRef}
                 >
                   <td colSpan={columns.length} className='text-center truncate py-[10px]'>
@@ -476,7 +477,7 @@ function Table <T extends Record<string, any>>({
         </table>
       </div>
 
-      <div className={`flex flex-col lg:flex-row gap-y-3.5 justify-between items-center mt-5`}>
+      <div hidden={allRows.length === 0} className={`flex flex-col lg:flex-row gap-y-3.5 justify-between items-center mt-5`}>
         {sampleLength > 0 && (
           <p className='inline-block'>
             {
@@ -549,4 +550,3 @@ function Table <T extends Record<string, any>>({
 }
 
 export default Table;
-
