@@ -402,7 +402,7 @@ function Table <T extends Record<string, any>>({
                       </div>
                       <div>
                         <div
-                          className={`flex items-center justify-center w-[12px] h-[12px] m-[5px] mr-[10px]`}
+                          className={`flex items-center justify-center w-[12px] h-[12px] mr-[10px]`}
                         >
                           <svg
                             className={`${!(activeOrder?.property === key.property)? 'hidden' : ''} ${activeOrder?.property === key.property && activeOrder?.order !== 'asc' ? 'rotate-90' : '-rotate-90'}`}
@@ -420,7 +420,7 @@ function Table <T extends Record<string, any>>({
               )}
             </tr>
           </thead>
-          <tbody className='pb-2.5 overflow-y-auto border-b-[#878787]'>
+          <tbody className='pb-2.5 overflow-y-auto '>
             {displayedSample.length > 0
               ? displayedSample.map((row: T, rowIndex: number): ReactNode => (
                 <tr
@@ -450,7 +450,7 @@ function Table <T extends Record<string, any>>({
                     <td title={`id: ${row.id}`}
                       key={colIndex}
                       role='cell'
-                      className={classNames?.cells ?? 'px-[5px] whitespace-nowrap border-b-solid last:border-b-2 last:border-[#878787]'}
+                      className={classNames?.cells ?? 'px-[5px] whitespace-nowrap '}
                     >
                       <div
                         
