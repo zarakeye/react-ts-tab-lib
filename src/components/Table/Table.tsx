@@ -13,6 +13,7 @@ export type ActiveOrderType<T> = {
 }
 export type TextContentType = {
   searchLabel?: string | null;
+  searchPlaceholder?: string | null;
   sampleLabelPrefix?: string | null;
   sampleLabelSuffix?: string | null;
   emptyTableText?: string | null;
@@ -59,8 +60,8 @@ export type SamplingOptionsClassNames = {
 }
 
 export type SearchBarClassNames = {
-  label: string;
-  input: string;
+  label?: string;
+  input?: string;
 }
 
 export type PaginationClassNames = {
@@ -72,6 +73,17 @@ export type PaginationClassNames = {
   currentPageButton?: string;
   otherpages?: string;
   navButtons?: string;
+}
+
+export type RowsClassNames = {
+  oddRowBackgroundColor?: string;
+  evenRowBackgroundColor?: string;
+  roundedLeft?: string;
+  roundedRight?: string;
+  marginLeft?: string;
+  marginRight?: string;
+  height?: string;
+  borders?: string;
 }
 
 export type ClassNames = {
@@ -86,7 +98,7 @@ export type ClassNames = {
   samplingOptions?: SamplingOptionsClassNames
   searchBar?: SearchBarClassNames
   sortIndicatorColor?: string;
-  rows?: string;
+  rows?: RowsClassNames;
   cells?: string;
   pagination?: PaginationClassNames
 }
@@ -339,7 +351,13 @@ function Table <T extends Record<string, any>>({
             <DropdownTrigger>
               <Button
                 variant='bordered'
-                className={`${classNames?.samplingOptions?.buttonBorders ?? 'border-4 border-gray-300'} ${classNames?.samplingOptions?.buttonRounded ?? 'rounded-[20px]'} ${classNames?.samplingOptions?.buttonText ?? 'text-center text-white'} ${classNames?.samplingOptions?.buttonBackgroundColor ?? 'bg-gray-800 hover:bg-gray-700'} ${classNames?.samplingOptions?.buttonPadding ?? 'px-[10px]'}`}
+                className={`
+                  ${classNames?.samplingOptions?.buttonBorders ?? 'border-4 border-gray-300'}
+                  ${classNames?.samplingOptions?.buttonRounded ?? 'rounded-[20px]'}
+                  ${classNames?.samplingOptions?.buttonText ?? 'text-center text-white'} 
+                  ${classNames?.samplingOptions?.buttonBackgroundColor ?? 'bg-gray-800 hover:bg-gray-700'} 
+                  ${classNames?.samplingOptions?.buttonPadding ?? 'px-[10px]'}`
+                }
               >
                 {`${textContent?.sampleLabelPrefix ?? 'Show'} ${selectedValue} ${textContent?.sampleLabelSuffix ?? 'entries'}`}
               </Button>
@@ -367,20 +385,37 @@ function Table <T extends Record<string, any>>({
         </div>
 
         <div>
-          <label htmlFor="search" className={classNames?.searchBar?.label ?? 'mr-2.5'}>
+          <label
+            htmlFor="search"
+            className={classNames?.searchBar?.label ?? 'mr-2.5'}
+          >
             {textContent?.searchLabel ?? 'Search'}
           </label>
 
-          <input type="text" name="search" id="search" className={classNames?.searchBar?.input ?? 'ml-1.5 py-[5px] px-[10px] border-3 border-gray-300 hover:border-gray-400 rounded-[20px] focus:outline-sky-400'} onChange={(e) => handleSearch(e)}/>
+          <input
+            type="text"
+            name="search"
+            id="search"
+            placeholder={textContent?.searchPlaceholder ?? ''}
+            className={classNames?.searchBar?.input ?? 'ml-1.5 py-[5px] px-[10px] border-3 border-gray-300 hover:border-gray-400 rounded-[20px] focus:outline-sky-400'}
+            onChange={(e) => handleSearch(e)}
+          />
         </div>
       </div>
       
-      <div className={`${classNames?.tableBorders ?? 'border-4 border-gray-300'} ${classNames?.tableBordersHover ?? ''} ${classNames?.tableRounded ?? 'rounded-[23px]'} ${ classNames?.tablePaddings ?? 'p-[5px]'}  ${ classNames?.tableMargin ?? ''} ${classNames?.tableBackgroundColor ?? ''}`}>
+      <div
+        className={`
+          ${classNames?.tableBorders ?? 'border-4 border-gray-300'}
+          ${classNames?.tableBordersHover ?? ''} ${classNames?.tableRounded ?? 'rounded-[23px]'}
+          ${ classNames?.tablePaddings ?? 'px-[5px] pt-[5px] pb-[15px]'}  ${ classNames?.tableMargin ?? ''}
+          ${classNames?.tableBackgroundColor ?? ''}
+        `}
+      >
         <table className={`w-full`} role='table'>
           <thead>
             <tr role='row' className={`sticky top-0 z-10`}>
               {columns.map((key, index) => (
-                <th 
+                <th
                   key={index}
                   role='columnheader'
                   // className={`${key.specificColumnClassname ?? ''} ${globalColumnsClassname ? globalColumnsClassname : 'pl-[18px] pr-[5px] py-[10px] border-b-2 border-b-gray bg-gray/0 hover:bg-gray/40 '}`}
@@ -389,7 +424,16 @@ function Table <T extends Record<string, any>>({
                 >
                   <div
                     key={index}
-                    className={`flex justify-between items-center gap-2.5 py-[5px] text-white ${classNames?.tableHeaders?.backgroundColor ?? 'bg-gray-800 hover:bg-gray-700'} ${classNames?.tableHeaders?.borders ?? `border-t-4 border-b-4 border-gray-300`}  ${columnsWidth[index] ? `w-[${columnsWidth[index]}px]` : ''} ${index === 0 ? (classNames?.tableHeaders?.borderLeft ?? 'border-l-4') : ''} ${index === 0 ? classNames?.tableHeaders?.roundedLeft ?? 'rounded-tl-[20px] rounded-bl-[20px]': ''} ${index === columns.length - 1 ? classNames?.tableHeaders?.borderRight ?? 'border-r-4' : ''} ${index === columns.length - 1 ? classNames?.tableHeaders?.roundedRight ?? 'rounded-tr-[20px] rounded-br-[20px]' : ''}`}
+                    className={`
+                      flex justify-between items-center gap-2.5 py-[5px] text-white 
+                      ${classNames?.tableHeaders?.backgroundColor ?? 'bg-gray-800 hover:bg-gray-700'} 
+                      ${classNames?.tableHeaders?.borders ?? `border-t-4 border-b-4 border-gray-300`}
+                      ${columnsWidth[index] ? `w-[${columnsWidth[index]}px]` : ''}
+                      ${index === 0 ? (classNames?.tableHeaders?.borderLeft ?? 'border-l-4') : ''}
+                      ${index === 0 ? classNames?.tableHeaders?.roundedLeft ?? 'rounded-tl-[20px] rounded-bl-[20px]': ''}
+                      ${index === columns.length - 1 ? classNames?.tableHeaders?.borderRight ?? 'border-r-4' : ''}
+                      ${index === columns.length - 1 ? classNames?.tableHeaders?.roundedRight ?? 'rounded-tr-[20px] rounded-br-[20px]' : ''}
+                    `}
                     onClick={e => handleOrder(e, key.property)}
                   >
                     <div className={`flex items-center justify-between w-[100%] pl-[18px] pr-[5px]`}>
@@ -406,7 +450,10 @@ function Table <T extends Record<string, any>>({
                           className={`flex items-center justify-center w-[12px] h-[12px] mr-[10px]`}
                         >
                           <svg
-                            className={`${!(activeOrder?.property === key.property)? 'hidden' : ''} ${activeOrder?.property === key.property && activeOrder?.order !== 'asc' ? 'rotate-90' : '-rotate-90'}`}
+                            className={`
+                              ${!(activeOrder?.property === key.property)? 'hidden' : ''}
+                              ${activeOrder?.property === key.property && activeOrder?.order !== 'asc' ? 'rotate-90' : '-rotate-90'}
+                            `}
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 320 512"
                             fill={classNames?.sortIndicatorColor ?? '#FFF'}
@@ -421,13 +468,14 @@ function Table <T extends Record<string, any>>({
               )}
             </tr>
           </thead>
-          <tbody className='pb-2.5 overflow-y-auto '>
+          <tbody className='pb-[2.5] overflow-y-auto '>
             {displayedSample.length > 0
               ? displayedSample.map((row: T, rowIndex: number): ReactNode => (
                 <tr
                   key={rowIndex}
                   ref={rowRef}
                   role='row'
+                  data-row
                   onMouseEnter={() => {
                     setHoveredRow(row);
                     if (onRowHover) {
@@ -445,27 +493,51 @@ function Table <T extends Record<string, any>>({
                       onRowClick(row);
                     }
                   }}
-                  className={classNames?.rows ?? ''}
+                  className={`${classNames?.rows?.height ?? 'h-[30px]'}`}
+                 
                 >
-                  {columns.map((column, colIndex) => (
-                    <td title={`id: ${row.id}`}
-                      key={colIndex}
-                      role='cell'
-                      className={classNames?.cells ?? 'px-[5px] whitespace-nowrap '}
+                {columns.map((column, colIndex) => (
+                  <td title={`id: ${row.id}`}
+                    key={colIndex}
+                    role='cell'
+                    className={`
+                      ${classNames?.cells ?? 'whitespace-nowrap'} py-[2.5px]
+                      ${rowIndex === 0 ? 'pt-[10px]' : ''}
+                    `}
+                  >
+                    <div
+                      className={`
+                        flex justify-between items-center px-[10px] py-[5px] text-black h-full transition-colors duration-200 
+                        ${
+                          rowIndex % 2 === 0
+                            ? classNames?.rows?.oddRowBackgroundColor ?? 'bg-gray-500'
+                            : classNames?.rows?.evenRowBackgroundColor ?? 'bg-gray-600'
+                        }
+                        ${columnsWidth[colIndex] ? `w-[${columnsWidth[colIndex]}px]` : ''}
+                        ${colIndex === 0
+                          ? classNames?.rows?.marginLeft ?? 'ml-[15px]'
+                          : ''
+                        }
+                        ${colIndex === columns.length - 1
+                          ? classNames?.rows?.marginRight ?? 'mr-[15px]'
+                          : ''
+                        }
+                      `}
                     >
-                      <div
-                        
-                      >
-                        {columns[colIndex].renderer ? columns[colIndex].renderer(row[column.property]) : row[column.property] as ReactNode}
-                      </div>
-                    </td>
-                  ))}
+                      {
+                        columns[colIndex].renderer
+                          ? columns[colIndex].renderer(row[column.property])
+                          : row[column.property] as ReactNode
+                      }
+                    </div>
+                  </td>
+                ))}
                 </tr>
                 ))
               : (
                 <tr
                   role='row'
-                  className={classNames?.rows ?? ''}
+                  className={classNames?.rows?.oddRowBackgroundColor ?? ''}
                   ref={rowRef}
                 >
                   <td colSpan={columns.length} className='text-center truncate py-[10px]'>
@@ -477,26 +549,32 @@ function Table <T extends Record<string, any>>({
         </table>
       </div>
 
-      <div hidden={allRows.length === 0} className={`flex flex-col lg:flex-row gap-y-3.5 justify-between items-center mt-5`}>
-        {sampleLength > 0 && (
-          <p className='inline-block'>
-            {
-              textContent?.custtomizeSampleInfoTextContent && textContent?.custtomizeSampleInfoTextContent(sampleLength * (currentPage - 1) + 1, Math.min(sampleLength * currentPage, allRows.length), allRows.length)
-              ? textContent?.custtomizeSampleInfoTextContent(sampleLength * (currentPage - 1) + 1, Math.min(sampleLength * currentPage, allRows.length), allRows.length)
-              : allRows.length > Math.min(sampleLength * currentPage, allRows.length)
-              ? <span>Showing entries <span className='font-bold'>${sampleLength * (currentPage - 1) + 1}</span> to <span className='font-bold'>${Math.min(sampleLength * currentPage, allRows.length)}</span> of <span className='font-bold'>${allRows.length} entries</span></span>
-              : allRows.length >1
-              ? `Showing entries ${sampleLength * (currentPage - 1) + 1} to ${Math.min(sampleLength * currentPage, allRows.length)}`
-              : ''
-            }
-          </p>
-        )}
+      <div
+        hidden={pagesNumbers.length < 2}
+        className={`flex flex-col lg:flex-row gap-y-3.5 justify-between items-center mt-5`}
+      >
+        <p className='inline-block'>
+        {
+          textContent?.custtomizeSampleInfoTextContent && textContent?.custtomizeSampleInfoTextContent(sampleLength * (currentPage - 1) + 1, Math.min(sampleLength * currentPage, allRows.length), allRows.length)
+            ? textContent?.custtomizeSampleInfoTextContent(sampleLength * (currentPage - 1) + 1, Math.min(sampleLength * currentPage, allRows.length), allRows.length)
+            : allRows.length > Math.min(sampleLength * currentPage, allRows.length)
+            ? <span>Showing entries <span className='font-bold'>${sampleLength * (currentPage - 1) + 1}</span> to <span className='font-bold'>${Math.min(sampleLength * currentPage, allRows.length)}</span> of <span className='font-bold'>${allRows.length} entries</span></span>
+            : allRows.length >1
+            ? `Showing entries ${sampleLength * (currentPage - 1) + 1} to ${Math.min(sampleLength * currentPage, allRows.length)}`
+            : ''
+        }
+        </p>
 
-        <div className='flex items-center border-2 border-gray-300 rounded-[20px] bg-gray-800'>
+        <div
+          className='flex items-center border-2 border-gray-300 rounded-[20px] bg-gray-800'
+        >
           {currentPage - 1 >= 1 && (
             <button
               onClick={() => setCurrentPage(currentPage - 1)}
-              className={`px-3 text-white hover:bg-gray-500 py-[9px] first:pl-[20px] first:rounded-l-[20px] disabled:opacity-50 disabled:cursor-not-allowed ${classNames?.pagination?.navButtons ?? ''}`}
+              className={`
+                px-3 text-white hover:bg-gray-500 py-[9px] first:pl-[20px] first:rounded-l-[20px] disabled:opacity-50 disabled:cursor-not-allowed
+                ${classNames?.pagination?.navButtons ?? ''}
+              `}
               aria-label='Previous page'
             >
               {/* {textContent?.previousPageButtonLabel ?? 'Previous'} */}
@@ -504,8 +582,7 @@ function Table <T extends Record<string, any>>({
                 <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/>
               </svg>
             </button>
-          )}
-          
+          )}     
 
           {pagesNumbers.map((page, index) =>
             typeof page === 'number' ? (
@@ -542,7 +619,6 @@ function Table <T extends Record<string, any>>({
               </svg>
             </button>
           )}
-          
         </div>
       </div>
     </div>

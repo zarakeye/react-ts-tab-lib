@@ -30,62 +30,62 @@ function App() {
   ];
   
   const rows: RowData[] = [
-    // {
-    //   id: 1,
-    //   firstName: "John",
-    //   lastName: "Doe",
-    //   email: "john.doe@email.com",
-    //   phone: 1234567890,
-    // },
-    // {
-    //   id: 2,
-    //   firstName: "Jane",
-    //   lastName: "Smith",
-    //   email: "jane.smith@email.com",
-    //   phone: 9876543210
-    // },
-    // {
-    //   id: 3,
-    //   firstName: "Bob",
-    //   lastName: "Johnson",
-    //   email: "bob.johnson@email.com",
-    //   phone: 5555555555
-    // },
-    // {
-    //   id: 4,
-    //   firstName: "Alice",
-    //   lastName: "Williams",
-    //   email: "alice.williams@email.com",
-    //   phone: 1112223333
-    // },
-    // {
-    //   id: 5,
-    //   firstName: "Charlie",
-    //   lastName: "Brown",
-    //   email: "charlie.brown@email.com",
-    //   phone: 4445556666
-    // },
-    // {
-    //   id: 6,
-    //   firstName: "David",
-    //   lastName: "Lee",
-    //   email: "david.lee@email.com",
-    //   phone: 7778889999
-    // },
-    // {
-    //   id: 7,
-    //   firstName: "Eve",
-    //   lastName: "Garcia",
-    //   email: "eve.garcia@email.com",
-    //   phone: 2223334444
-    // },
-    // {
-    //   id: 8,
-    //   firstName: "Frank",
-    //   lastName: "Davis",
-    //   email: "frank.davis@email.com",
-    //   phone: 6667778888
-    // },
+    {
+      id: 1,
+      firstName: "John",
+      lastName: "Doe",
+      email: "john.doe@email.com",
+      phone: 1234567890,
+    },
+    {
+      id: 2,
+      firstName: "Jane",
+      lastName: "Smith",
+      email: "jane.smith@email.com",
+      phone: 9876543210
+    },
+    {
+      id: 3,
+      firstName: "Bob",
+      lastName: "Johnson",
+      email: "bob.johnson@email.com",
+      phone: 5555555555
+    },
+    {
+      id: 4,
+      firstName: "Alice",
+      lastName: "Williams",
+      email: "alice.williams@email.com",
+      phone: 1112223333
+    },
+    {
+      id: 5,
+      firstName: "Charlie",
+      lastName: "Brown",
+      email: "charlie.brown@email.com",
+      phone: 4445556666
+    },
+    {
+      id: 6,
+      firstName: "David",
+      lastName: "Lee",
+      email: "david.lee@email.com",
+      phone: 7778889999
+    },
+    {
+      id: 7,
+      firstName: "Eve",
+      lastName: "Garcia",
+      email: "eve.garcia@email.com",
+      phone: 2223334444
+    },
+    {
+      id: 8,
+      firstName: "Frank",
+      lastName: "Davis",
+      email: "frank.davis@email.com",
+      phone: 6667778888
+    },
     // {
     //   id: 9,
     //   firstName: "Grace",

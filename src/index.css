@@ -9,3 +9,7 @@
   border-top-right-radius: 20px;
   border-bottom-right-radius: 20px;
 }
+
+[data-row]:hover div {
+  background-color: #e8e8e8 !important;
+}
