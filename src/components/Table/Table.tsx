@@ -84,6 +84,7 @@ export type RowsClassNames = {
   marginRight?: string;
   height?: string;
   borders?: string;
+  textColor?: string;
 }
 
 export type ClassNames = {
@@ -507,7 +508,8 @@ function Table <T extends Record<string, any>>({
                   >
                     <div
                       className={`
-                        flex justify-between items-center px-[10px] py-[5px] text-black h-full transition-colors duration-200 
+                        flex justify-between items-center px-[10px] py-[5px] h-full transition-colors duration-200
+                        ${classNames?.rows?.textColor ?? ''}
                         ${
                           rowIndex % 2 === 0
                             ? classNames?.rows?.oddRowBackgroundColor ?? 'bg-gray-500'
