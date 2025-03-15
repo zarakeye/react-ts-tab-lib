@@ -1,5 +1,6 @@
 import { Button } from '@heroui/button';
 import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@heroui/dropdown";
+import { ChevronDownIcon } from '@heroicons/react/24/solid';
 import type { Selection } from '@heroui/react';
 import * as React from 'react';
 import { type ChangeEvent, JSX, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
@@ -34,12 +35,12 @@ export type TableHeadersClassNames = {
   font?: string;
   backgroundColor?: string;
   color?: string;
-  borders?: string;
-  borderLeft?: string;
-  borderRight?: string;
-  bordersHover?: string;
-  roundedLeft?: string;
-  roundedRight?: string;
+  borderY?: string;
+  borderColor?: string;
+  borderL?: string;
+  borderR?: string;
+  roundedL?: string;
+  roundedR?: string;
   padding?: string;
   margin?: string;
 }
@@ -47,7 +48,7 @@ export type TableHeadersClassNames = {
 export type SamplingOptionsClassNames = {
   buttonBackgroundColor?: string;
   buttonText?: string;
-  buttonBorders?: string;
+  buttonBorder?: string;
   buttonRounded?: string;
   buttonPadding?: string;
   buttonMargin?: string;
@@ -89,11 +90,10 @@ export type RowsClassNames = {
 
 export type ClassNames = {
   tableBackgroundColor?: string;
-  tableBackgroundColorHover?: string;
   tableBorders?: string;
   tableBordersHover?: string;
   tablePaddings?: string;
-  tableMargin?: string;
+  tableMargins?: string;
   tableRounded?: string;
   tableHeaders?: TableHeadersClassNames,
   samplingOptions?: SamplingOptionsClassNames
@@ -353,7 +353,7 @@ function Table <T extends Record<string, any>>({
               <Button
                 variant='bordered'
                 className={`
-                  ${classNames?.samplingOptions?.buttonBorders ?? 'border-4 border-gray-300'}
+                  ${classNames?.samplingOptions?.buttonBorder ?? 'border-4 border-gray-300'}
                   ${classNames?.samplingOptions?.buttonRounded ?? 'rounded-[20px]'}
                   ${classNames?.samplingOptions?.buttonText ?? 'text-center text-white'} 
                   ${classNames?.samplingOptions?.buttonBackgroundColor ?? 'bg-gray-800 hover:bg-gray-700'} 
@@ -361,6 +361,10 @@ function Table <T extends Record<string, any>>({
                 }
               >
                 {`${textContent?.sampleLabelPrefix ?? 'Show'} ${selectedValue} ${textContent?.sampleLabelSuffix ?? 'entries'}`}
+                <ChevronDownIcon 
+                  className="h-5 w-5 text-white ui-open:rotate-180 transition-transform"
+                  aria-hidden="true"
+                />
               </Button>
             </DropdownTrigger>
             <DropdownMenu
@@ -407,8 +411,9 @@ function Table <T extends Record<string, any>>({
       <div
         className={`
           ${classNames?.tableBorders ?? 'border-4 border-gray-300'}
-          ${classNames?.tableBordersHover ?? ''} ${classNames?.tableRounded ?? 'rounded-[23px]'}
-          ${ classNames?.tablePaddings ?? 'px-[5px] pt-[5px] pb-[15px]'}  ${ classNames?.tableMargin ?? ''}
+          ${classNames?.tableRounded ?? 'rounded-[23px]'}
+          ${ classNames?.tablePaddings ?? 'px-[5px] pt-[5px] pb-[15px]'}
+          ${ classNames?.tableMargins ?? ''}
           ${classNames?.tableBackgroundColor ?? ''}
         `}
       >
@@ -428,12 +433,13 @@ function Table <T extends Record<string, any>>({
                     className={`
                       flex justify-between items-center gap-2.5 py-[5px] text-white 
                       ${classNames?.tableHeaders?.backgroundColor ?? 'bg-gray-800 hover:bg-gray-700'} 
-                      ${classNames?.tableHeaders?.borders ?? `border-t-4 border-b-4 border-gray-300`}
+                      ${classNames?.tableHeaders?.borderY ?? `border-y-4`}
+                      ${classNames?.tableHeaders?.borderColor ?? `border-gray-300`}
                       ${columnsWidth[index] ? `w-[${columnsWidth[index]}px]` : ''}
-                      ${index === 0 ? (classNames?.tableHeaders?.borderLeft ?? 'border-l-4') : ''}
-                      ${index === 0 ? classNames?.tableHeaders?.roundedLeft ?? 'rounded-tl-[20px] rounded-bl-[20px]': ''}
-                      ${index === columns.length - 1 ? classNames?.tableHeaders?.borderRight ?? 'border-r-4' : ''}
-                      ${index === columns.length - 1 ? classNames?.tableHeaders?.roundedRight ?? 'rounded-tr-[20px] rounded-br-[20px]' : ''}
+                      ${index === 0 ? (classNames?.tableHeaders?.borderL ?? 'border-l-4') : ''}
+                      ${index === 0 ? classNames?.tableHeaders?.roundedL ?? 'rounded-tl-[20px] rounded-bl-[20px]': ''}
+                      ${index === columns.length - 1 ? classNames?.tableHeaders?.borderR ?? 'border-r-4' : ''}
+                      ${index === columns.length - 1 ? classNames?.tableHeaders?.roundedR ?? 'rounded-tr-[20px] rounded-br-[20px]' : ''}
                     `}
                     onClick={e => handleOrder(e, key.property)}
                   >

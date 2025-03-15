@@ -307,3 +307,43 @@ All optional properties are those that you will use to style the component and c
 - **numberOfDisplayedRows** : Array of numbers allowing to define your own sampling options.
 
 - **defaultOrder** : Object of type { property: keyof T; order: OrderType; }, keyof T corresponding to a key of type T (in our case, the User type), and order can take the values ​​'asc' or 'desc'. It allows to define the column on the basis of which the entries will be ordered, and the direction of the order, 'asc' or 'desc'
+
+## API Props
+
+In this section, we assume **User** is the type of data you are processing.
+
+Class names satisfies Tailwiind.
+
+| Props      | DescriptionType                                              | Type                          | Properties            | Property type             | Required | Default value |
+|:---------- | ------------------------------------------------------------ | ----------------------------- | --------------------- | ------------------------- | -------- | ------------- |
+| rows       | Array of all the User entries you populate your table with   | User []                       |                       |                           | True     |               |
+| columns    | Array of which keys of User type you want for your columns   | Array(keyof User)             |                       |                           | True     |               |
+| classNames | Object of type ClassNames you use to customize the rendering | Object of type **ClassNames** |                       |                           | False    |               |
+|            |                                                              |                               | tableBackgroundColor  | string                    | False    |               |
+|            |                                                              |                               | tableBorders          | string                    | False    |               |
+|            |                                                              |                               | tablePaddings         | string                    | False    |               |
+|            |                                                              |                               | tableMargins          | string                    | False    |               |
+|            |                                                              |                               | tableRounded          | string                    | False    |               |
+|            |                                                              |                               |                       |                           |          |               |
+|            |                                                              |                               | tableHeaders          | TableHeadersClassNames    | False    |               |
+|            |                                                              | TableHeadersClassNames        |                       |                           |          |               |
+|            |                                                              |                               | font                  | string                    | False    |               |
+|            |                                                              |                               | backgroundColor       | string                    | False    |               |
+|            |                                                              |                               | color                 | string                    | False    |               |
+|            |                                                              |                               | borderY               | string                    | False    |               |
+|            |                                                              |                               | borderL               | string                    | False    |               |
+|            |                                                              |                               | borderR               | string                    | False    |               |
+|            |                                                              |                               | borderColor           | string                    | False    |               |
+|            |                                                              |                               | roundedL              | string                    | False    |               |
+|            |                                                              |                               | roundedR              | string                    | False    |               |
+|            |                                                              |                               | padding               | string                    | False    |               |
+|            |                                                              |                               | margin                | string                    | False    |               |
+|            |                                                              |                               |                       |                           |          |               |
+|            |                                                              |                               | samplingOptions       | SamplingOptionsClassNames | False    |               |
+|            |                                                              | SamplingOptionsClassNames     |                       |                           |          |               |
+|            |                                                              |                               | buttonBackgroundColor | string                    | False    |               |
+|            |                                                              |                               | buttonText            | string                    | False    |               |
+|            |                                                              |                               | buttonBorder          | string                    | False    |               |
+|            |                                                              |                               | buttonRounded         | string                    | False    |               |
+|            |                                                              |                               | buttonPadding         | string                    | False    |               |
+|            |                                                              |                               | buttonMargin          | string                    | False    |               |
