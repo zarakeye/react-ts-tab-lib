@@ -266,6 +266,8 @@ function App(): JSX.Element {
 }
 ```
 
+
+
 So we chose to define the columns with according to the keys firstName, lastName and phone of the type User.
 Let's see what our table looks like.
 

@@ -778,27 +778,27 @@ function App() {
     <Table
       columns={columns}
       rows={rows}
-      defaultOrder={
-        {
-          property: 'lastName',
-          order: 'asc'
-        }
-      }
-      textContent={{
-        searchLabel: 'Rechercher',
-        sampleLabelPrefix: 'Affiche ',
-        sampleLabelSuffix: ' employés par page',
-        emptyTableText: 'Aucun employé',
-        custtomizeSampleInfoTextContent: (sampleBegin, sampleEnd, sampleLength) => {
-          if (sampleLength > sampleEnd) {
-            return <span>Affichage des employés <span className='font-bold'>{sampleBegin}</span> à <span className='font-bold'>{sampleEnd}</span> sur <span className='font-bold'>{sampleLength}</span></span>
-          } else {
-            return sampleLength > 1 ? <span>Affichage des employés <span className='font-bold'>'${sampleBegin}</span> à <span className='font-bold'>'${sampleEnd}</span></span>:''
-          }
-        },
-        previousPageButtonLabel: 'Page précédente',
-        nextPageButtonLabel: 'Page suivante'
-      }}
+      // defaultOrder={
+      //   {
+      //     property: 'lastName',
+      //     order: 'asc'
+      //   }
+      // }
+      // textContent={{
+      //   searchLabel: 'Rechercher',
+      //   sampleLabelPrefix: 'Affiche ',
+      //   sampleLabelSuffix: ' employés par page',
+      //   emptyTableText: 'Aucun employé',
+      //   custtomizeSampleInfoTextContent: (sampleBegin, sampleEnd, sampleLength) => {
+      //     if (sampleLength > sampleEnd) {
+      //       return <span>Affichage des employés <span className='font-bold'>{sampleBegin}</span> à <span className='font-bold'>{sampleEnd}</span> sur <span className='font-bold'>{sampleLength}</span></span>
+      //     } else {
+      //       return sampleLength > 1 ? <span>Affichage des employés <span className='font-bold'>'${sampleBegin}</span> à <span className='font-bold'>'${sampleEnd}</span></span>:''
+      //     }
+      //   },
+      //   previousPageButtonLabel: 'Page précédente',
+      //   nextPageButtonLabel: 'Page suivante'
+      // }}
 
       // key={rows.length}
       // {...tableProps}
