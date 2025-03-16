@@ -1,25 +1,87 @@
 # react-ts-tab-lib : A React table component implemented in TypeScript
 
-    **react-ts-tab-lib** is a typescript library developed with React that renders a Table component rendering a table made of columns defining properties, rows corresponding to objects having these properties. In other words, this component needs at least that the user communicates to it on the one hand a list of entries (for the rows) and their type (let's call this type T), and on the other hand a list of the properties of T of each entry that the user wants to process/display (the columns).
+    A small typescript library developed for React rendering a table of selected properties of typed entries. It allows to customize the displayed name of every properties as column header and how its value is rendering. A search bar allows to request its input in entries.
 
 ## Installation
 
-    **react-ts-tab-lib** requires react version 18.3.1 or later and can be used in your project by running the following command at the root of your project:
+    **react-ts-tab-lib** requires react version 19r and can be used in your project by running the following command at the root of your project:
 
 ```bash
 npm install react-ts-tab-lib
 ```
 
-To integrate the Table component from react-ts-tab-lib into a component or page in your project, start by importing the Table component at the top of their codebase (/src/MyPage/MyPage.jsx, /src/MyPage/MyPage.tsx, /src/MyPage/index.jsx ou /src/MyPage/index.tsx) :
+## Basic usage
 
-```ts
+Start by importing from the library the Table component and its required props types Columns and TableProps.
+
+Then, create an Columns array to define the properties you want to diplay and a second array containing your typed entries, and finally a TableProps objet which contains your two arrays.
+
+Column and TableProps types are defined as generic, so you have to precise to them the type of your entries : let's say we're working on entries of type User 
+
+Here is a basic usage of our library:
+
+```tsx
 import { Table } from 'react-ts-tab-lib'
-```
-
-However, to pass the data to the Table component, you must pass them as props in an object of type TableProps which, as we said before, takes at least a 'rows' array of objects of type T and a 'columns' array of objects each containing a key of T: you must therefore also import the Column and TableProps types :
-
-```ts
 import type { Column, TableProps } from 'react-ts-tab-lib'
+
+interface User {
+    id: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: number;
+}
+
+
+function App(): JSX.Element {
+    const columns: Column<User>[] = [
+        {
+            property: 'firstName',
+            type: 'string'
+        },
+        {
+            property: 'lastName',
+            type: 'string'
+        },
+        {          
+            property: 'phone',
+            type: 'number'
+        }
+    ]
+
+    const rows: User[] = [
+        {
+            id: 1,
+            firstName: "John",
+            lastName: "Doe",
+            email: "john.doe@email.com",
+            phone: 1234567890,
+        },
+        ...........
+        ...........
+        {
+            id: 108,
+            firstName: "Tony",
+            lastName: "Stark",
+            email: "tony.stark@starkindustry.com",
+            phone: 1356445656
+        }
+    }
+
+    const tableProps: TableProps<User> {
+        columns,
+        rows
+    }
+
+    return (
+        <main>
+            <Table
+                keys={ rows.length }
+                { ...tableProps }
+            />
+        </main>
+    )
+}
 ```
 
 ## Usage
@@ -27,13 +89,7 @@ import type { Column, TableProps } from 'react-ts-tab-lib'
     Let's imagine that you have as inputs objects of the type User defined as:
 
 ```ts
-type User {
-    id: number;
-    firstName: string:
-    lastName: string;
-    email: string;
-    phone: number
-}
+
 ```
 
 Start by defining the columns of your table, in other words the properties you want to display/process. To do this, you will create an array **columns** of **Column** type objects, which is defined as follows:
@@ -268,82 +324,98 @@ export type TableProps<T> = {
 
 All optional properties are those that you will use to style the component and customize its behaviours.
 
-- **onRowHover** : Function to define a behavior when hovering over a row
-
-- **onRowClick** : Function to define a behavior when clicking on a row
-
-- **componentGlobalClassname** : Defines the general style of the component with Tailwind.
-
-- **sampleOptionsClassname**  : Defines the style of the sample option select labels.
-
-- **customSelect** : Defines the style of the sample option select.
-
-- **searchLabelClassname** : Defines the style of the search bar label
-
-- **searchInputClassname** : Defines the style of the search bar.
-
-- **sampleInfoClassname** : Defines the style of the sample info.
-
-- **tableClassname** : Defines the general style of the table.
-
-- **globalColumnsClassname** : Defines the general style of the column headers
-
-- **sortButtonClassname** : Object of type { style: string, color: string } that defines the style of the container of the triangles indicating the order in the column headers, as well as the default color of the triangles.
-
-- **activeSortButtonClassname** : Object of type { style: string, color: string } that defines the style of the container of the triangle indicating the active column and order, as well as the color of the triangle.
-
-- **rowsClassname** : Defines the style of the rows of the table
-
-- **sampleInfoClassname** : Defines the style of the sample info notes
-
-- **currentPagePaginationButtonClassname** : Defines the style of the indicator of the current page
-
-- **pagesPaginationButtonClassname** : Defines the style of the indicator links of the other pages of the table.
-
-- **paginationNavButtonsClassname** : Defines the style of the Previous and Next buttons
-
-- **cellClassname** : Allows you to define the style of a cell in the table.
-
-- **numberOfDisplayedRows** : Array of numbers allowing to define your own sampling options.
-
-- **defaultOrder** : Object of type { property: keyof T; order: OrderType; }, keyof T corresponding to a key of type T (in our case, the User type), and order can take the values ​​'asc' or 'desc'. It allows to define the column on the basis of which the entries will be ordered, and the direction of the order, 'asc' or 'desc'
-
-## API Props
+- ## API Props
 
 In this section, we assume **User** is the type of data you are processing.
 
 Class names satisfies Tailwiind.
 
-| Props      | DescriptionType                                              | Type                          | Properties            | Property type             | Required | Default value |
-|:---------- | ------------------------------------------------------------ | ----------------------------- | --------------------- | ------------------------- | -------- | ------------- |
-| rows       | Array of all the User entries you populate your table with   | User []                       |                       |                           | True     |               |
-| columns    | Array of which keys of User type you want for your columns   | Array(keyof User)             |                       |                           | True     |               |
-| classNames | Object of type ClassNames you use to customize the rendering | Object of type **ClassNames** |                       |                           | False    |               |
-|            |                                                              |                               | tableBackgroundColor  | string                    | False    |               |
-|            |                                                              |                               | tableBorders          | string                    | False    |               |
-|            |                                                              |                               | tablePaddings         | string                    | False    |               |
-|            |                                                              |                               | tableMargins          | string                    | False    |               |
-|            |                                                              |                               | tableRounded          | string                    | False    |               |
-|            |                                                              |                               |                       |                           |          |               |
-|            |                                                              |                               | tableHeaders          | TableHeadersClassNames    | False    |               |
-|            |                                                              | TableHeadersClassNames        |                       |                           |          |               |
-|            |                                                              |                               | font                  | string                    | False    |               |
-|            |                                                              |                               | backgroundColor       | string                    | False    |               |
-|            |                                                              |                               | color                 | string                    | False    |               |
-|            |                                                              |                               | borderY               | string                    | False    |               |
-|            |                                                              |                               | borderL               | string                    | False    |               |
-|            |                                                              |                               | borderR               | string                    | False    |               |
-|            |                                                              |                               | borderColor           | string                    | False    |               |
-|            |                                                              |                               | roundedL              | string                    | False    |               |
-|            |                                                              |                               | roundedR              | string                    | False    |               |
-|            |                                                              |                               | padding               | string                    | False    |               |
-|            |                                                              |                               | margin                | string                    | False    |               |
-|            |                                                              |                               |                       |                           |          |               |
-|            |                                                              |                               | samplingOptions       | SamplingOptionsClassNames | False    |               |
-|            |                                                              | SamplingOptionsClassNames     |                       |                           |          |               |
-|            |                                                              |                               | buttonBackgroundColor | string                    | False    |               |
-|            |                                                              |                               | buttonText            | string                    | False    |               |
-|            |                                                              |                               | buttonBorder          | string                    | False    |               |
-|            |                                                              |                               | buttonRounded         | string                    | False    |               |
-|            |                                                              |                               | buttonPadding         | string                    | False    |               |
-|            |                                                              |                               | buttonMargin          | string                    | False    |               |
+| Props      | DescriptionType                                              | Type                          | Properties           | Property type             | Required | Default value                 |
+|:---------- | ------------------------------------------------------------ | ----------------------------- | -------------------- | ------------------------- | -------- | ----------------------------- |
+| rows       | Array of all the User entries you populate your table with   | User []                       |                      |                           | True     |                               |
+| columns    | Array of which keys of User type you want for your columns   | Array(keyof User)             |                      |                           | True     |                               |
+| classNames | Object of type ClassNames you use to customize the rendering | Object of type **ClassNames** |                      |                           | False    |                               |
+|            |                                                              |                               | tableBackgroundColor | string                    | False    |                               |
+|            |                                                              |                               | tableBorders         | string                    | False    | 'border-4 border-gray-300'    |
+|            |                                                              |                               | tablePaddings        | string                    | False    | 'px-[5px] pt-[5px] pb-[15px]' |
+|            |                                                              |                               | tableMargins         | string                    | False    |                               |
+|            |                                                              |                               | tableRounded         | string                    | False    | 'rounded-[23px]'              |
+|            |                                                              |                               | tableHeaders         | TableHeadersClassNames    | False    |                               |
+|            |                                                              |                               | samplingOptions      | SamplingOptionsClassNames | False    |                               |
+|            |                                                              |                               | searchBar            | SearchBarClassNames       | False    |                               |
+|            |                                                              |                               | sortIndicatorColor   | string                    | False    |                               |
+|            |                                                              |                               | rows                 | RowsClassNames            | False    |                               |
+|            |                                                              |                               | cells                | string                    | False    |                               |
+|            |                                                              |                               | pagination           | PaginationClassNames      | False    |                               |
+
+## tableHeaders options
+
+| Option          | Description | Type    | Default value                         |
+| --------------- | ----------- | ------- | ------------------------------------- |
+| font            |             |         |                                       |
+| backgroundColor |             | string  | 'bg-gray-800 hover:bg-gray-700'       |
+| textColor       |             | string  | 'text-white'                          |
+| borderY         |             | string  | 'border-y-4'                          |
+| borderL         |             | string  | 'border-l-4'                          |
+| borderR         |             | string  | 'border-r-4'                          |
+| borderColor     |             |         | 'border-gray-300'                     |
+| roundedL        |             | string  | 'rounded-tl-[20px] rounded-bl-[20px]' |
+| roundedR        |             | string  | 'rounded-tr-[20px] rounded-br-[20px]' |
+| padding         |             | string  | 'py-[5px]'                            |
+| gap             |             | sttring | 'gap-2.5'                             |
+
+## samplingOptions options
+
+| Option                | Description | Type   | Default value                   |
+| --------------------- | ----------- | ------ | ------------------------------- |
+| buttonBackgroundColor |             | string | 'bg-gray-800 hover:bg-gray-700' |
+| buttonText            |             | string | 'text-center text-white'        |
+| buttonBorder          |             | string | 'border-4'                      |
+| buttonRounded         |             | string | 'rounded-[20px]'                |
+| buttonPadding         |             | string | 'px-[10px]'                     |
+| menuBorder            |             | string | 'border-4'                      |
+| menuBorderColor       |             | string | 'border-gray-300'               |
+| menuRounded           |             | string | 'rounded-[20px]'                |
+| menuPadding           |             | string | 'p-[10px]'                      |
+| menuBackgroundColor   |             | string | 'bg-gray-800 hover:bg-gray-600' |
+
+## searchBar options
+
+| option               | Description | Type | Default value                           |
+| -------------------- | ----------- | ---- | --------------------------------------- |
+| inputPaddingX        |             |      | 'px-[10px]'                             |
+| inputBackgroundColor |             |      | 'bg-white'                              |
+| inputMarginL         |             |      | 'ml-[15px]'                             |
+| inputBorder          |             |      | 'border-3'                              |
+| inputBorderColor     |             |      | 'border-gray-300 hover:border-gray-400' |
+| inputRounded         |             |      | 'rounded-[20px]'                        |
+| inputFocusOutLine    |             |      | 'focus:outline-sky-400'                 |
+| inputTextColor       |             |      | 'text-black'                            |
+
+## rows options
+
+| Option                 | Description | Type   | Default value |
+| ---------------------- | ----------- | ------ | ------------- |
+| oddRowBackgroundColor  |             | string | 'bg-gray-500' |
+| evenRowBackgroundColor |             | string | 'bg-gray-600' |
+| marginL                |             | string | 'ml-[15px]'   |
+| marginR                |             | string | 'mr-[15px]'   |
+| paddingT               |             | string | 'pt-[10px]'   |
+| height                 |             | string | 'h-[30px]'    |
+| textColor              |             | string |               |
+
+## pagination options
+
+| Option                     | Description | Type   | Default value       |
+| -------------------------- | ----------- | ------ | ------------------- |
+| paginationBlockHover       |             | string |                     |
+| rounded                    |             | string | 'rounded-[20px]'    |
+| border                     |             | string | 'border-2'          |
+| buttonBorderColor          |             | string | 'border-gray-300'   |
+| buttonBackgroundColor      |             | string | 'bg-gray-800'       |
+| previousButtonPadding      |             | string | 'pl-[20px] pr-3'    |
+| previousButtonRoundedL     |             | string | 'rounded-l-[20px]'  |
+| nextButtonPadding          |             | string | 'pl-3 pr-[20px]'    |
+| nextButtonRoundedR         |             | string | 'rounded-r-[20px]'  |
+| buttonBackgroundColorHover |             | string | 'hover:bg-gray-500' |
+| navButtonsColor            |             | string | '#fff'              |
