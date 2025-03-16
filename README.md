@@ -84,7 +84,7 @@ function App(): JSX.Element {
 }
 ```
 
-![Desciption](/basic_usage.jpg)
+![Desciption](/public/basic_usage.jpg)
 
 
 
