@@ -84,47 +84,186 @@ function App(): JSX.Element {
 }
 ```
 
-## Usage
+![Desciption](/home/stephane/Documents/GitHub/OC-DA-JS-React/P14_OC_DA_JS_React/react-ts-tab-lib/public/basic_usage.jpg)
 
-    Let's imagine that you have as inputs objects of the type User defined as:
 
-```ts
 
-```
+> By default, entries are ordered on the first column in ascending order, so in alphabetic order as firstName is a string.
 
-Start by defining the columns of your table, in other words the properties you want to display/process. To do this, you will create an array **columns** of **Column** type objects, which is defined as follows:
+## Use cases
 
-```ts
-export type Column<T> = {
-  property: keyof T;
-  displayName?: string;
-  type: DataType;
-  renderer?: (value: T[keyof T]) => ReactNode;
-  specificColumnClassname?: string;
+### To change the default order
+
+Add a defaultOrder prop to precise the property and the order. Let's define lastName and descending order :
+
+```tsx
+import { Table } from 'react-ts-tab-lib'
+import type { Column, TableProps } from 'react-ts-tab-lib'
+
+interface User {
+    id: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: number;
+}
+
+
+function App(): JSX.Element {
+    const columns: Column<User>[] = [
+        {
+            property: 'firstName',
+            type: 'string'
+        },
+        {
+            property: 'lastName',
+            type: 'string'
+        },
+        {          
+            property: 'phone',
+            type: 'number'
+        }
+    ]
+
+    const rows: User[] = [
+        {
+            id: 1,
+            firstName: "John",
+            lastName: "Doe",
+            email: "john.doe@email.com",
+            phone: 1234567890,
+        },
+        ...........
+        ...........
+        {
+            id: 108,
+            firstName: "Tony",
+            lastName: "Stark",
+            email: "tony.stark@starkindustry.com",
+            phone: 1356445656
+        }
+    }
+
+    const tableProps: TableProps<User> {
+        columns,
+        rows,
+        defaultOrder={
+            {
+                property: 'lastName',
+                order: 'asc'
+            }
+        }
+    }
+
+    return (
+        <main>
+            <Table
+                keys={ rows.length }
+                
+                { ...tableProps }
+            />
+        </main>
+    )
 }
 ```
 
-As you can see, some keys of the Column type are optional and we will cover them later, but for now, let's focus on the required keys. We have two of them: **property** and **type**.
+![Description](/home/stephane/Documents/GitHub/OC-DA-JS-React/P14_OC_DA_JS_React/react-ts-tab-lib/public/change_default_order.jpg)
 
-**property** will contain the name of the property taken from the keys of the T type, while **type** will specify its type, allowing us to process values ​​based on their type, which will be taken from the values ​​**string**, **number**, **date**, **boolean** ou **custom**.
 
-Since T is a generic type, you must specify this when defining the columns array :
 
-```ts
-const columns: Column<User> = [
-    {
-        property: 'firstName',
-        type: 'string'
-    },
-    {
-        property: 'lastName',
-        type: 'string'
-    },
-    {          
-        property: 'phone',
-        type: 'number'
+### To customize texts
+
+Add a textContent prop :
+
+```tsx
+import { Table } from 'react-ts-tab-lib'
+import type { Column, TableProps } from 'react-ts-tab-lib'
+
+interface User {
+    id: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: number;
+}
+
+
+function App(): JSX.Element {
+    const columns: Column<User>[] = [
+        {
+            property: 'firstName',
+            type: 'string'
+        },
+        {
+            property: 'lastName',
+            type: 'string'
+        },
+        {          
+            property: 'phone',
+            type: 'number'
+        }
+    ]
+
+    const rows: User[] = [
+        {
+            id: 1,
+            firstName: "John",
+            lastName: "Doe",
+            email: "john.doe@email.com",
+            phone: 1234567890,
+        },
+        ...........
+        ...........
+        {
+            id: 108,
+            firstName: "Tony",
+            lastName: "Stark",
+            email: "tony.stark@starkindustry.com",
+            phone: 1356445656
+        }
     }
-]
+
+    const tableProps: TableProps<User> {
+        columns,
+        rows,
+        defaultOrder={
+            {
+                property: 'lastName',
+                order: 'asc'
+            }
+        },
+        textContent={{
+        searchLabel: 'Rechercher',
+        sampleLabelPrefix: 'Affiche ',
+        sampleLabelSuffix: ' employés par page',
+        emptyTableText: 'Aucun employé',
+        custtomizeSampleInfoTextContent: (sampleBegin, sampleEnd, sampleLength) => {
+          if (sampleLength > sampleEnd) {
+            return <span>Affichage des employés <span className='font-bold'>{sampleBegin}</span> à <span className='font-bold'>{sampleEnd}</span> sur <span className='font-bold'>{sampleLength}</span></span>
+          } else {
+            return sampleLength > 1 ? <span>Affichage des employés <span className='font-bold'>'${sampleBegin}</span> à <span className='font-bold'>'${sampleEnd}</span></span>:''
+          }
+        },
+        previousPageButtonLabel: 'Page précédente',
+        nextPageButtonLabel: 'Page suivante'
+      }}
+    }
+
+    return (
+        <main>
+            <Table
+                keys={ rows.length }
+                defaultOrder={
+                    {
+                      property: 'lastName',
+                      order: 'asc'
+                    }
+                }
+                { ...tableProps }
+            />
+        </main>
+    )
+}
 ```
 
 So we chose to define the columns with according to the keys firstName, lastName and phone of the type User.
@@ -155,6 +294,10 @@ const rows: User[] = [
     }
 }
 ```
+
+![Description](/home/stephane/Documents/GitHub/OC-DA-JS-React/P14_OC_DA_JS_React/react-ts-tab-lib/public/customizing_texts.jpg)
+
+
 
 Then you must encapsulate these 2 tables within an object of type TableProps that you will pass as props to the Table component using the spread operator :
 
@@ -324,29 +467,38 @@ export type TableProps<T> = {
 
 All optional properties are those that you will use to style the component and customize its behaviours.
 
-- ## API Props
+## 
+
+## API Props
 
 In this section, we assume **User** is the type of data you are processing.
 
 Class names satisfies Tailwiind.
 
-| Props      | DescriptionType                                              | Type                          | Properties           | Property type             | Required | Default value                 |
-|:---------- | ------------------------------------------------------------ | ----------------------------- | -------------------- | ------------------------- | -------- | ----------------------------- |
-| rows       | Array of all the User entries you populate your table with   | User []                       |                      |                           | True     |                               |
-| columns    | Array of which keys of User type you want for your columns   | Array(keyof User)             |                      |                           | True     |                               |
-| classNames | Object of type ClassNames you use to customize the rendering | Object of type **ClassNames** |                      |                           | False    |                               |
-|            |                                                              |                               | tableBackgroundColor | string                    | False    |                               |
-|            |                                                              |                               | tableBorders         | string                    | False    | 'border-4 border-gray-300'    |
-|            |                                                              |                               | tablePaddings        | string                    | False    | 'px-[5px] pt-[5px] pb-[15px]' |
-|            |                                                              |                               | tableMargins         | string                    | False    |                               |
-|            |                                                              |                               | tableRounded         | string                    | False    | 'rounded-[23px]'              |
-|            |                                                              |                               | tableHeaders         | TableHeadersClassNames    | False    |                               |
-|            |                                                              |                               | samplingOptions      | SamplingOptionsClassNames | False    |                               |
-|            |                                                              |                               | searchBar            | SearchBarClassNames       | False    |                               |
-|            |                                                              |                               | sortIndicatorColor   | string                    | False    |                               |
-|            |                                                              |                               | rows                 | RowsClassNames            | False    |                               |
-|            |                                                              |                               | cells                | string                    | False    |                               |
-|            |                                                              |                               | pagination           | PaginationClassNames      | False    |                               |
+| Props                  | DescriptionType                                              | Type                          | Properties           | Property type             | Required | Default value                 |
+|:---------------------- | ------------------------------------------------------------ | ----------------------------- | -------------------- | ------------------------- | -------- | ----------------------------- |
+| rows                   | Array of all the User entries you populate your table with   | User []                       |                      |                           | True     |                               |
+| columns                | Array of which keys of User type you want for your columns   | Array(keyof User)             |                      |                           | True     |                               |
+| defaultOrder           | Object defining the column to order by default and the order |                               |                      | ActiveOrderType<T>        | False    |                               |
+| textContent            | Obejct containing the customized texts                       |                               |                      | TextContentType           | False    |                               |
+| onRowHover()           | Function to customize a row hovering                         | (row: T \| null) => void;     |                      |                           | False    |                               |
+| onRowClick()           |                                                              | (row: T \| null) => void;     |                      |                           | False    |                               |
+| defaultSamplingOptions | Array of numbers defining samples length options             |                               |                      |                           | False    | [10, 20, 50, 100]             |
+| classNames             | Object of type ClassNames you use to customize the rendering | Object of type **ClassNames** |                      |                           | False    |                               |
+|                        |                                                              |                               | tableBackgroundColor | string                    | False    |                               |
+|                        |                                                              |                               | tableBorders         | string                    | False    | 'border-4 border-gray-300'    |
+|                        |                                                              |                               | tablePaddings        | string                    | False    | 'px-[5px] pt-[5px] pb-[15px]' |
+|                        |                                                              |                               | tableMargins         | string                    | False    |                               |
+|                        |                                                              |                               | tableRounded         | string                    | False    | 'rounded-[23px]'              |
+|                        |                                                              |                               | tableHeaders         | TableHeadersClassNames    | False    |                               |
+|                        |                                                              |                               | samplingOptions      | SamplingOptionsClassNames | False    |                               |
+|                        |                                                              |                               | searchBar            | SearchBarClassNames       | False    |                               |
+|                        |                                                              |                               | sortIndicatorColor   | string                    | False    |                               |
+|                        |                                                              |                               | rows                 | RowsClassNames            | False    |                               |
+|                        |                                                              |                               | cells                | string                    | False    |                               |
+|                        |                                                              |                               | pagination           | PaginationClassNames      | False    |                               |
+
+## 
 
 ## tableHeaders options
 
@@ -364,6 +516,8 @@ Class names satisfies Tailwiind.
 | padding         |             | string  | 'py-[5px]'                            |
 | gap             |             | sttring | 'gap-2.5'                             |
 
+## 
+
 ## samplingOptions options
 
 | Option                | Description | Type   | Default value                   |
@@ -379,6 +533,8 @@ Class names satisfies Tailwiind.
 | menuPadding           |             | string | 'p-[10px]'                      |
 | menuBackgroundColor   |             | string | 'bg-gray-800 hover:bg-gray-600' |
 
+## 
+
 ## searchBar options
 
 | option               | Description | Type | Default value                           |
@@ -392,6 +548,8 @@ Class names satisfies Tailwiind.
 | inputFocusOutLine    |             |      | 'focus:outline-sky-400'                 |
 | inputTextColor       |             |      | 'text-black'                            |
 
+## 
+
 ## rows options
 
 | Option                 | Description | Type   | Default value |
@@ -403,6 +561,8 @@ Class names satisfies Tailwiind.
 | paddingT               |             | string | 'pt-[10px]'   |
 | height                 |             | string | 'h-[30px]'    |
 | textColor              |             | string |               |
+
+## 
 
 ## pagination options
 

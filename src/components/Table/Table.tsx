@@ -126,7 +126,7 @@ export type TableProps<T> = {
   onRowHover?: (row: T | null) => void;
   onRowClick?: (row: T | null) => void;
   classNames?: ClassNames;
-  defaultSamplingOptions?: number[] | undefined;
+  samplingOptions?: number[] | undefined;
   defaultOrder?: ActiveOrderType<T> | null;
   textContent?: TextContentType | null;
 }
@@ -138,12 +138,12 @@ function Table <T extends Record<string, any>>({
   onRowHover,
   onRowClick,
   classNames,
-  defaultSamplingOptions = [10, 20, 50, 100],
+  samplingOptions = [10, 20, 50, 100],
   defaultOrder,
   textContent
 }: TableProps<T>): JSX.Element {
-  type DisplayedRows_Type = typeof defaultSamplingOptions[number];
-  const [sampleLength, setSampleLength] = useState<DisplayedRows_Type>(defaultSamplingOptions[0]);
+  type DisplayedRows_Type = typeof samplingOptions[number];
+  const [sampleLength, setSampleLength] = useState<DisplayedRows_Type>(samplingOptions[0]);
   const [allRows, setAllRows] = useState<T[]>(rows);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pagesNumber, setPagesNumber] = useState<number>(1);
@@ -340,7 +340,7 @@ function Table <T extends Record<string, any>>({
     [currentPage, pagesNumber]
   );
 
-  const sampleLengthOptions = defaultSamplingOptions.map((option) => (
+  const sampleLengthOptions = samplingOptions.map((option) => (
     { value: option, label: <span className={`${classNames?.samplingOptions?.menuTextColor ?? 'text-white'} ${classNames?.samplingOptions?.menuBackgroundColor ?? 'bg-gray-800 hover:bg-gray-700'}`}>{`${textContent?.sampleLabelPrefix ?? 'Show '} ${option} ${textContent?.sampleLabelSuffix ?? ' entries'}`} </span> }
   ))
 
