@@ -84,7 +84,7 @@ function App(): JSX.Element {
 }
 ```
 
-![Desciption](/home/stephane/Documents/GitHub/OC-DA-JS-React/P14_OC_DA_JS_React/react-ts-tab-lib/public/basic_usage.jpg)
+![Desciption](/basic_usage.jpg)
 
 
 
