@@ -84,7 +84,7 @@ function App(): JSX.Element {
 }
 ```
 
-![Desciption](/public/basic_usag.jpg)
+![Desciption](/public/basic_usage.jpg)
 
 > By default, entries are ordered on the first column in ascending order, so in alphabetic order as firstName is a string.
 
