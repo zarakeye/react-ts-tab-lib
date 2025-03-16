@@ -167,7 +167,7 @@ function App(): JSX.Element {
 }
 ```
 
-![Description](/home/stephane/Documents/GitHub/OC-DA-JS-React/P14_OC_DA_JS_React/react-ts-tab-lib/public/change_default_order.jpg)
+![Description](change_default_order.jpg)
 
 
 
