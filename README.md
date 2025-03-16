@@ -86,8 +86,6 @@ function App(): JSX.Element {
 
 ![Desciption](/public/basic_usage.jpg)
 
-
-
 > By default, entries are ordered on the first column in ascending order, so in alphabetic order as firstName is a string.
 
 ## Use cases
@@ -159,7 +157,7 @@ function App(): JSX.Element {
         <main>
             <Table
                 keys={ rows.length }
-                
+
                 { ...tableProps }
             />
         </main>
@@ -168,8 +166,6 @@ function App(): JSX.Element {
 ```
 
 ![Description](/public/change_default_order.jpg)
-
-
 
 ### To customize texts
 
@@ -266,8 +262,6 @@ function App(): JSX.Element {
 }
 ```
 
-
-
 So we chose to define the columns with according to the keys firstName, lastName and phone of the type User.
 Let's see what our table looks like.
 
@@ -298,8 +292,6 @@ const rows: User[] = [
 ```
 
 ![Description](/home/stephane/Documents/GitHub/OC-DA-JS-React/P14_OC_DA_JS_React/react-ts-tab-lib/public/customizing_texts.jpg)
-
-
 
 Then you must encapsulate these 2 tables within an object of type TableProps that you will pass as props to the Table component using the spread operator :
 
