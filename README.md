@@ -167,7 +167,7 @@ function App(): JSX.Element {
 }
 ```
 
-![Description](change_default_order.jpg)
+![Description](/public/change_default_order.jpg)
 
 
 
