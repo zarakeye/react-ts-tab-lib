@@ -589,15 +589,25 @@ function Table <T extends Record<string, any>>({
                   role='row'
                   className={`
                     ${classNames?.rows?.oddRowBackgroundColor ?? ''}
-                    ${classNames?.rows?.paddingB ?? 'first:mt-[10px] last:mt-[15px]'}
+                    ${classNames?.rows?.paddingB ?? ''}
                     `}
                   ref={rowRef}
                 >
-                  <td colSpan={columns.length} className={`
-                    ${classNames?.rows?.paddingT ?? 'mt-[10px]'}
-                    
-                    ${'text-center truncate mt-[10px] mb-[15px]'}`}>
-                    No data available in table
+                  <td
+                    colSpan={columns.length}
+                    className={`
+                      ${classNames?.rows?.paddingT ?? 'mt-[10px]'}
+                      ${'text-center truncate mt-[10px] mb-[15px]'}
+                    `}
+                  >
+                      <div
+                        className={`
+                          ${classNames?.rows?.marginL ?? 'ml-[15px]'}
+                          ${classNames?.rows?.marginR ?? 'mr-[15px]'}
+                        `}
+                      >
+                        No data available in table
+                      </div>
                   </td>
                 </tr>
               )}
