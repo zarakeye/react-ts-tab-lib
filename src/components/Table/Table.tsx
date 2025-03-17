@@ -461,13 +461,13 @@ function Table <T extends Record<string, any>>({
                   key={index}
                   role='columnheader'
                   // className={`${key.specificColumnClassname ?? ''} ${globalColumnsClassname ? globalColumnsClassname : 'pl-[18px] pr-[5px] py-[10px] border-b-2 border-b-gray bg-gray/0 hover:bg-gray/40 '}`}
-                  className=""
+                  className="cursor-pointer"
                   ref={columnHeaderRef}
                 >
                   <div
                     key={index}
                     className={`
-                      flex justify-between items-center  cursor-pointer
+                      flex justify-between items-center
                       ${classNames?.tableHeaders?.gap ?? 'gap-2.5'}
                       ${classNames?.tableHeaders?.padding ?? 'py-[5px]'}
                       ${classNames?.tableHeaders?.margin ?? 'mb-[10px]'}
