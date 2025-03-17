@@ -261,8 +261,6 @@ function App(): JSX.Element {
 
 > <mark>*Note that you must respect this definition of custtomizeSampleInfoTextContent if you want to customize the message*</mark>
 
-
-
 ### To define a background color on hover a row :
 
 In your main CSS file, add that :
@@ -271,16 +269,11 @@ In your main CSS file, add that :
 [data-row]:hover div {
   background-color: #e8e8e8 !important;
 }
-
 ```
 
 > <mark>Do not forget the mention !important</mark>
 
-
-
 ![Description](/home/stephane/Documents/GitHub/OC-DA-JS-React/P14_OC_DA_JS_React/react-ts-tab-lib/public/customizing_texts.jpg)
-
-
 
 ### To define a behaviour when you click on a row :
 
