@@ -552,7 +552,7 @@ function Table <T extends Record<string, any>>({
                     className={`
                       ${classNames?.cells ?? 'whitespace-nowrap'} py-[2.5px]
                       ${classNames?.rows?.paddingT ?? 'pt-[10px]'}
-                      ${rowIndex === 0 ? classNames?.rows?.paddingB ?? 'pt-[15px]' : ''}
+                      ${classNames?.rows?.paddingB ?? 'pb-[15px]'}
                     `}
                   >
                     <div
