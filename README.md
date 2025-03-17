@@ -14,11 +14,11 @@ npm install react-ts-tab-lib
 
     Start by importing the `Table` component and the prop type `Columns`  from the library.
 
-Then, create an `Columns` array to define which properties you want to diplay and a second array containing your typed entries.
+Then, create an `Columns` array to define which properties you want to diplay and their types, and a second array containing your typed entries.
 
 Let's say we're working on entries of type `User` : here is a basic usage of our library:
 
-```tsx
+```ts
 import { Table } from 'react-ts-tab-lib'
 import type { Column } from 'react-ts-tab-lib'
 
@@ -73,197 +73,106 @@ function App(): JSX.Element {
     return (
         <main>
             <Table
-                keys={ rows.length }
-                { ...tableProps }
+                columns={columns}
+                rows={rows}
             />
         </main>
     )
 }
+
+
+export default App;
 ```
 
 ![Desciption](/public/basic_usage.jpg)
 
 > By default, entries are ordered on the first column in ascending order, so in alphabetic order as firstName is a string.
 
+## 
+
 ## Use cases
 
 ### To change the default order
 
-Add a defaultOrder prop to precise the property and the order. Let's define lastName and descending order :
+    Add a `defaultOrder` prop to precise the property and the order. Let's define lastName and descending order :
 
-```tsx
-import { Table } from 'react-ts-tab-lib'
-import type { Column, TableProps } from 'react-ts-tab-lib'
-
-interface User {
-    id: number;
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone: number;
-}
-
-
-function App(): JSX.Element {
-    const columns: Column<User>[] = [
-        {
-            property: 'firstName',
-            type: 'string'
-        },
-        {
-            property: 'lastName',
-            type: 'string'
-        },
-        {        
-            property: 'phone',
-            type: 'number'
-        }
-    ]
-
-    const rows: User[] = [
-        {
-            id: 1,
-            firstName: "John",
-            lastName: "Doe",
-            email: "john.doe@email.com",
-            phone: 1234567890,
-        },
-        ...........
-        ...........
-        {
-            id: 108,
-            firstName: "Tony",
-            lastName: "Stark",
-            email: "tony.stark@starkindustry.com",
-            phone: 1356445656
-        }
-    }
-
-    const tableProps: TableProps<User> {
-        columns,
-        rows,
-        defaultOrder={
-            {
-                property: 'lastName',
-                order: 'asc'
-            }
-        }
-    }
-
-    return (
-        <main>
-            <Table
-                keys={ rows.length }
-
-                { ...tableProps }
-            />
-        </main>
-    )
-}
+```ts
+<Table
+    columns={columns}
+    rows={rows}
+    defaultOrder={{
+        property: 'lastName',
+        order: 'asc'
+    }}
+/>
 ```
 
 ![Description](/public/change_default_order.jpg)
 
+### 
+
+### To toggle the order between ascending and descending order :
+
+     Just click on the header of the column.
+
+
+
+### To customize how the value of a property is rendered :
+
+    For example, let's imagine that we want `lastName` values to be uppercased.
+
+You have to define into its object in the `columns` array a `render` function as below :
+
+```ts
+const columns: Column<User>[] = [
+    ...,
+    {
+        proprety: 'lastName',
+        type: 'string',
+        renderer: (value: string | number | null) => value && String(value).toUpperCase()
+    },
+    ...
+]
+```
+
+
+
 ### To customize texts
 
-Add a textContent prop :
+Add a `textContent` prop :
 
-```tsx
-import { Table } from 'react-ts-tab-lib'
-import type { Column, TableProps } from 'react-ts-tab-lib'
-
-interface User {
-    id: number;
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone: number;
-}
-
-
-function App(): JSX.Element {
-    const columns: Column<User>[] = [
-        {
-            property: 'firstName',
-            type: 'string'
-        },
-        {
-            property: 'lastName',
-            type: 'string'
-        },
-        {  
-            property: 'phone',
-            type: 'number'
-        }
-    ]
-
-    const rows: User[] = [
-        {
-            id: 1,
-            firstName: "John",
-            lastName: "Doe",
-            email: "john.doe@email.com",
-            phone: 1234567890,
-        },
-        ...........
-        ...........
-        {
-            id: 108,
-            firstName: "Tony",
-            lastName: "Stark",
-            email: "tony.stark@starkindustry.com",
-            phone: 1356445656
-        }
-    }
-
-    const tableProps: TableProps<User> {
-        columns,
-        rows,
-        defaultOrder={
-            {
-                property: 'lastName',
-                order: 'asc'
-            }
-        },
-        textContent={{
+```ts
+<Table
+    columns
+    defaultOrder={{
+        property: 'lastName',
+        order: 'asc'
+    }}
+    textContent={{
         searchLabel: 'Rechercher',
         sampleLabelPrefix: 'Affiche ',
         sampleLabelSuffix: ' employés par page',
         emptyTableText: 'Aucun employé',
         custtomizeSampleInfoTextContent: (sampleBegin, sampleEnd, sampleLength) => {
-          if (sampleLength > sampleEnd) {
-            return <span>Affichage des employés <span className='font-bold'>{sampleBegin}</span> à <span className='font-bold'>{sampleEnd}</span> sur <span className='font-bold'>{sampleLength}</span></span>
-          } else {
-            return sampleLength > 1 ? <span>Affichage des employés <span className='font-bold'>'${sampleBegin}</span> à <span className='font-bold'>'${sampleEnd}</span></span>:''
-          }
+            if (sampleLength > sampleEnd) {
+                return <span>Affichage des employés <span className='font-bold'>{sampleBegin}</span> à <span className='font-bold'>{sampleEnd}</span> sur <span className='font-bold'>{sampleLength}</span></span>
+            } else {
+                return sampleLength > 1 ? <span>Affichage des employés <span className='font-bold'>'${sampleBegin}</span> à <span className='font-bold'>'${sampleEnd}</span></span>:''
+            }
         },
         previousPageButtonLabel: 'Page précédente',
         nextPageButtonLabel: 'Page suivante'
-      }}
-    }
-
-    return (
-        <main>
-                <Table
-                    keys={ rows.length }
-                    defaultOrder={
-                            {
-                                  property: 'lastName',
-                                  order: 'asc'
-                            }
-                    }
-                    { ...tableProps }
-                />
-        </main>
-    )
-}
+     }}
+/>
 ```
 
 > <mark>*Note that you must respect this definition of custtomizeSampleInfoTextContent if you want to customize the message*</mark>
 
+### 
+
 ### To define a background color on hover a row :
 
-In your main CSS file, add that :
+    In your main CSS file, add that :
 
 ```css
 [data-row]:hover div {
@@ -273,171 +182,46 @@ In your main CSS file, add that :
 
 > <mark>Do not forget the mention !important</mark>
 
-![Description](/home/stephane/Documents/GitHub/OC-DA-JS-React/P14_OC_DA_JS_React/react-ts-tab-lib/public/customizing_texts.jpg)
+
 
 ### To define a behaviour when you click on a row :
 
-Let's say we have 
+    Let's say we have a page `Profile` accessible at the route `/profile/:id` managed by react-router. We have to import the hook `useNavigate` from `react-router-dom` and define the handler of the event prop `onRowClick`
 
 ```ts
-const tableProps: TableProps<User> = { columns, rows }
-
-return (
-    <Table key={rows.length} {...tableProps} />
-)
-```
-
-> Note that it is necessary to add a **key** attribute to which you will give the value **rows.length** if the **rows** array is likely to see its size change. The **rows.length** value assigned to the **key** attribute will therefore change dynamically, which will force React to re-render the component.
-> In any case, adding it but when it is not necessary will not change the behavior of the component in any way, so we strongly recommend doing it for safety: it is a **good practice**!
-
-From 2 entries, you are given, at the bottom left of the table, the number of the first and last entries currently displayed.
-But if we have a large number of entries, it is more judicious to browse them by samples: for this, the select at the top left allows you to define the number of entries that we want to display at a time. When the number of lines is greater than the number selected for sampling, the table is paginated and navigation buttons and the current page appear at the bottom right while we have at the bottom left additional information on the total number of entries.
-And here is our table now hydrated with enough entries to display all types of information and possible actions :
-
-![ ](/home/stephane/Images/Captures%20d’écran/Copie%20d'écran_20250307_154938.png)
-
-You get a component with a very spartan style but very functional.
-
-The small opposite triangles next to the column header are indicators that the entries can be ordered based on their value for that property: ascending or descending for numbers, alphabetical or inverse for strings, chronological or inverse for dates, true or false for booleans. When you see 2 gray triangles superimposed in a column header, it means that the entries are not ordered according to the corresponding property.
-On the other hand, when you see a single black triangle, it means that the entries are ordered according to that column. An upward triangle means ascending, alphabetical or chronological order, while a downward triangle means the opposite.
-By default, the order is ascending (points upward) and is done on the first column. When you click on the header of another column, it is on that one that the order is done.
-When you click on the same header multiple times in a row, the order is toggled with each click.
-
-The search bar at the top right, which allows you to filter the displayed entries. Indeed, when you enter something in the bar, a case-insensitive match search is immediately launched on each property of each entry in the table and all those whose at least one of the properties contains the entry will be displayed.
-
-We have shown you the default behavior of our Table component so far and, we must admit, it has a rather minimalist and spartan style for now. But, good news, our component is almost entirely customizable with a multitude of props to change the style of each element thanks to Tailwindcss or even change the texts. Let's see together how through common use cases.
-
-### Use cases :
-
-> *I want to modify words and texts in the component*
-
-Ok. The words and the content of the component texts are customizable thanks to the **textContent** prop which is a **TextContentType** object type containing only optional keys:
-
-```ts
-type TextContentType = {
-  searchLabel?: string | null;
-  sampleLabelPrefix?: string | null;
-  sampleLabelSuffix?: string | null;
-  emptyTableText?: string | null;
-  custtomizeSampleInfoTextContent?: (sampleBegin: number, sampleEnd: number, allRows: number) => string | null;
-  previousPageButtonLabel?: string | null;
-  nextPageButtonLabel?: string | null;
-}
-```
-
-Let's assume that you want to translate the entire component into French, for example.
-You will need to define the different possible properties of textContent:
-
-- **searchLabel** : Allows you to modify the label of the search bar
-- **sampleLabelPrefix** : changes the prefix label of the select by the number of entries per sample
-- **sampleLabelSuffix** : changes the suffix label of the select by the number of entries per sample
-- **emptyTableText** : Modifies the sentence that accompanies an empty table of entries
-- **customizeSampleInfoTextContent** : Function that modifies the text giving information on the first and last entry of a sample as well as the total of entries
-- **previousPageButtonLabel** : modifies the text displayed by the Previous button
-- **nextPageButtonLabel** : modifies the text displayed by the Next button
-
-In the tableProps prop, add the object :
-
-```ts
-textContent = {
-    searchLabel: 'Rechercher',
-    sampleLabelPrefix: 'Affiche ',
-    sampleLabelSuffix: ' employés par page',
-    emptyTableText: 'Aucun employé',
-    custtomizeSampleInfoTextContent: (sampleBegin, sampleEnd, sampleLength) => {
-      if (sampleLength > sampleEnd) {
-        return `Affichage des employés ${sampleBegin} à ${sampleEnd} sur ${sampleLength}`
-      } else {
-        return sampleLength > 1 ? `Affichage des employés ${sampleBegin} à ${sampleEnd}`:''
-      }
-    },
-    previousPageButtonLabel: 'Page précédente',
-    nextPageButtonLabel: 'Page suivante'
-}
-```
-
-We strongly advise you to scrupulously respect the structure of the definition of the **customizeSampleInfoTextContent(sampleBegin, sampleEnd, sampleLength)** function because if its logic is not well thought out, its rendering may be hazardous.
-
-![ ](/home/stephane/Images/Captures%20d’écran/Copie%20d'écran_20250307_184031.png)
-
-There you go! Mission accomplished!!... Next?...
-
----
-
-> *I would like to customize the display name of my columns*
-
-To do that, you must enter, for each column whose display name you want to customize, the displayName key of the object that corresponds to it in the columns table.
-
-```ts
-const columns: Column<User>[] = [
-    {
-      displayName: "Prénom",
-      property: "firstName",
-      type: "string",
-    },
-    {
-      displayName: "Nom de famille",
-      property: "lastName",
-      type: "string",
-    },
-    {
-      displayName: "Téléphone",
-      property: "phone",
-      type: "number",
+<Table
+    ...
+    onRowClick={
+       (row: Employee | null) => {
+           if (!row) return;
+           navigate(`/profile/${row?.id}`);
+       }
     }
-  ];
+/>
 ```
 
-Which gives :
 
-![ ](/home/stephane/Images/Captures%20d’écran/Copie%20d'écran_20250307_185802.png)
 
-Now you have completely customized the component texts !!!
+### To customize sampling options
+
+    Give to the `samplingOptions` prop an array of numbers representing the lengths available for sampling.
+
+```ts
+<Table
+    ...
+    samplingOptions={[5, 12, 15, 25]}
+/>
+```
 
 ---
 
-> *Now I would like to make the component more visually appealing and to respect the graphic charter of my page.*
+### To make the component more visually appealing and to respect the graphic charter of my page.
 
-To do this, you will use Tailwindcss to define the styles you want to apply to the component. Tailwind is a dependency of the library. You can define your own Tailwindcss themes and classes in your project; they will be usable for the component of our library.
+We recommend to use Tailwindcss to define the styles you want to apply to the component.
 
-The TableProps type is defined as :
+Look at the table of the API props below to know the options you have :
 
-```ts
-export type TableProps<T> = {
-  columns: Column<T>[];
-  rows: T[];
-  onRowHover?: (row: T | null) => void;
-  onRowClick?: (row: T | null) => void;
-  componentGlobalClassname?: string;
-  sampleLengthOptionClassname?: string;
-  sampleOptionsClassname?: string;
-  customSelect?: string;
-  searchLabelClassname?: string;
-  searchInputClassname?: string;
-  tableClassname?: string;
-  globalColumnsClassname?: string;
-  sortButtonClassname?: {
-    style: string;
-    color: string;
-  };
-  activeSortButtonClassname?: {
-    style: string;
-    color: string;
-  };
-  rowsClassname?: string;
-  sampleInfoClassname?: string;
-  currentPagePaginationButtonClassname?: string;
-  pagesPaginationButtonsClassname?: string;
-  paginationNavButtonsClassname?: string;
-  cellClassname?: string;
 
-  numberOfDisplayedRows?: number[] | undefined;
-  defaultOrder?: ActiveOrderType<T> | null;
-  textContent?: TextContentType | null;
-}
-```
-
-All optional properties are those that you will use to style the component and customize its behaviours.
 
 ## API Props
 
