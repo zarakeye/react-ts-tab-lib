@@ -100,8 +100,8 @@ export type RowsClassNames = {
   evenRowBackgroundColor?: string;
   marginL?: string;
   marginR?: string;
-  paddingT?: string;
   paddingB?: string;
+  paddingX?: string;
   height?: string;
   textColor?: string;
 }
@@ -596,16 +596,11 @@ function Table <T extends Record<string, any>>({
                   <td
                     colSpan={columns.length}
                     className={`
-                      ${classNames?.rows?.paddingT ?? 'mt-[10px]'}
-                      ${'text-center truncate mt-[10px] mb-[15px]'}
+                      ${'text-center truncate'}
+                      ${classNames?.rows?.paddingX ?? 'px-[15px]'}
                     `}
                   >
-                      <div
-                        className={`
-                          ${classNames?.rows?.marginL ?? 'ml-[15px]'}
-                          ${classNames?.rows?.marginR ?? 'mr-[15px]'}
-                        `}
-                      >
+                      <div>
                         No data available in table
                       </div>
                   </td>
