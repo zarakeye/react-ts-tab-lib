@@ -100,6 +100,7 @@ export type RowsClassNames = {
   evenRowBackgroundColor?: string;
   marginL?: string;
   marginR?: string;
+  paddingT?: string;
   paddingB?: string;
   paddingX?: string;
   height?: string;
@@ -550,6 +551,7 @@ function Table <T extends Record<string, any>>({
                     role='cell'
                     className={`
                       ${classNames?.cells ?? 'whitespace-nowrap'} py-[2.5px]
+                      ${rowIndex === 0 ? classNames?.rows?.paddingT ?? 'pt-[10px]' : ''}
                       ${rowIndex === 0 ? classNames?.rows?.paddingB ?? 'pt-[15px]' : ''}
                     `}
                   >
@@ -586,20 +588,24 @@ function Table <T extends Record<string, any>>({
               : (
                 <tr
                   role='row'
-                  className={`
-                    ${classNames?.rows?.oddRowBackgroundColor ?? ''}
+                  className={`  
                     ${classNames?.rows?.paddingB ?? ''}
-                    `}
+                  `}
                   ref={rowRef}
                 >
                   <td
                     colSpan={columns.length}
                     className={`
+                      ${classNames?.rows?.paddingT ?? 'mt-[10px]'}
                       ${'text-center truncate'}
                       ${classNames?.rows?.paddingX ?? 'px-[15px]'}
                     `}
                   >
-                      <div>
+                      <div
+                        className={`
+                          ${classNames?.rows?.oddRowBackgroundColor ?? ''}
+                        `}
+                      >
                         No data available in table
                       </div>
                   </td>
