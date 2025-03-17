@@ -1,7 +1,7 @@
 {
   "name": "react-ts-tab-lib",
   "private": false,
-  "version": "1.6.2",
+  "version": "1.6.3",
   "sideEffects": false,
   "type": "module",
   "main": "./dist/index.js",
