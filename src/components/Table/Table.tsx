@@ -467,7 +467,7 @@ function Table <T extends Record<string, any>>({
                   <div
                     key={index}
                     className={`
-                      flex justify-between items-center 
+                      flex justify-between items-center  cursor-pointer
                       ${classNames?.tableHeaders?.gap ?? 'gap-2.5'}
                       ${classNames?.tableHeaders?.padding ?? 'py-[5px]'}
                       ${classNames?.tableHeaders?.margin ?? 'mb-[10px]'}
@@ -487,7 +487,7 @@ function Table <T extends Record<string, any>>({
                       <div className='flex-1 text-center overflow-hidden mr-[10px]'>
                         <p
                           ref={columnNameRef}
-                          className='whitespace-nowrap cursor-pointer'
+                          className='whitespace-nowrap'
                         >
                           {key.displayName ? key.displayName : String(key.property)}
                         </p>
