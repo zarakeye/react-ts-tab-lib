@@ -305,7 +305,7 @@ describe("Table test suite", () => {
     ];
 
     it('should update displaayed entries count and reset pagination', async () => {
-      render(<Table columns={columns} rows={mockRows} defaultSamplingOptions={[10, 20, 50]} />);
+      render(<Table columns={columns} rows={mockRows} samplingOptions={[10, 20, 50]} />);
 
       expect(screen.getByText('Showing entries 1 to 10 of 250 entries')).toBeInTheDocument();
 
