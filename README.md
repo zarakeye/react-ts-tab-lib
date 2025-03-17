@@ -1,10 +1,10 @@
 # react-ts-tab-lib : A React table component implemented in TypeScript
 
-    A small typescript library developed for React rendering a table of selected properties of typed entries. It allows to customize the displayed name of every properties as column header and how its value is rendering. A search bar allows to request its input in entries.
+    A small TypeScript library developed for React rendering a generic table of selected properties of typed entries. It allows to customize the displayed name of every property as column header and how its value is rendered. A search bar allows to look for some occurrence of its input in entries.
 
 ## Installation
 
-    **react-ts-tab-lib** requires react version 19r and can be used in your project by running the following command at the root of your project:
+    **react-ts-tab-lib** requires react 19 and can be used in your project by running the following command at the root of your project:
 
 ```bash
 npm install react-ts-tab-lib
@@ -12,17 +12,15 @@ npm install react-ts-tab-lib
 
 ## Basic usage
 
-Start by importing from the library the Table component and its required props types Columns and TableProps.
+    Start by importing the `Table` component and the prop type `Columns`  from the library.
 
-Then, create an Columns array to define the properties you want to diplay and a second array containing your typed entries, and finally a TableProps objet which contains your two arrays.
+Then, create an `Columns` array to define which properties you want to diplay and a second array containing your typed entries.
 
-Column and TableProps types are defined as generic, so you have to precise to them the type of your entries : let's say we're working on entries of type User 
-
-Here is a basic usage of our library:
+Let's say we're working on entries of type `User` : here is a basic usage of our library:
 
 ```tsx
 import { Table } from 'react-ts-tab-lib'
-import type { Column, TableProps } from 'react-ts-tab-lib'
+import type { Column } from 'react-ts-tab-lib'
 
 interface User {
     id: number;
@@ -31,7 +29,6 @@ interface User {
     email: string;
     phone: number;
 }
-
 
 function App(): JSX.Element {
     const columns: Column<User>[] = [
@@ -43,7 +40,7 @@ function App(): JSX.Element {
             property: 'lastName',
             type: 'string'
         },
-        {          
+        {        
             property: 'phone',
             type: 'number'
         }
@@ -80,7 +77,7 @@ function App(): JSX.Element {
                 { ...tableProps }
             />
         </main>
-    )
+    )
 }
 ```
 
@@ -117,7 +114,7 @@ function App(): JSX.Element {
             property: 'lastName',
             type: 'string'
         },
-        {          
+        {        
             property: 'phone',
             type: 'number'
         }
@@ -194,7 +191,7 @@ function App(): JSX.Element {
             property: 'lastName',
             type: 'string'
         },
-        {          
+        {  
             property: 'phone',
             type: 'number'
         }
@@ -247,53 +244,47 @@ function App(): JSX.Element {
 
     return (
         <main>
-            <Table
-                keys={ rows.length }
-                defaultOrder={
-                    {
-                      property: 'lastName',
-                      order: 'asc'
+                <Table
+                    keys={ rows.length }
+                    defaultOrder={
+                            {
+                                  property: 'lastName',
+                                  order: 'asc'
+                            }
                     }
-                }
-                { ...tableProps }
-            />
+                    { ...tableProps }
+                />
         </main>
     )
 }
 ```
 
-So we chose to define the columns with according to the keys firstName, lastName and phone of the type User.
-Let's see what our table looks like.
+> <mark>*Note that you must respect this definition of custtomizeSampleInfoTextContent if you want to customize the message*</mark>
 
-![ ](/home/stephane/Images/Captures%20d’écran/Copie%20d'écran_20250307_151147.png)
 
-We see our 3 columns but since we have not yet entered our data to process, we can see the message '**No data available in table**' under the column header line.
-So let's now add the entries. You need to create an array row of object of type T that we have defined here as type User :
 
-```ts
-const rows: User[] = [
-    {
-      id: 1,
-      firstName: "John",
-      lastName: "Doe",
-      email: "john.doe@email.com",
-      phone: 1234567890,
-    },
-    ...........
-    ...........
-    {
-      id: 108,
-      firstName: "Tony",
-      lastName: "Stark",
-      email: "tony.stark@starkindustry.com",
-      phone: 1356445656
-    }
+### To define a background color on hover a row :
+
+In your main CSS file, add that :
+
+```css
+[data-row]:hover div {
+  background-color: #e8e8e8 !important;
 }
+
 ```
+
+> <mark>Do not forget the mention !important</mark>
+
+
 
 ![Description](/home/stephane/Documents/GitHub/OC-DA-JS-React/P14_OC_DA_JS_React/react-ts-tab-lib/public/customizing_texts.jpg)
 
-Then you must encapsulate these 2 tables within an object of type TableProps that you will pass as props to the Table component using the spread operator :
+
+
+### To define a behaviour when you click on a row :
+
+Let's say we have 
 
 ```ts
 const tableProps: TableProps<User> = { columns, rows }
@@ -345,17 +336,11 @@ Let's assume that you want to translate the entire component into French, for ex
 You will need to define the different possible properties of textContent:
 
 - **searchLabel** : Allows you to modify the label of the search bar
-
 - **sampleLabelPrefix** : changes the prefix label of the select by the number of entries per sample
-
 - **sampleLabelSuffix** : changes the suffix label of the select by the number of entries per sample
-
 - **emptyTableText** : Modifies the sentence that accompanies an empty table of entries
-
 - **customizeSampleInfoTextContent** : Function that modifies the text giving information on the first and last entry of a sample as well as the total of entries
-
 - **previousPageButtonLabel** : modifies the text displayed by the Previous button
-
 - **nextPageButtonLabel** : modifies the text displayed by the Next button
 
 In the tableProps prop, add the object :
@@ -384,7 +369,7 @@ We strongly advise you to scrupulously respect the structure of the definition o
 
 There you go! Mission accomplished!!... Next?...
 
------------------------------------------------------------
+---
 
 > *I would like to customize the display name of my columns*
 
@@ -416,7 +401,7 @@ Which gives :
 
 Now you have completely customized the component texts !!!
 
-------------------------------------------------------------
+---
 
 > *Now I would like to make the component more visually appealing and to respect the graphic charter of my page.*
 
@@ -461,38 +446,34 @@ export type TableProps<T> = {
 
 All optional properties are those that you will use to style the component and customize its behaviours.
 
-## 
-
 ## API Props
 
 In this section, we assume **User** is the type of data you are processing.
 
 Class names satisfies Tailwiind.
 
-| Props                  | DescriptionType                                              | Type                          | Properties           | Property type             | Required | Default value                 |
-|:---------------------- | ------------------------------------------------------------ | ----------------------------- | -------------------- | ------------------------- | -------- | ----------------------------- |
-| rows                   | Array of all the User entries you populate your table with   | User []                       |                      |                           | True     |                               |
-| columns                | Array of which keys of User type you want for your columns   | Array(keyof User)             |                      |                           | True     |                               |
-| defaultOrder           | Object defining the column to order by default and the order |                               |                      | ActiveOrderType<T>        | False    |                               |
-| textContent            | Obejct containing the customized texts                       |                               |                      | TextContentType           | False    |                               |
-| onRowHover()           | Function to customize a row hovering                         | (row: T \| null) => void;     |                      |                           | False    |                               |
-| onRowClick()           |                                                              | (row: T \| null) => void;     |                      |                           | False    |                               |
-| defaultSamplingOptions | Array of numbers defining samples length options             |                               |                      |                           | False    | [10, 20, 50, 100]             |
-| classNames             | Object of type ClassNames you use to customize the rendering | Object of type **ClassNames** |                      |                           | False    |                               |
-|                        |                                                              |                               | tableBackgroundColor | string                    | False    |                               |
-|                        |                                                              |                               | tableBorders         | string                    | False    | 'border-4 border-gray-300'    |
-|                        |                                                              |                               | tablePaddings        | string                    | False    | 'px-[5px] pt-[5px] pb-[15px]' |
-|                        |                                                              |                               | tableMargins         | string                    | False    |                               |
-|                        |                                                              |                               | tableRounded         | string                    | False    | 'rounded-[23px]'              |
-|                        |                                                              |                               | tableHeaders         | TableHeadersClassNames    | False    |                               |
-|                        |                                                              |                               | samplingOptions      | SamplingOptionsClassNames | False    |                               |
-|                        |                                                              |                               | searchBar            | SearchBarClassNames       | False    |                               |
-|                        |                                                              |                               | sortIndicatorColor   | string                    | False    |                               |
-|                        |                                                              |                               | rows                 | RowsClassNames            | False    |                               |
-|                        |                                                              |                               | cells                | string                    | False    |                               |
-|                        |                                                              |                               | pagination           | PaginationClassNames      | False    |                               |
-
-## 
+| Props                  | DescriptionType                                              | Type                         | Properties           | Property type             | Required | Default value                 |
+|:---------------------- | ------------------------------------------------------------ | ---------------------------- | -------------------- | ------------------------- | -------- | ----------------------------- |
+| rows                   | Array of all the User entries you populate your table with   | User []                      |                      |                           | True     |                               |
+| columns                | Array of which keys of User type you want for your columns   | Array(keyof User)            |                      |                           | True     |                               |
+| defaultOrder           | Object defining the column to order by default and the order |                              |                      | ActiveOrderType`<T>`      | False    |                               |
+| textContent            | Obejct containing the customized texts                       |                              |                      | TextContentType           | False    |                               |
+| onRowHover()           | Function to customize a row hovering                         | (row: T\| null) => void;     |                      |                           | False    |                               |
+| onRowClick()           |                                                              | (row: T\| null) => void;     |                      |                           | False    |                               |
+| defaultSamplingOptions | Array of numbers defining samples length options             |                              |                      |                           | False    | [10, 20, 50, 100]             |
+| classNames             | Object of type ClassNames you use to customize the rendering | Object of type**ClassNames** |                      |                           | False    |                               |
+|                        |                                                              |                              | tableBackgroundColor | string                    | False    |                               |
+|                        |                                                              |                              | tableBorders         | string                    | False    | 'border-4 border-gray-300'    |
+|                        |                                                              |                              | tablePaddings        | string                    | False    | 'px-[5px] pt-[5px] pb-[15px]' |
+|                        |                                                              |                              | tableMargins         | string                    | False    |                               |
+|                        |                                                              |                              | tableRounded         | string                    | False    | 'rounded-[23px]'              |
+|                        |                                                              |                              | tableHeaders         | TableHeadersClassNames    | False    |                               |
+|                        |                                                              |                              | samplingOptions      | SamplingOptionsClassNames | False    |                               |
+|                        |                                                              |                              | searchBar            | SearchBarClassNames       | False    |                               |
+|                        |                                                              |                              | sortIndicatorColor   | string                    | False    |                               |
+|                        |                                                              |                              | rows                 | RowsClassNames            | False    |                               |
+|                        |                                                              |                              | cells                | string                    | False    |                               |
+|                        |                                                              |                              | pagination           | PaginationClassNames      | False    |                               |
 
 ## tableHeaders options
 
@@ -510,8 +491,6 @@ Class names satisfies Tailwiind.
 | padding         |             | string  | 'py-[5px]'                            |
 | gap             |             | sttring | 'gap-2.5'                             |
 
-## 
-
 ## samplingOptions options
 
 | Option                | Description | Type   | Default value                   |
@@ -527,8 +506,6 @@ Class names satisfies Tailwiind.
 | menuPadding           |             | string | 'p-[10px]'                      |
 | menuBackgroundColor   |             | string | 'bg-gray-800 hover:bg-gray-600' |
 
-## 
-
 ## searchBar options
 
 | option               | Description | Type | Default value                           |
@@ -542,8 +519,6 @@ Class names satisfies Tailwiind.
 | inputFocusOutLine    |             |      | 'focus:outline-sky-400'                 |
 | inputTextColor       |             |      | 'text-black'                            |
 
-## 
-
 ## rows options
 
 | Option                 | Description | Type   | Default value |
@@ -555,8 +530,6 @@ Class names satisfies Tailwiind.
 | paddingT               |             | string | 'pt-[10px]'   |
 | height                 |             | string | 'h-[30px]'    |
 | textColor              |             | string |               |
-
-## 
 
 ## pagination options
 

@@ -100,6 +100,7 @@ export type RowsClassNames = {
   marginL?: string;
   marginR?: string;
   paddingT?: string;
+  paddingB?: string;
   height?: string;
   textColor?: string;
 }
@@ -536,7 +537,10 @@ function Table <T extends Record<string, any>>({
                       onRowClick(row);
                     }
                   }}
-                  className={`${classNames?.rows?.height ?? 'h-[30px]'}`}
+                  className={`
+                    ${classNames?.rows?.height ?? 'h-[30px]'}
+                    ${classNames?.rows?.paddingB ?? 'last:pt-[15px]'}
+                  `}
                 >
                 {columns.map((column, colIndex) => (
                   <td title={`id: ${row.id}`}
@@ -545,6 +549,7 @@ function Table <T extends Record<string, any>>({
                     className={`
                       ${classNames?.cells ?? 'whitespace-nowrap'} py-[2.5px]
                       ${rowIndex === 0 ? classNames?.rows?.paddingT ?? 'pt-[10px]' : ''}
+                      ${rowIndex === 0 ? classNames?.rows?.paddingB ?? 'pt-[15px]' : ''}
                     `}
                   >
                     <div
@@ -580,11 +585,15 @@ function Table <T extends Record<string, any>>({
               : (
                 <tr
                   role='row'
-                  className={`${classNames?.rows?.oddRowBackgroundColor ?? ''}`}
+                  className={`
+                    ${classNames?.rows?.oddRowBackgroundColor ?? ''}
+                    ${classNames?.rows?.paddingB ?? 'last:pt-[15px]'}
+                    `}
                   ref={rowRef}
                 >
                   <td colSpan={columns.length} className={`
                     ${classNames?.rows?.paddingT ?? 'pt-[10px]'}
+                    
                     ${'text-center truncate py-[5px]'}`}>
                     No data available in table
                   </td>
