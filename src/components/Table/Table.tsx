@@ -42,6 +42,7 @@ export type TableHeadersClassNames = {
   roundedL?: string;
   roundedR?: string;
   padding?: string;
+  margin?: string;
   gap?: string;
 }
 
@@ -465,9 +466,10 @@ function Table <T extends Record<string, any>>({
                   <div
                     key={index}
                     className={`
-                      flex justify-between items-center
+                      flex justify-between items-center 
                       ${classNames?.tableHeaders?.gap ?? 'gap-2.5'}
                       ${classNames?.tableHeaders?.padding ?? 'py-[5px]'}
+                      ${classNames?.tableHeaders?.margin ?? 'mb-[10px]'}
                       ${classNames?.tableHeaders?.textColor ?? 'text-white'}
                       ${classNames?.tableHeaders?.backgroundColor ?? 'bg-gray-800 hover:bg-gray-700'} 
                       ${classNames?.tableHeaders?.borderY ?? 'border-y-4'}
@@ -587,14 +589,14 @@ function Table <T extends Record<string, any>>({
                   role='row'
                   className={`
                     ${classNames?.rows?.oddRowBackgroundColor ?? ''}
-                    ${classNames?.rows?.paddingB ?? 'last:pt-[15px]'}
+                    ${classNames?.rows?.paddingB ?? 'first:mt-[10px] last:mt-[15px]'}
                     `}
                   ref={rowRef}
                 >
                   <td colSpan={columns.length} className={`
-                    ${classNames?.rows?.paddingT ?? 'pt-[10px]'}
+                    ${classNames?.rows?.paddingT ?? 'mt-[10px]'}
                     
-                    ${'text-center truncate py-[5px]'}`}>
+                    ${'text-center truncate mt-[10px] mb-[15px]'}`}>
                     No data available in table
                   </td>
                 </tr>
@@ -655,7 +657,6 @@ function Table <T extends Record<string, any>>({
               `}
               aria-label='Previous page'
             >
-              {/* {textContent?.previousPageButtonLabel ?? 'Previous'} */}
               <svg className='rotate-180 h-[15px]' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill={classNames?.pagination?.navButtonsColor ?? '#fff'}>
                 <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/>
               </svg>
@@ -697,7 +698,6 @@ function Table <T extends Record<string, any>>({
               `}
               aria-label='Next page'
             >
-              {/* {textContent?.nextPageButtonLabel ?? 'Next'} */}
               <svg className='h-[15px]' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill={classNames?.pagination?.navButtonsColor ?? '#fff'}>
                 <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/>
               </svg>
