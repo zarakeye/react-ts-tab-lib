@@ -784,6 +784,11 @@ function App() {
           order: 'asc'
         }
       }
+      classNames={{
+        rows: {
+          textColor: 'text-white',
+        }
+      }}
       textContent={{
         searchLabel: 'Rechercher',
         sampleLabelPrefix: 'Affiche ',

@@ -134,6 +134,42 @@ export type TableProps<T> = {
   textContent?: TextContentType | null;
 }
 
+/**
+ * The Table component renders a table with a specified number of columns and rows.
+ *
+ * Props:
+ *   columns: Column<T>[]
+ *   rows: T[]
+ *   onRowHover: (row: T | null) => void
+ *   onRowClick: (row: T | null) => void
+ *   classNames: ClassNames
+ *   samplingOptions: number[] | undefined
+ *   defaultOrder: ActiveOrderType<T> | null
+ *   textContent: TextContentType | null
+ *
+ * State:
+ *   allRows: T[]
+ *   columnsWidth: number[]
+ *   activeOrder: { property: keyof T; order: OrderType }
+ *   currentPage: number
+ *   pagesNumber: number
+ *   displayedSample: T[]
+ *   hoveredRow: T | null
+ *   selectedKeys: Selection
+ *
+ * Effects:
+ *   Updates the sample length when the user selects a new number of displayed entries.
+ *   Resets the current page to 1.
+ *   Filters the rows based on the search input value.
+ *   Generates an array of page numbers for the pagination component.
+ *   Updates the columns width when the component is mounted.
+ *
+ * Renders:
+ *   A table with the specified number of columns and rows.
+ *   A select menu for selecting the number of displayed entries.
+ *   A search bar for filtering the rows.
+ *   A pagination component for navigating between pages.
+ */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function Table <T extends Record<string, any>>({
   columns = [],
@@ -226,14 +262,16 @@ function Table <T extends Record<string, any>>({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[ activeOrder]);
 
+  
   /**
-   * Handles the click event on the sort button of a column.
+   * Toggles the sorting order for the specified property.
    *
-   * Toggles the sort order between 'asc' and 'desc' if the column is already sorted,
-   * or sets the sort order to 'asc' if the column was not sorted.
+   * @param e - The mouse event triggered by clicking the column header.
+   * @param property - The property of the row to sort by.
    *
-   * @param e - The click event.
-   * @param property - The property of the column to sort.
+   * This function checks if the current active order is for the specified property.
+   * If it is, the order is toggled between ascending and descending. If it is not,
+   * the order is set to ascending for the specified property.
    */
   const handleOrder = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, property: keyof T) => {
     e.preventDefault();
@@ -252,7 +290,7 @@ function Table <T extends Record<string, any>>({
   /**
    * Updates the sample length when the user selects a new number of displayed entries.
    * Resets the current page to 1.
-   * @param e The event triggered by the user selecting a new number of displayed entries.
+   * @param value The new number of displayed entries.
    */
   const handleDisplayedEntriesChange = (/*e: ChangeEvent<HTMLSelectElement>*/ value: string) => {
     const newValue = parseInt(/*e.target.value*/ value);
@@ -288,9 +326,10 @@ function Table <T extends Record<string, any>>({
    * 
    * The array will contain the first page number, the last page number, and the current page number, 
    * as well as the two page numbers before and after the current page number. 
-   * If the total number of pages is greater than 5, the array will also contain the string '...' 
-   * to indicate that there are more pages.
-   *
+   * If the total number of pages is greater than 5, the array will also contain the string '...'. 
+   * To avoid having multiple '...' in a row, the function will remove any '...' that are not 
+   * preceded by a number and not followed by a number.
+   * 
    * @param current - The current page number.
    * @param total - The total number of pages.
    * 
@@ -602,6 +641,7 @@ function Table <T extends Record<string, any>>({
                       <div
                         className={`
                           ${classNames?.rows?.oddRowBackgroundColor ?? ''}
+                          ${classNames?.rows?.textColor ?? ''}
                         `}
                       >
                         No data available in table
