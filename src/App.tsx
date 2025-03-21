@@ -804,9 +804,6 @@ function App() {
         previousPageButtonLabel: 'Page précédente',
         nextPageButtonLabel: 'Page suivante'
       }}
-
-      // key={rows.length}
-      // {...tableProps}
     />
   )
 }

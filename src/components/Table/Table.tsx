@@ -28,7 +28,6 @@ export type Column<T> = {
   displayName?: string;
   type: DataType;
   renderer?: (value: T[keyof T]) => ReactNode;
-  specificColumnClassname?: string;
 }
 
 export type TableHeadersClassNames = {
