@@ -5,13 +5,16 @@ import { type Selection } from '@heroui/react';
 import * as React from 'react';
 import { type ChangeEvent, JSX, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import '../../index.css';
+import { v4 as uuidv4 } from 'uuid';
 
 export type DataType = 'string' | 'number' | 'date' | 'boolean' | 'custom';
 export type OrderType = 'asc' | 'desc';
+
 export type ActiveOrderType<T> = {
   property: keyof T;
   order: OrderType;
 }
+
 export type TextContentType = {
   searchLabel?: string | null;
   searchPlaceholder?: string | null;
@@ -45,7 +48,7 @@ export type TableHeadersClassNames = {
   gap?: string;
 }
 
-export type SamplingOptionsClassNames = {
+export type RangeOptionsClassNames = {
   buttonBackgroundColor?: string;
   buttonText?: string;
   buttonBorder?: string;
@@ -114,7 +117,7 @@ export type ClassNames = {
   tableMargins?: string;
   tableRounded?: string;
   tableHeaders?: TableHeadersClassNames,
-  samplingOptions?: SamplingOptionsClassNames
+  rangeLengthOptions?: RangeOptionsClassNames
   searchBar?: SearchBarClassNames
   sortIndicatorColor?: string;
   rows?: RowsClassNames;
@@ -128,9 +131,49 @@ export type TableProps<T> = {
   onRowHover?: (row: T | null) => void;
   onRowClick?: (row: T | null) => void;
   classNames?: ClassNames;
-  samplingOptions?: number[] | undefined;
+  rangeLengthOptions?: number[] | undefined;
   defaultOrder?: ActiveOrderType<T> | null;
   textContent?: TextContentType | null;
+}
+  
+/**
+ * Generates an array of page numbers for the pagination component.
+ * 
+ * The array will contain the first page number, the last page number, and the current page number, 
+ * as well as the two page numbers before and after the current page number. 
+ * If the total number of pages is greater than 5, the array will also contain the string '...'. 
+ * To avoid having multiple '...' in a row, the function will remove any '...' that are not 
+ * preceded by a number and not followed by a number.
+ * 
+ * @param current - The current page number.
+ * @param total - The total number of pages.
+ * 
+ * @returns An array of page numbers and/or the string '...'.
+ */
+const generatePagesNumbers = (current: number, total: number): (number | string)[] => {
+  if (total <= 1) return [];
+  
+  const delta = 1; // Number of page numbers to show before and after the current page
+  const pages = [];
+
+  for (let i = 1; i <= total; i++) {
+    if (i === 1 || i === total || (i >= current - delta && i <= current + delta)) {
+      pages.push(i);
+    } else if (i !== 1 && i <= current - delta - 1 || i !== total && i >= current + delta + 1) {
+      pages.push('...');
+    }
+  }
+
+  const uniquePages = [] as (number | string)[];
+  for (let i = 0; i < pages.length; i++) {
+    if (pages[i] !== '...') {
+      uniquePages.push(pages[i]);
+    } else if (pages[i] === '...' && pages[i - 1] !== '...') {
+      uniquePages.push(pages[i]);
+    }
+  }
+
+  return uniquePages;
 }
 
 /**
@@ -142,7 +185,7 @@ export type TableProps<T> = {
  *   onRowHover: (row: T | null) => void
  *   onRowClick: (row: T | null) => void
  *   classNames: ClassNames
- *   samplingOptions: number[] | undefined
+ *   rangeLengthOptions: number[] | undefined
  *   defaultOrder: ActiveOrderType<T> | null
  *   textContent: TextContentType | null
  *
@@ -152,7 +195,7 @@ export type TableProps<T> = {
  *   activeOrder: { property: keyof T; order: OrderType }
  *   currentPage: number
  *   pagesNumber: number
- *   displayedSample: T[]
+ *   displayedRange: T[]
  *   hoveredRow: T | null
  *   selectedKeys: Selection
  *
@@ -176,16 +219,16 @@ function Table <T extends Record<string, any>>({
   onRowHover,
   onRowClick,
   classNames,
-  samplingOptions = [10, 20, 50, 100],
+  rangeLengthOptions = [10, 20, 50, 100],
   defaultOrder,
   textContent
 }: TableProps<T>): JSX.Element {
-  type DisplayedRows_Type = typeof samplingOptions[number];
-  const [sampleLength, setSampleLength] = useState<DisplayedRows_Type>(samplingOptions[0]);
+  type DisplayedRange_Type = typeof rangeLengthOptions[number];
+  const [rangeLength, setRangeLength] = useState<DisplayedRange_Type>(rangeLengthOptions[0]); // Max number of displayed rows at once
   const [allRows, setAllRows] = useState<T[]>(rows);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pagesNumber, setPagesNumber] = useState<number>(1);
-  const [displayedSample, setDisplayedSample] = useState<T[]>([]);
+  const [displayedRange, setDisplayedRange] = useState<T[]>([]); // Rows currently displayed (on the current page)
   const [activeOrder, setActiveOrder] = useState<{ property: keyof T; order: OrderType }>({
     property: defaultOrder?.property ?? columns[0].property satisfies keyof T,
     order: defaultOrder?.order ?? 'asc'
@@ -199,21 +242,24 @@ function Table <T extends Record<string, any>>({
   const columnNameRef = useRef<HTMLDivElement>(null);
   const rowRef = useRef<HTMLTableRowElement>(null);
   
+  /**
+   * Order all rows based on the active order and the property type
+   */
   useEffect(() => {
-    const valuesOfFilteredProperty = allRows.map((row) => row[activeOrder.property]);
+    const valuesToOrder = allRows.map((row) => row[activeOrder.property]);
     const order = activeOrder.order;
     const col = columns.find((column) => column.property === activeOrder.property);
 
-    if (activeOrder.order === 'asc') {
+    if (order === 'asc') {
       switch (col?.type) {
         case 'string':
-          valuesOfFilteredProperty.sort((a, b) => a.localeCompare(b));
+          valuesToOrder.sort((a, b) => a.localeCompare(b));
           break;
         case 'number':
-          valuesOfFilteredProperty.sort((a, b) => a - b);
+          valuesToOrder.sort((a, b) => a - b);
           break;
         case 'date':
-          valuesOfFilteredProperty.sort((a, b) => {
+          valuesToOrder.sort((a, b) => {
             if (typeof a === 'string' && typeof b === 'string') {
               const dateA = new Date(a);
               const dateB = new Date(b);
@@ -229,19 +275,19 @@ function Table <T extends Record<string, any>>({
           });
           break;
         case 'boolean':
-          valuesOfFilteredProperty.sort((a, b) => a - b);
+          valuesToOrder.sort((a, b) => a - b);
           break;
       }
     } else if (order === 'desc') {
       switch (col?.type) {
         case 'string':
-          valuesOfFilteredProperty.sort((a, b) => b.localeCompare(a));
+          valuesToOrder.sort((a, b) => b.localeCompare(a));
           break;
         case 'number':
-          valuesOfFilteredProperty.sort((a, b) => b - a);
+          valuesToOrder.sort((a, b) => b - a);
           break;
         case 'date':
-          valuesOfFilteredProperty.sort((a, b) => {
+          valuesToOrder.sort((a, b) => {
             if (typeof a === 'string' && typeof b === 'string') {
               return new Date(b).getTime() - new Date(a).getTime();
             } else {
@@ -250,29 +296,23 @@ function Table <T extends Record<string, any>>({
           });
           break;
         case 'boolean':
-          valuesOfFilteredProperty.sort((a, b) => b - a);
+          valuesToOrder.sort((a, b) => b - a);
           break;
       }
     }
 
-    const sortedRows = valuesOfFilteredProperty.map((value) => rows.find((row) => row[activeOrder.property] === value));
+    const sortedRows = valuesToOrder.map((value) => rows.find((row) => row[activeOrder.property] === value));
 
     setAllRows(sortedRows as T[]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[ activeOrder]);
-
-  
+ 
   /**
-   * Toggles the sorting order for the specified property.
-   *
-   * @param e - The mouse event triggered by clicking the column header.
-   * @param property - The property of the row to sort by.
-   *
-   * This function checks if the current active order is for the specified property.
-   * If it is, the order is toggled between ascending and descending. If it is not,
-   * the order is set to ascending for the specified property.
+   * Toggles the order between ascending and descending order when the user clicks on a table header.
+   * @param e - The mouse event triggered by clicking the table header.
+   * @param property - The property to sort the rows by.
    */
-  const handleOrder = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, property: keyof T) => {
+  const handleOrderChange = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, property: keyof T) => {
     e.preventDefault();
 
     if (activeOrder?.property === property) {
@@ -282,7 +322,7 @@ function Table <T extends Record<string, any>>({
         setActiveOrder({ property, order: 'asc' });
       }
     } else {
-      setActiveOrder({ property, order: 'asc' });
+      setActiveOrder({ property, order: defaultOrder?.order ?? 'asc' });
     }
   }
 
@@ -291,9 +331,9 @@ function Table <T extends Record<string, any>>({
    * Resets the current page to 1.
    * @param value The new number of displayed entries.
    */
-  const handleDisplayedEntriesChange = (/*e: ChangeEvent<HTMLSelectElement>*/ value: string) => {
-    const newValue = parseInt(/*e.target.value*/ value);
-    setSampleLength(newValue);
+  const handleRangeLengthChange = (value: string) => {
+    const newValue = parseInt(value);
+    setRangeLength(newValue);
     setCurrentPage(1);
   }
 
@@ -304,88 +344,74 @@ function Table <T extends Record<string, any>>({
    *
    * This function iterates over all rows, concatenates the values of each row into a single
    * string, and checks if this string includes the trimmed and lowercased value from the
-   * search input. If it does, the row is added to the searchBaseArray. Updates the state
+   * search input. If it does, the row is added to the rowsMatchingWithSearchInput. Updates the state
    * with the filtered rows.
    */
-  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
-    const searchBaseArray: T[] = [];
+  const handleSearchInput = (e: ChangeEvent<HTMLInputElement>) => {
+    const rowsMatchingWithSearchInput: T[] = [];
+
+    const displayedProperties = columns.map(column => column.property);
+
     rows.forEach(row => {
-      const mergedRow = Object.values(row).join(' ').toString().toLowerCase().trim();
-      if (mergedRow.includes(e.target.value.trim().toLowerCase())) {
-        searchBaseArray.push(row);
+      let mergedRow = '';
+
+      Object.keys(row).forEach(key => {
+        if (rowsMatchingWithSearchInput.includes(row)) {
+          return;
+        } else if (displayedProperties.includes(key)) {
+          mergedRow += row[key].toString().toLowerCase().trim().concat(' ');
+        }
+      })
+      
+      if (mergedRow.trim().includes(e.target.value.trim().toLowerCase())) {
+        rowsMatchingWithSearchInput.push(row);
       }
     });
 
-    setAllRows(searchBaseArray);
+    setAllRows(rowsMatchingWithSearchInput);
     setCurrentPage(1);
   }
-  
+
   /**
-   * Generates an array of page numbers for the pagination component.
-   * 
-   * The array will contain the first page number, the last page number, and the current page number, 
-   * as well as the two page numbers before and after the current page number. 
-   * If the total number of pages is greater than 5, the array will also contain the string '...'. 
-   * To avoid having multiple '...' in a row, the function will remove any '...' that are not 
-   * preceded by a number and not followed by a number.
-   * 
-   * @param current - The current page number.
-   * @param total - The total number of pages.
-   * 
-   * @returns An array of page numbers and/or the string '...'.
+   * Updates the number of pages when the number of rows or the range length changes.
    */
-  const generatePagesNumbers = (current: number, total: number): (number | string)[] => {
-    if (total <= 1) return [];
-    
-    const delta = 1;
-    const pages = [];
-
-    for (let i = 1; i <= total; i++) {
-      if (i === 1 || i === total || (i >= current - delta && i <= current + delta)) {
-        pages.push(i);
-      } else if (i !== 1 && i <= current - delta - 1 || i !== total && i >= current + delta + 1) {
-        pages.push('...');
-      }
-    }
-
-    const uniquePages = [] as (number | string)[];
-    for (let i = 0; i < pages.length; i++) {
-      if (pages[i] !== '...') {
-        uniquePages.push(pages[i]);
-      } else if (pages[i] === '...' && pages[i - 1] !== '...') {
-        uniquePages.push(pages[i]);
-      }
-    }
-
-    return uniquePages;
-  }
-
   useEffect(() => {
-    const newPagesNumber = Math.ceil(allRows.length / sampleLength);
+    const newPagesNumber = Math.ceil(allRows.length / rangeLength);
+    if (newPagesNumber === 0) {
+      setPagesNumber(1);
+      return;
+    }
     setPagesNumber(newPagesNumber);
+  }, [allRows.length, rangeLength]);
 
-    if (currentPage > newPagesNumber) {
-      setCurrentPage(newPagesNumber > 0 ? newPagesNumber : 1);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allRows.length, sampleLength]);
-
+  /**
+   * Updates the displayed range when the current page changes.
+   */
   useEffect(() => {
-    const startIndex = sampleLength * (currentPage - 1);
-    const endIndex = startIndex + sampleLength;
-    setDisplayedSample(allRows.slice(startIndex, endIndex))
-  }, [allRows, currentPage, sampleLength])
+    const startIndex = rangeLength * (currentPage - 1);
+    const endIndex = startIndex + rangeLength;
+    setDisplayedRange(allRows.slice(startIndex, endIndex))
+  }, [allRows, currentPage, rangeLength])
 
   const pagesNumbers = useMemo(
     () => generatePagesNumbers(currentPage, pagesNumber),
     [currentPage, pagesNumber]
   );
 
-  const sampleLengthOptions = samplingOptions.map((option) => (
-    { value: option, label: <span className={`${classNames?.samplingOptions?.menuTextColor ?? 'text-white'} ${classNames?.samplingOptions?.menuBackgroundColor ?? 'bg-gray-800 hover:bg-gray-700'}`}>{`${textContent?.sampleLabelPrefix ?? 'Show '} ${option} ${textContent?.sampleLabelSuffix ?? ' entries'}`} </span> }
+  const rangeLengthOptionsTags = rangeLengthOptions.map((option) => (
+    {
+      value: option,
+      label:  <span
+                key={option}
+                className={`
+                  ${classNames?.rangeLengthOptions?.menuTextColor ?? 'text-white'}
+                  ${classNames?.rangeLengthOptions?.menuBackgroundColor ?? 'bg-gray-800 hover:bg-gray-700'}
+                `}
+              >
+                {`${textContent?.sampleLabelPrefix ?? 'Show '} ${option} ${textContent?.sampleLabelSuffix ?? ' entries'}`}
+              </span>
+      }
   ))
-
-  // const columnsWidth: ColumnsWitdthType<T>[] = [];
 
   useEffect(() => {
     const firstRow = document.getElementsByTagName('tbody')[0].children[0];
@@ -393,8 +419,13 @@ function Table <T extends Record<string, any>>({
     for (let i = 0; i < cells.length; i++) {
       setColumnsWidth(  [...columnsWidth, cells[i].offsetWidth]);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [columns]);
 
+  /**
+   * Creates a comma-separated string of selected keys from the selectedKeys Set.
+   * Replaces underscores with empty strings.
+   */
   const selectedValue = useMemo(
     () => Array.from(selectedKeys).join(', ').replace(/_/g, ''),
     [selectedKeys]
@@ -404,18 +435,18 @@ function Table <T extends Record<string, any>>({
     <div className={`my-5 `}>
       <div className='flex flex-col lg:flex-row items-center justify-between my-5 gap-y-3.5'>
         <div>
-          <label htmlFor="sampleLength" className='sr-only'>Displayed entries</label>
+          <label htmlFor="rangeLength" className='sr-only'>Displayed entries</label>
           <Dropdown>
             <DropdownTrigger>
               <Button
                 variant='bordered'
                 className={`
-                  ${classNames?.samplingOptions?.buttonBorder ?? 'border-4'}
-                  ${classNames?.samplingOptions?.buttonBorderColor ?? 'border-gray-300'}
-                  ${classNames?.samplingOptions?.buttonRounded ?? 'rounded-[20px]'}
-                  ${classNames?.samplingOptions?.buttonText ?? 'text-center text-white'} 
-                  ${classNames?.samplingOptions?.buttonBackgroundColor ?? 'bg-gray-800 hover:bg-gray-700'} 
-                  ${classNames?.samplingOptions?.buttonPadding ?? 'px-[10px]'}`
+                  ${classNames?.rangeLengthOptions?.buttonBorder ?? 'border-4'}
+                  ${classNames?.rangeLengthOptions?.buttonBorderColor ?? 'border-gray-300'}
+                  ${classNames?.rangeLengthOptions?.buttonRounded ?? 'rounded-[20px]'}
+                  ${classNames?.rangeLengthOptions?.buttonText ?? 'text-center text-white'} 
+                  ${classNames?.rangeLengthOptions?.buttonBackgroundColor ?? 'bg-gray-800 hover:bg-gray-700'} 
+                  ${classNames?.rangeLengthOptions?.buttonPadding ?? 'px-[10px]'}`
                 }
               >
                 {`${textContent?.sampleLabelPrefix ?? 'Show'} ${selectedValue} ${textContent?.sampleLabelSuffix ?? 'entries'}`}
@@ -434,18 +465,18 @@ function Table <T extends Record<string, any>>({
               onSelectionChange={e => {
                 if (!e.currentKey) return
                 setSelectedKeys(new Set([e.currentKey]))
-                handleDisplayedEntriesChange(e.currentKey)
+                handleRangeLengthChange(e.currentKey)
               }}
               className={`
-                ${classNames?.samplingOptions?.menuBorder ?? 'border-4'}
-                ${classNames?.samplingOptions?.menuBackgroundColor ?? 'border-gray-300'}
-                ${classNames?.samplingOptions?.menuRounded ?? 'rounded-[20px]'}
-                ${classNames?.samplingOptions?.menuPadding ?? 'p-[10px]'}
-                ${classNames?.samplingOptions?.menuTextColor ?? 'text-white'}
-                ${classNames?.samplingOptions?.menuBackgroundColor ?? 'bg-gray-800 hover:bg-gray-600'}
+                ${classNames?.rangeLengthOptions?.menuBorder ?? 'border-4'}
+                ${classNames?.rangeLengthOptions?.menuBackgroundColor ?? 'border-gray-300'}
+                ${classNames?.rangeLengthOptions?.menuRounded ?? 'rounded-[20px]'}
+                ${classNames?.rangeLengthOptions?.menuPadding ?? 'p-[10px]'}
+                ${classNames?.rangeLengthOptions?.menuTextColor ?? 'text-white'}
+                ${classNames?.rangeLengthOptions?.menuBackgroundColor ?? 'bg-gray-800 hover:bg-gray-600'}
               `}
             >
-              {sampleLengthOptions.map(option => (
+              {rangeLengthOptionsTags.map(option => (
                 <DropdownItem key={option.value}>
                   {`${textContent?.sampleLabelPrefix ?? 'Show'} ${option.value} ${textContent?.sampleLabelSuffix ?? 'entries'}`}
                 </DropdownItem>
@@ -477,7 +508,7 @@ function Table <T extends Record<string, any>>({
               ${classNames?.searchBar?.inputFocusOutLine ?? 'focus:outline-sky-400'}
               ${classNames?.searchBar?.inputTextColor ?? 'text-black'}
             `}
-            onChange={(e) => handleSearch(e)}
+            onChange={(e) => handleSearchInput(e)}
           />
         </div>
       </div>
@@ -493,10 +524,14 @@ function Table <T extends Record<string, any>>({
       >
         <table className={`w-full`} role='table'>
           <thead>
-            <tr role='row' className={`sticky top-0 z-10`}>
+            <tr
+              role='row'
+              key={uuidv4()}
+              className={`sticky top-0 z-10`}
+            >
               {columns.map((key, index) => (
                 <th
-                  key={index}
+                  key={uuidv4()}
                   role='columnheader'
                   // className={`${key.specificColumnClassname ?? ''} ${globalColumnsClassname ? globalColumnsClassname : 'pl-[18px] pr-[5px] py-[10px] border-b-2 border-b-gray bg-gray/0 hover:bg-gray/40 '}`}
                   className="cursor-pointer"
@@ -519,7 +554,7 @@ function Table <T extends Record<string, any>>({
                       ${index === columns.length - 1 ? classNames?.tableHeaders?.borderR ?? 'border-r-4' : ''}
                       ${index === columns.length - 1 ? classNames?.tableHeaders?.roundedR ?? 'rounded-tr-[20px] rounded-br-[20px]' : ''}
                     `}
-                    onClick={e => handleOrder(e, key.property)}
+                    onClick={e => handleOrderChange(e, key.property)}
                   >
                     <div className={`flex items-center justify-between w-[100%] pl-[18px] pr-[5px]`}>
                       <div className='flex-1 text-center overflow-hidden mr-[10px]'>
@@ -554,100 +589,106 @@ function Table <T extends Record<string, any>>({
             </tr>
           </thead>
           <tbody className='pb-[2.5] overflow-y-auto '>
-            {displayedSample.length > 0
-              ? displayedSample.map((row: T, rowIndex: number): ReactNode => (
-                <tr
-                  key={rowIndex}
-                  ref={rowRef}
-                  role='row'
-                  data-row
-                  onMouseEnter={() => {
-                    setHoveredRow(row);
-                    if (onRowHover) {
-                      onRowHover(row);
-                    }
-                  }}
-                  onMouseLeave={() => {
-                    setHoveredRow(null);
-                    if (onRowHover) {
-                      onRowHover(null);
-                    }
-                  }}
-                  onClick={() => {
-                    if (onRowClick) {
-                      onRowClick(row);
-                    }
-                  }}
+            {displayedRange.length === 0 && (
+              <tr
+                role='row'
+                key={uuidv4()}
+                className={`  
+                  ${classNames?.rows?.paddingB ?? ''}
+                `}
+                ref={rowRef}
+              >
+                <td
+                  key={uuidv4()}
+                  role='cell'
+                  colSpan={columns.length}
                   className={`
-                    ${classNames?.rows?.height ?? 'h-[30px]'}
-                    ${classNames?.rows?.paddingB ?? 'last:pt-[15px]'}
+                    ${classNames?.rows?.paddingT ?? 'mt-[10px]'}
+                    ${'text-center truncate'}
+                    ${classNames?.rows?.paddingX ?? 'px-[15px]'}
                   `}
                 >
-                {columns.map((column, colIndex) => (
-                  <td title={`id: ${row.id}`}
-                    key={colIndex}
-                    role='cell'
-                    className={`
-                      ${classNames?.cells ?? 'whitespace-nowrap'} py-[2.5px]
-                    `}
-                  >
                     <div
                       className={`
-                        flex justify-between items-center px-[10px] py-[5px] h-full transition-colors duration-200
+                        ${classNames?.rows?.oddRowBackgroundColor ?? 'bg-gray-500'}
                         ${classNames?.rows?.textColor ?? ''}
-                        ${
-                          rowIndex % 2 === 0
-                            ? classNames?.rows?.oddRowBackgroundColor ?? 'bg-gray-500'
-                            : classNames?.rows?.evenRowBackgroundColor ?? 'bg-gray-600'
-                        }
-                        ${columnsWidth[colIndex] ? `w-[${columnsWidth[colIndex]}px]` : ''}
-                        ${colIndex === 0
-                          ? classNames?.rows?.marginL ?? 'ml-[15px]'
-                          : ''
-                        }
-                        ${colIndex === columns.length - 1
-                          ? classNames?.rows?.marginR ?? 'mr-[15px]'
-                          : ''
-                        }
                       `}
                     >
-                      {
-                        columns[colIndex].renderer
-                          ? columns[colIndex].renderer(row[column.property])
-                          : row[column.property] as ReactNode
-                      }
+                      No data available in table
                     </div>
-                  </td>
-                ))}
-                </tr>
-                ))
-              : (
-                <tr
-                  role='row'
-                  className={`  
-                    ${classNames?.rows?.paddingB ?? ''}
-                  `}
-                  ref={rowRef}
-                >
-                  <td
-                    colSpan={columns.length}
-                    className={`
-                      ${classNames?.rows?.paddingT ?? 'mt-[10px]'}
-                      ${'text-center truncate'}
-                      ${classNames?.rows?.paddingX ?? 'px-[15px]'}
-                    `}
-                  >
+                </td>
+              </tr>
+            )}
+
+            {displayedRange.length > 0 && displayedRange.map((row: T, rowIndex: number): ReactNode => (
+              <tr
+                key={uuidv4()}
+                ref={rowRef}
+                role='row'
+                data-row
+                onMouseEnter={() => {
+                  setHoveredRow(row);
+                  if (onRowHover) {
+                    onRowHover(row);
+                  }
+                }}
+                onMouseLeave={() => {
+                  setHoveredRow(null);
+                  if (onRowHover) {
+                    onRowHover(null);
+                  }
+                }}
+                onClick={() => {
+                  if (onRowClick) {
+                    onRowClick(row);
+                  }
+                }}
+                className={`
+                  ${classNames?.rows?.height ?? 'h-[30px]'}
+                  ${classNames?.rows?.paddingB ?? 'last:pt-[15px]'}
+                `}
+              >
+                {columns.map((column, colIndex) => (
+                  Object.keys(row).includes(String(column.property)) && (
+                    <td
+                      title={row.id ? `id: ${row.id}` : ''}
+                      key={uuidv4()}
+                      role='cell'
+                      className={`
+                        ${classNames?.cells ?? 'whitespace-nowrap'} py-[2.5px]
+                      `}
+                    >
                       <div
                         className={`
-                          ${classNames?.rows?.oddRowBackgroundColor ?? ''}
+                          flex justify-between items-center px-[10px] py-[5px] h-full transition-colors duration-200
                           ${classNames?.rows?.textColor ?? ''}
+                          ${
+                            rowIndex % 2 === 0
+                              ? classNames?.rows?.oddRowBackgroundColor ?? 'bg-gray-500'
+                              : classNames?.rows?.evenRowBackgroundColor ?? 'bg-gray-600'
+                          }
+                          ${columnsWidth[colIndex] ? `w-[${columnsWidth[colIndex]}px]` : ''}
+                          ${colIndex === 0
+                            ? classNames?.rows?.marginL ?? 'ml-[15px]'
+                            : ''
+                          }
+                          ${colIndex === columns.length - 1
+                            ? classNames?.rows?.marginR ?? 'mr-[15px]'
+                            : ''
+                          }
                         `}
                       >
-                        No data available in table
+                        {column.renderer
+                          ? column.renderer(row[column.property])
+                          : row[column.property] as ReactNode
+                        }
                       </div>
-                  </td>
-                </tr>
-              )}
+                    </td>
+                  )))
+                }
+              </tr>
+            ))
+            }
           </tbody>
         </table>
       </div>
@@ -658,14 +699,14 @@ function Table <T extends Record<string, any>>({
       >
         <p className='inline-block'>
         {
-          textContent?.custtomizeSampleInfoTextContent && textContent?.custtomizeSampleInfoTextContent(sampleLength * (currentPage - 1) + 1, Math.min(sampleLength * currentPage, allRows.length), allRows.length)
-            ? textContent?.custtomizeSampleInfoTextContent(sampleLength * (currentPage - 1) + 1, Math.min(sampleLength * currentPage, allRows.length), allRows.length)
-            : allRows.length > Math.min(sampleLength * currentPage, allRows.length)
+          textContent?.custtomizeSampleInfoTextContent && textContent?.custtomizeSampleInfoTextContent(rangeLength * (currentPage - 1) + 1, Math.min(rangeLength * currentPage, allRows.length), allRows.length)
+            ? textContent?.custtomizeSampleInfoTextContent(rangeLength * (currentPage - 1) + 1, Math.min(rangeLength * currentPage, allRows.length), allRows.length)
+            : allRows.length > Math.min(rangeLength * currentPage, allRows.length)
             ? (
               <span>Showing entries 
-                <span className='font-bold'>${sampleLength * (currentPage - 1) + 1}</span>
+                <span className='font-bold'>${rangeLength * (currentPage - 1) + 1}</span>
                  to 
-                <span className='font-bold'>${Math.min(sampleLength * currentPage, allRows.length)}</span>
+                <span className='font-bold'>${Math.min(rangeLength * currentPage, allRows.length)}</span>
                  of 
                 <span className='font-bold'>${allRows.length} entries</span>
               </span>
@@ -673,9 +714,9 @@ function Table <T extends Record<string, any>>({
             : allRows.length >1
             ? (
               <span>Showing entries
-                <span className='font-bold'> ${sampleLength * (currentPage - 1) + 1}</span>
+                <span className='font-bold'> ${rangeLength * (currentPage - 1) + 1}</span>
                 to 
-                <span className='font-bold'>${Math.min(sampleLength * currentPage, allRows.length)}</span>
+                <span className='font-bold'>${Math.min(rangeLength * currentPage, allRows.length)}</span>
               </span>
             )
             : ''
@@ -725,7 +766,9 @@ function Table <T extends Record<string, any>>({
                 {page}
               </button>
             ) : (
-              <div className='flex items-start justify-start '>
+              <div
+                key={index}
+                className='flex items-start justify-start '>
                 <span key={index} className='px-2 pb-2 text-white align-top'>
                   ...
                 </span>
