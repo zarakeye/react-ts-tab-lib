@@ -17,8 +17,11 @@ export default defineConfig({
     dts({
       insertTypesEntry: true,
       //Exclude tests and stories if any
-      exclude: ['src/**/*.test.ts', 'src/**/*.stories.ts'],
-      entryRoot: 'src',
+      exclude: [
+        'src/**/*.test.ts',
+        'src/**/*.stories.ts',
+      ],
+      entryRoot: 'src/components',
       tsconfigPath: 'tsconfig.app.json',
       outDir: 'dist/types',
     }),
@@ -34,7 +37,7 @@ export default defineConfig({
   build: {
     emptyOutDir: false,
     lib: {
-      entry: resolve(__dirname, 'src/index.ts'),
+      entry: resolve(__dirname, 'src/components/Table/index.tsx'),
       name: 'ReactTableLibrary',
       formats: ['es'],
     },

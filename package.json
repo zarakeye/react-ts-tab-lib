@@ -102,6 +102,7 @@
     "@heroui/button": "^2.2.16",
     "@heroui/dropdown": "^2.3.16",
     "@heroui/react": "^2.7.5",
+    "styled-components": "^6.1.16",
     "uuid": "^11.1.0"
   }
 }

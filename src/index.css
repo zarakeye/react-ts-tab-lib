@@ -1,15 +1,1 @@
 @import 'tailwindcss';
-
-.first-column {
-  border-top-left-radius: 20px;
-  border-bottom-left-radius: 20px;
-}
-
-.last-column {
-  border-top-right-radius: 20px;
-  border-bottom-right-radius: 20px;
-}
-
-[data-row]:hover div {
-  background-color: #e8e8e8 !important;
-}
