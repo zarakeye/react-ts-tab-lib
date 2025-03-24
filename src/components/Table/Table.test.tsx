@@ -35,7 +35,7 @@ const columns: Column<RowData>[] = [
     displayName: "Active",
     property: "isActive",
     type: "boolean",
-    renderer: (value) => (value ? "true" : "false"),
+    render: (value) => (value ? "true" : "false"),
   },
 ];
 

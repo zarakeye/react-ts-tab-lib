@@ -30,7 +30,7 @@ export type Column<T> = {
   property: keyof T;
   displayName?: string;
   type: DataType;
-  renderer?: (value: T[keyof T]) => ReactNode;
+  render?: (value: T[keyof T]) => ReactNode;
 }
 
 export type TableHeadersClassNames = {
@@ -678,8 +678,8 @@ function Table <T extends Record<string, any>>({
                           }
                         `}
                       >
-                        {column.renderer
-                          ? column.renderer(row[column.property])
+                        {column.render
+                          ? column.render(row[column.property])
                           : row[column.property] as ReactNode
                         }
                       </div>

@@ -40,7 +40,7 @@ function App(): JSX.Element {
             property: 'lastName',
             type: 'string'
         },
-        {        
+        {  
             property: 'phone',
             type: 'number'
         }
@@ -88,8 +88,6 @@ export default App;
 
 > By default, entries are ordered on the first column in ascending order, so in alphabetic order as firstName is a string.
 
-## 
-
 ## Use cases
 
 ### To change the default order
@@ -109,13 +107,9 @@ export default App;
 
 ![Description](/public/change_default_order.jpg)
 
-### 
-
 ### To toggle the order between ascending and descending order :
 
      Just click on the header of the column.
-
-
 
 ### To customize how the value of a property is rendered :
 
@@ -129,13 +123,11 @@ const columns: Column<User>[] = [
     {
         proprety: 'lastName',
         type: 'string',
-        renderer: (value: string | number | null) => value && String(value).toUpperCase()
+        render: (value: string | number | null) => value && String(value).toUpperCase()
     },
     ...
 ]
 ```
-
-
 
 ### To customize texts
 
@@ -166,9 +158,7 @@ Add a `textContent` prop :
 />
 ```
 
-> <mark>*Note that you must respect this definition of custtomizeSampleInfoTextContent if you want to customize the message*</mark>
-
-### 
+> `<mark>`*Note that you must respect this definition of custtomizeSampleInfoTextContent if you want to customize the message* `</mark>`
 
 ### To define a background color on hover a row :
 
@@ -180,9 +170,7 @@ Add a `textContent` prop :
 }
 ```
 
-> <mark>Do not forget the mention !important</mark>
-
-
+> `<mark>`Do not forget the mention !important `</mark>`
 
 ### To define a behaviour when you click on a row :
 
@@ -200,16 +188,14 @@ Add a `textContent` prop :
 />
 ```
 
+### To customize range options
 
-
-### To customize sampling options
-
-    Give to the `samplingOptions` prop an array of numbers representing the lengths available for sampling.
+    Give to the `rangeOptions` prop an array of numbers representing the lengths available for sampling.
 
 ```ts
 <Table
     ...
-    samplingOptions={[5, 12, 15, 25]}
+    rangeOptions={[5, 12, 15, 25]}
 />
 ```
 
@@ -221,36 +207,34 @@ We recommend to use Tailwindcss to define the styles you want to apply to the co
 
 Look at the table of the API props below to know the options you have :
 
-
-
 ## API Props
 
 In this section, we assume **User** is the type of data you are processing.
 
 Class names satisfies Tailwiind.
 
-| Props                  | DescriptionType                                              | Type                         | Properties           | Property type             | Required | Default value                 |
-|:---------------------- | ------------------------------------------------------------ | ---------------------------- | -------------------- | ------------------------- | -------- | ----------------------------- |
-| rows                   | Array of all the User entries you populate your table with   | User []                      |                      |                           | True     |                               |
-| columns                | Array of which keys of User type you want for your columns   | Array(keyof User)            |                      |                           | True     |                               |
-| defaultOrder           | Object defining the column to order by default and the order |                              |                      | ActiveOrderType`<T>`      | False    |                               |
-| textContent            | Obejct containing the customized texts                       |                              |                      | TextContentType           | False    |                               |
-| onRowHover()           | Function to customize a row hovering                         | (row: T\| null) => void;     |                      |                           | False    |                               |
-| onRowClick()           |                                                              | (row: T\| null) => void;     |                      |                           | False    |                               |
-| defaultSamplingOptions | Array of numbers defining samples length options             |                              |                      |                           | False    | [10, 20, 50, 100]             |
+| Props                  | DescriptionType                                              | Type                               | Properties           | Property type             | Required | Default value                 |
+| :--------------------- | ------------------------------------------------------------ | ---------------------------------- | -------------------- | ------------------------- | -------- | ----------------------------- |
+| rows                   | Array of all the User entries you populate your table with   | User []                            |                      |                           | True     |                               |
+| columns                | Array of which keys of User type you want for your columns   | Array(keyof User)                  |                      |                           | True     |                               |
+| defaultOrder           | Object defining the column to order by default and the order |                                    |                      | ActiveOrderType `<T>`   | False    |                               |
+| textContent            | Obejct containing the customized texts                       |                                    |                      | TextContentType           | False    |                               |
+| onRowHover()           | Function to customize a row hovering                         | (row: T\| null) => void;           |                      |                           | False    |                               |
+| onRowClick()           |                                                              | (row: T\| null) => void;           |                      |                           | False    |                               |
+| defaultSamplingOptions | Array of numbers defining samples length options             |                                    |                      |                           | False    | [10, 20, 50, 100]             |
 | classNames             | Object of type ClassNames you use to customize the rendering | Object of type**ClassNames** |                      |                           | False    |                               |
-|                        |                                                              |                              | tableBackgroundColor | string                    | False    |                               |
-|                        |                                                              |                              | tableBorders         | string                    | False    | 'border-4 border-gray-300'    |
-|                        |                                                              |                              | tablePaddings        | string                    | False    | 'px-[5px] pt-[5px] pb-[15px]' |
-|                        |                                                              |                              | tableMargins         | string                    | False    |                               |
-|                        |                                                              |                              | tableRounded         | string                    | False    | 'rounded-[23px]'              |
-|                        |                                                              |                              | tableHeaders         | TableHeadersClassNames    | False    |                               |
-|                        |                                                              |                              | samplingOptions      | SamplingOptionsClassNames | False    |                               |
-|                        |                                                              |                              | searchBar            | SearchBarClassNames       | False    |                               |
-|                        |                                                              |                              | sortIndicatorColor   | string                    | False    |                               |
-|                        |                                                              |                              | rows                 | RowsClassNames            | False    |                               |
-|                        |                                                              |                              | cells                | string                    | False    |                               |
-|                        |                                                              |                              | pagination           | PaginationClassNames      | False    |                               |
+|                        |                                                              |                                    | tableBackgroundColor | string                    | False    |                               |
+|                        |                                                              |                                    | tableBorders         | string                    | False    | 'border-4 border-gray-300'    |
+|                        |                                                              |                                    | tablePaddings        | string                    | False    | 'px-[5px] pt-[5px] pb-[15px]' |
+|                        |                                                              |                                    | tableMargins         | string                    | False    |                               |
+|                        |                                                              |                                    | tableRounded         | string                    | False    | 'rounded-[23px]'              |
+|                        |                                                              |                                    | tableHeaders         | TableHeadersClassNames    | False    |                               |
+|                        |                                                              |                                    | samplingOptions      | SamplingOptionsClassNames | False    |                               |
+|                        |                                                              |                                    | searchBar            | SearchBarClassNames       | False    |                               |
+|                        |                                                              |                                    | sortIndicatorColor   | string                    | False    |                               |
+|                        |                                                              |                                    | rows                 | RowsClassNames            | False    |                               |
+|                        |                                                              |                                    | cells                | string                    | False    |                               |
+|                        |                                                              |                                    | pagination           | PaginationClassNames      | False    |                               |
 
 ## tableHeaders options
 
@@ -268,7 +252,7 @@ Class names satisfies Tailwiind.
 | padding         |             | string  | 'py-[5px]'                            |
 | gap             |             | sttring | 'gap-2.5'                             |
 
-## samplingOptions options
+## rangeOptions options
 
 | Option                | Description | Type   | Default value                   |
 | --------------------- | ----------- | ------ | ------------------------------- |
