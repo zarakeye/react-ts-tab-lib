@@ -449,11 +449,13 @@ function Table <T extends Record<string, any>>({
                   ${classNames?.rangeLengthOptions?.buttonPadding ?? 'px-[10px]'}`
                 }
               >
-                {`${textContent?.sampleLabelPrefix ?? 'Show'} ${selectedValue} ${textContent?.sampleLabelSuffix ?? 'entries'}`}
-                <ChevronDownIcon 
-                  className="h-5 w-5 text-white ui-open:rotate-180 transition-transform"
-                  aria-hidden="true"
-                />
+                <span >
+                  {`${textContent?.sampleLabelPrefix ?? 'Show'} ${selectedValue} ${textContent?.sampleLabelSuffix ?? 'entries'}`}
+                  <ChevronDownIcon 
+                    className="pl-[10px] inline-block h-5 w-[30px] text-white ui-open:rotate-180 transition-transform"
+                    aria-hidden="true"
+                  />
+                </span>
               </Button>
             </DropdownTrigger>
             <DropdownMenu
