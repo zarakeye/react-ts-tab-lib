@@ -20,7 +20,6 @@ export default defineConfig({
                 'src/**/*.test.ts',
                 'src/**/*.stories.ts',
             ],
-            // entryRoot: 'src',
             entryRoot: 'src/components',
             tsconfigPath: 'tsconfig.app.json',
             outDir: 'dist/types',
@@ -37,7 +36,6 @@ export default defineConfig({
     build: {
         emptyOutDir: false,
         lib: {
-            // entry: resolve(__dirname, 'src/index.ts'),
             entry: resolve(__dirname, 'src/components/Table/index.tsx'),
             name: 'ReactTableLibrary',
             formats: ['es'],
