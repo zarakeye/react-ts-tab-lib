@@ -6,13 +6,6 @@ import * as React from 'react';
 import { type ChangeEvent, JSX, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import '../../index.css';
 import { v4 as uuidv4 } from 'uuid';
-import styled from 'styled-components';
-
-const TableRow = styled.tr`
-  &[data-row]:hover div {
-    background-color: #e8e8e8 !important;
-  }
-`
 
 export type DataType = 'string' | 'number' | 'date' | 'boolean' | 'custom';
 export type OrderType = 'asc' | 'desc';
@@ -630,7 +623,7 @@ function Table <T extends Record<string, any>>({
             )}
 
             {displayedRange.length > 0 && displayedRange.map((row: T, rowIndex: number): ReactNode => (
-              <TableRow
+              <tr
                 key={uuidv4()}
                 ref={rowRef}
                 role='row'
@@ -695,7 +688,7 @@ function Table <T extends Record<string, any>>({
                     </td>
                   )))
                 }
-              </TableRow>
+              </tr>
             ))
             }
           </tbody>
