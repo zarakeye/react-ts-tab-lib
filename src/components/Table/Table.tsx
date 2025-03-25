@@ -15,13 +15,21 @@ export type ActiveOrderType<T> = {
   order: OrderType;
 }
 
+type RangeInfoText = {
+  showEntries_altText: string | null;
+  to_altText: string | null;
+  of_altText: string | null;
+  entries_altText: string | null
+}
+
 export type TextContentType = {
   searchLabel?: string | null;
   searchPlaceholder?: string | null;
   sampleLabelPrefix?: string | null;
   sampleLabelSuffix?: string | null;
   emptyTableText?: string | null;
-  custtomizeSampleInfoTextContent?: (sampleBegin: number, sampleEnd: number, allRows: number) => ReactNode | null;
+  // custtomizeSampleInfoTextContent?: (sampleBegin: number, sampleEnd: number, allRows: number) => ReactNode | null;
+  rangeInfoText?: RangeInfoText | null;
   previousPageButtonLabel?: string | null;
   nextPageButtonLabel?: string | null;
 }
@@ -535,7 +543,6 @@ function Table <T extends Record<string, any>>({
                 <th
                   key={uuidv4()}
                   role='columnheader'
-                  // className={`${key.specificColumnClassname ?? ''} ${globalColumnsClassname ? globalColumnsClassname : 'pl-[18px] pr-[5px] py-[10px] border-b-2 border-b-gray bg-gray/0 hover:bg-gray/40 '}`}
                   className="cursor-pointer"
                   ref={columnHeaderRef}
                 >
@@ -701,7 +708,29 @@ function Table <T extends Record<string, any>>({
         className={`flex flex-col lg:flex-row gap-y-3.5 justify-between items-center mt-5`}
       >
         <p className='inline-block'>
-        {
+          {allRows.length > Math.min(rangeLength * currentPage, allRows.length)
+            ? (
+                <span>
+                  {textContent?.rangeInfoText?.showEntries_altText ?? 'Showing entries'}
+                  <span className='font-bold'>{rangeLength * (currentPage - 1) + 1}</span>
+                  {textContent?.rangeInfoText?.to_altText ?? 'to'}
+                  <span className='font-bold'>{Math.min(rangeLength * currentPage, allRows.length)}</span>
+                  {textContent?.rangeInfoText?.of_altText ?? 'of'}
+                  <span className='font-bold'>{allRows.length}</span>
+                  {textContent?.rangeInfoText?.entries_altText ?? 'entries'}
+                </span>
+              )
+            : (
+                <span>
+                  {textContent?.rangeInfoText?.showEntries_altText ?? 'Showing entries'}
+                  <span className='font-bold'>{rangeLength * (currentPage - 1) + 1}</span>
+                  {textContent?.rangeInfoText?.to_altText ?? 'to'}
+                  <span className='font-bold'>{allRows.length}</span>
+                  {textContent?.rangeInfoText?.entries_altText ?? 'entries'}
+                </span>
+              )
+            }
+        {/* {
           textContent?.custtomizeSampleInfoTextContent && textContent?.custtomizeSampleInfoTextContent(rangeLength * (currentPage - 1) + 1, Math.min(rangeLength * currentPage, allRows.length), allRows.length)
             ? textContent?.custtomizeSampleInfoTextContent(rangeLength * (currentPage - 1) + 1, Math.min(rangeLength * currentPage, allRows.length), allRows.length)
             : allRows.length > Math.min(rangeLength * currentPage, allRows.length)
@@ -723,7 +752,7 @@ function Table <T extends Record<string, any>>({
               </span>
             )
             : ''
-        }
+        } */}
         </p>
 
         <div
