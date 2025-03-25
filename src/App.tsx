@@ -794,13 +794,6 @@ function App() {
         sampleLabelPrefix: 'Affiche ',
         sampleLabelSuffix: ' employés par page',
         emptyTableText: 'Aucun employé',
-        // custtomizeSampleInfoTextContent: (sampleBegin, sampleEnd, sampleLength) => {
-        //   if (sampleLength > sampleEnd) {
-        //     return <span>Affichage des employés <span className='font-bold'>{sampleBegin}</span> à <span className='font-bold'>{sampleEnd}</span> sur <span className='font-bold'>{sampleLength}</span></span>
-        //   } else {
-        //     return sampleLength > 1 ? <span>Affichage des employés <span className='font-bold'>'${sampleBegin}</span> à <span className='font-bold'>'${sampleEnd}</span></span>:''
-        //   }
-        // },
         rangeInfoText: {
           showEntries_altText: 'Affichage des employés ',
           to_altText: ' à ',

@@ -730,29 +730,6 @@ function Table <T extends Record<string, any>>({
                 </span>
               )
             }
-        {/* {
-          textContent?.custtomizeSampleInfoTextContent && textContent?.custtomizeSampleInfoTextContent(rangeLength * (currentPage - 1) + 1, Math.min(rangeLength * currentPage, allRows.length), allRows.length)
-            ? textContent?.custtomizeSampleInfoTextContent(rangeLength * (currentPage - 1) + 1, Math.min(rangeLength * currentPage, allRows.length), allRows.length)
-            : allRows.length > Math.min(rangeLength * currentPage, allRows.length)
-            ? (
-              <span>Showing entries 
-                <span className='font-bold'>${rangeLength * (currentPage - 1) + 1}</span>
-                 to 
-                <span className='font-bold'>${Math.min(rangeLength * currentPage, allRows.length)}</span>
-                 of 
-                <span className='font-bold'>${allRows.length} entries</span>
-              </span>
-            )
-            : allRows.length >1
-            ? (
-              <span>Showing entries
-                <span className='font-bold'> ${rangeLength * (currentPage - 1) + 1}</span>
-                to 
-                <span className='font-bold'>${Math.min(rangeLength * currentPage, allRows.length)}</span>
-              </span>
-            )
-            : ''
-        } */}
         </p>
 
         <div
