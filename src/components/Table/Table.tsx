@@ -594,6 +594,7 @@ function Table <T extends Record<string, any>>({
             {displayedRange.length === 0 && (
               <tr
                 role='row'
+                data-row
                 key={uuidv4()}
                 className={`  
                   ${classNames?.rows?.paddingB ?? ''}
