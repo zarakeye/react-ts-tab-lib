@@ -32,6 +32,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
+      '\\.css$': '<rootDir>/__mocks__/styleMock.js',
     },
   },
   build: {
@@ -58,7 +59,7 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: './src/tests/vitest.setup.ts',
-    css: true,
+    css: false,
     coverage: {
       include: ['src/components/**/*.{ts,tsx}'],
       exclude: ['**/*.test.{ts,tsx}'],

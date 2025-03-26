@@ -28,7 +28,6 @@ export type TextContentType = {
   sampleLabelPrefix?: string | null;
   sampleLabelSuffix?: string | null;
   emptyTableText?: string | null;
-  // custtomizeSampleInfoTextContent?: (sampleBegin: number, sampleEnd: number, allRows: number) => ReactNode | null;
   rangeInfoText?: RangeInfoText | null;
   previousPageButtonLabel?: string | null;
   nextPageButtonLabel?: string | null;
@@ -547,6 +546,8 @@ function Table <T extends Record<string, any>>({
                   ref={columnHeaderRef}
                 >
                   <div
+                    aria-label={`Sort by ${key.displayName}`}
+                    role='button'
                     key={index}
                     className={`
                       flex justify-between items-center
@@ -669,6 +670,7 @@ function Table <T extends Record<string, any>>({
                       `}
                     >
                       <div
+                        
                         className={`
                           flex justify-between items-center px-[10px] py-[5px] h-full transition-colors duration-200
                           ${classNames?.rows?.textColor ?? ''}
