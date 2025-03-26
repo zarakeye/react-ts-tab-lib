@@ -212,28 +212,29 @@ In this section, we assume **User** is the type of data you are processing.
 
 Class names satisfies Tailwiind.
 
-| Props                  | DescriptionType                                              | Type                               | Properties           | Property type           | Required | Default value                 |
-| :--------------------- | ------------------------------------------------------------ | ---------------------------------- | -------------------- | ----------------------- | -------- | ----------------------------- |
-| rows                   | Array of all the User entries you populate your table with   | User []                            |                      |                         | True     |                               |
-| columns                | Array of which keys of User type you want for your columns   | Array(keyof User)                  |                      |                         | True     |                               |
-| defaultOrder           | Object defining the column to order by default and the order |                                    |                      | ActiveOrderType `<T>` | False    |                               |
-| textContent            | Obejct containing the customized texts                       |                                    |                      | TextContentType         | False    |                               |
-| onRowHover()           | Function to customize a row hovering                         | (row: T\| null) => void;           |                      |                         | False    |                               |
-| onRowClick()           |                                                              | (row: T\| null) => void;           |                      |                         | False    |                               |
-| defaultSamplingOptions | Array of numbers defining samples length options             |                                    |                      |                         | False    | [10, 20, 50, 100]             |
-| classNames             | Object of type ClassNames you use to customize the rendering | Object of type**ClassNames** |                      |                         | False    |                               |
-|                        |                                                              |                                    | tableBackgroundColor | string                  | False    |                               |
-|                        |                                                              |                                    | tableBorders         | string                  | False    | 'border-4 border-gray-300'    |
-|                        |                                                              |                                    | tablePaddings        | string                  | False    | 'px-[5px] pt-[5px] pb-[15px]' |
-|                        |                                                              |                                    | tableMargins         | string                  | False    |                               |
-|                        |                                                              |                                    | tableRounded         | string                  | False    | 'rounded-[23px]'              |
-|                        |                                                              |                                    | tableHeaders         | TableHeadersClassNames  | False    |                               |
-|                        |                                                              |                                    | rangeOptions         | RangeOptionsClassNames  | False    |                               |
-|                        |                                                              |                                    | searchBar            | SearchBarClassNames     | False    |                               |
-|                        |                                                              |                                    | sortIndicatorColor   | string                  | False    |                               |
-|                        |                                                              |                                    | rows                 | RowsClassNames          | False    |                               |
-|                        |                                                              |                                    | cells                | string                  | False    |                               |
-|                        |                                                              |                                    | pagination           | PaginationClassNames    | False    |                               |
+| Props                  | DescriptionType                                              | Type                         | Properties                   | Property type          | Required | Default value                 |
+|:---------------------- | ------------------------------------------------------------ | ---------------------------- | ---------------------------- | ---------------------- | -------- | ----------------------------- |
+| rows                   | Array of all the User entries you populate your table with   | User []                      |                              |                        | True     |                               |
+| columns                | Array of which keys of User type you want for your columns   | Array(keyof User)            |                              |                        | True     |                               |
+| defaultOrder           | Object defining the column to order by default and the order |                              |                              | ActiveOrderType `<T>`  | False    |                               |
+| textContent            | Obejct containing the customized texts                       |                              |                              | TextContentType        | False    |                               |
+| onRowHover()           | Function to customize a row hovering                         | (row: T\| null) => void;     |                              |                        | False    |                               |
+| onRowClick()           |                                                              | (row: T\| null) => void;     |                              |                        | False    |                               |
+| defaultSamplingOptions | Array of numbers defining samples length options             |                              |                              |                        | False    | [10, 20, 50, 100]             |
+| classNames             | Object of type ClassNames you use to customize the rendering | Object of type**ClassNames** |                              |                        | False    |                               |
+|                        |                                                              |                              | tableBackgroundColor         | string                 | False    |                               |
+|                        |                                                              |                              | tableBorders                 | string                 | False    | 'border-4 border-gray-300'    |
+|                        |                                                              |                              | tablePaddings                | string                 | False    | 'px-[5px] pt-[5px] pb-[15px]' |
+|                        |                                                              |                              | tableMargins                 | string                 | False    |                               |
+|                        |                                                              |                              | tableRounded                 | string                 | False    | 'rounded-[23px]'              |
+|                        |                                                              |                              | tableHeaders                 | TableHeadersClassNames | False    |                               |
+|                        |                                                              |                              | rangeOptionsAndSearchBarArea | string                 | False    | ''                            |
+|                        |                                                              |                              | rangeOptions                 | RangeOptionsClassNames | False    |                               |
+|                        |                                                              |                              | searchBar                    | SearchBarClassNames    | False    |                               |
+|                        |                                                              |                              | sortIndicatorColor           | string                 | False    |                               |
+|                        |                                                              |                              | rows                         | RowsClassNames         | False    |                               |
+|                        |                                                              |                              | cells                        | string                 | False    |                               |
+|                        |                                                              |                              | pagination                   | PaginationClassNames   | False    |                               |
 
 ## tableHeaders options
 
