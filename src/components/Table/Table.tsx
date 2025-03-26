@@ -124,6 +124,7 @@ export type ClassNames = {
   tableMargins?: string;
   tableRounded?: string;
   tableHeaders?: TableHeadersClassNames,
+  rangeOptionsAndSearchBarArea?: string
   rangeLengthOptions?: RangeOptionsClassNames
   searchBar?: SearchBarClassNames
   sortIndicatorColor?: string;
@@ -440,7 +441,7 @@ function Table <T extends Record<string, any>>({
 
   return (
     <div className={`my-5`}>
-      <div className='flex justify-between items-center my-5 gap-y-3.5'>
+      <div className={`flex flex-col justify-between items-center my-5 gap-y-3.5 ${classNames?.rangeOptionsAndSearchArea ?? ''}`}>
         <div>
           <label htmlFor="rangeLength" className='sr-only'>Displayed entries</label>
           <Dropdown>
