@@ -1,12 +1,11 @@
 /// <reference types="vite/client" />
-/// <reference types="vitest" />
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import dts from 'vite-plugin-dts';
 import tailwindcss from '@tailwindcss/vite';
 import { libInjectCss } from 'vite-plugin-lib-inject-css'; // injecte le css dans le composant qui est exporté
-import { visualizer } from 'rollup-plugin-visualizer';
+// import { visualizer } from 'rollup-plugin-visualizer';
 // https://vite.dev/config/
 export default defineConfig({
     plugins: [
@@ -17,27 +16,22 @@ export default defineConfig({
             insertTypesEntry: true,
             //Exclude tests and stories if any
             exclude: [
-                'src/**/*.test.ts',
                 'src/**/*.stories.ts',
             ],
-            entryRoot: 'src/components',
+            entryRoot: 'src',
             tsconfigPath: 'tsconfig.app.json',
             outDir: 'dist/types',
         }),
-        visualizer({
-            open: true
-        })
     ],
     resolve: {
         alias: {
             '@': resolve(__dirname, 'src'),
-            '\\.css$': '<rootDir>/__mocks__/styleMock.js',
         },
     },
     build: {
         emptyOutDir: false,
         lib: {
-            entry: resolve(__dirname, 'src/components/Table/index.tsx'),
+            entry: resolve(__dirname, 'src/index.ts'),
             name: 'ReactTableLibrary',
             formats: ['es'],
         },
@@ -53,15 +47,5 @@ export default defineConfig({
             },
         },
         minify: 'esbuild',
-    },
-    test: {
-        globals: true,
-        environment: 'jsdom',
-        setupFiles: './src/tests/vitest.setup.ts',
-        css: false,
-        coverage: {
-            include: ['src/components/**/*.{ts,tsx}'],
-            exclude: ['**/*.test.{ts,tsx}'],
-        },
     },
 });
