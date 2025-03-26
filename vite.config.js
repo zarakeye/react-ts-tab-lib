@@ -5,7 +5,6 @@ import react from '@vitejs/plugin-react';
 import dts from 'vite-plugin-dts';
 import tailwindcss from '@tailwindcss/vite';
 import { libInjectCss } from 'vite-plugin-lib-inject-css'; // injecte le css dans le composant qui est exporté
-// import { visualizer } from 'rollup-plugin-visualizer';
 // https://vite.dev/config/
 export default defineConfig({
     plugins: [
@@ -15,9 +14,6 @@ export default defineConfig({
         dts({
             insertTypesEntry: true,
             //Exclude tests and stories if any
-            exclude: [
-                'src/**/*.stories.ts',
-            ],
             entryRoot: 'src',
             tsconfigPath: 'tsconfig.app.json',
             outDir: 'dist/types',
