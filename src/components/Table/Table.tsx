@@ -6,6 +6,8 @@ import * as React from 'react';
 import { type ChangeEvent, JSX, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import '../../index.css';
 import { v4 as uuidv4 } from 'uuid';
+import { a } from 'vitest/dist/chunks/suite.d.FvehnV49.js';
+import { text } from 'stream/consumers';
 
 export type DataType = 'string' | 'number' | 'date' | 'boolean' | 'custom';
 export type OrderType = 'asc' | 'desc';
@@ -254,64 +256,33 @@ function Table <T extends Record<string, any>>({
    * Order all rows based on the active order and the property type
    */
   useEffect(() => {
-    const valuesToOrder = allRows.map((row) => row[activeOrder.property]);
-    const order = activeOrder.order;
-    const col = columns.find((column) => column.property === activeOrder.property);
+    const propertyType = columns.find((column) => column.property === activeOrder.property)?.type;
+    const sortedRows = allRows.map(row => ({ row, value: row[activeOrder.property]}))
+      .sort((a, b) => {
+        if (activeOrder.order === 'asc') {
+          if (propertyType === 'string') {
+            return a.value.localeCompare(b.value);
+          } else if (propertyType === 'number') {
+            return a.value - b.value;
+          } else if (propertyType === 'date') {
+            return a.value.getTime() - b.value.getTime();
+          } else {
+            return 0;
+          }
+        } else {
+          if (propertyType === 'string') {
+            return b.value.localeCompare(a.value);
+          } else if (propertyType === 'number') {
+            return b.value - a.value;
+          } else if (propertyType === 'date') {
+            return b.value.getTime() - a.value.getTime();
+          } else {
+            return 0;
+          }
+        }
+      });
 
-    if (order === 'asc') {
-      switch (col?.type) {
-        case 'string':
-          valuesToOrder.sort((a, b) => a.localeCompare(b));
-          break;
-        case 'number':
-          valuesToOrder.sort((a, b) => a - b);
-          break;
-        case 'date':
-          valuesToOrder.sort((a, b) => {
-            if (typeof a === 'string' && typeof b === 'string') {
-              const dateA = new Date(a);
-              const dateB = new Date(b);
-              if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) {
-                console.error('Invalid date');
-                return 0;
-              }
-              return new Date(a).getTime() - new Date(b).getTime();
-            } else {
-              console.error('Invalid date');
-              return 0;
-            }
-          });
-          break;
-        case 'boolean':
-          valuesToOrder.sort((a, b) => a - b);
-          break;
-      }
-    } else if (order === 'desc') {
-      switch (col?.type) {
-        case 'string':
-          valuesToOrder.sort((a, b) => b.localeCompare(a));
-          break;
-        case 'number':
-          valuesToOrder.sort((a, b) => b - a);
-          break;
-        case 'date':
-          valuesToOrder.sort((a, b) => {
-            if (typeof a === 'string' && typeof b === 'string') {
-              return new Date(b).getTime() - new Date(a).getTime();
-            } else {
-              throw new Error('Invalid date type');
-            }
-          });
-          break;
-        case 'boolean':
-          valuesToOrder.sort((a, b) => b - a);
-          break;
-      }
-    }
-
-    const sortedRows = valuesToOrder.map((value) => rows.find((row) => row[activeOrder.property] === value));
-
-    setAllRows(sortedRows as T[]);
+    setAllRows(sortedRows.map((tuple) => tuple.row));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[ activeOrder]);
  
@@ -626,7 +597,7 @@ function Table <T extends Record<string, any>>({
                         ${classNames?.rows?.textColor ?? ''}
                       `}
                     >
-                      No data available in table
+                      {textContent?.emptyTableText ?? 'No data available in table'}
                     </div>
                 </td>
               </tr>
@@ -747,6 +718,8 @@ function Table <T extends Record<string, any>>({
         >
           {currentPage - 1 >= 1 && (
             <button
+              type='button'
+              role='previousButton'
               onClick={() => setCurrentPage(currentPage - 1)}
               className={`
                 disabled:opacity-50 cursor-pointer
@@ -790,6 +763,8 @@ function Table <T extends Record<string, any>>({
 
           {currentPage + 1 <= pagesNumber && (
             <button
+              role='nextButton'
+              aria-label='Next page'
               onClick={() => setCurrentPage(currentPage + 1)}
               className={`
                 disabled:opacity-50  cursor-pointer
@@ -798,7 +773,6 @@ function Table <T extends Record<string, any>>({
                 ${classNames?.pagination?.textColor ?? 'text-white'}
                 ${classNames?.pagination?.buttonBackgroundColorHover ?? 'hover:bg-gray-500 py-[9px]'}
               `}
-              aria-label='Next page'
             >
               <svg className='h-[15px]' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill={classNames?.pagination?.navButtonsColor ?? '#fff'}>
                 <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/>

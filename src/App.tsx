@@ -13,17 +13,20 @@ interface RowData {
 function App() {
   const columns: Column<RowData>[] = [
     {
-      // displayName: "Prénom",
+      displayName: "Prénom",
       property: "firstName",
       type: "string",
     },
     {
-      // displayName: "Nom de famille",
+      displayName: "Nom de famille",
       property: "lastName",
       type: "string",
+      render: (value: string | number) => {
+        return String(value).toUpperCase();
+      }
     },
     {
-      // displayName: "Téléphone",
+      displayName: "Téléphone",
       property: "phone",
       type: "number",
     }
@@ -191,405 +194,405 @@ function App() {
       email: "uma.anderson@email.com",
       phone: 4445556666
     },
-    {
-      id: 24,
-      firstName: "Victor",
-      lastName: "Taylor",
-      email: "victor.taylor@email.com",
-      phone: 7778889999
-    },
-    {
-      id: 25,
-      firstName: "Wendy",
-      lastName: "Moore",
-      email: "wendy.moore@email.com",
-      phone: 2223334444
-    },
-    {
-      id: 26,
-      firstName: "Xavier",
-      lastName: "Jackson",
-      email: "xavier.jackson@email.com",
-      phone: 5556667777
-    },
-    {
-      id: 27,
-      firstName: "Yvonne",
-      lastName: "White",
-      email: "yvonne.white@email.com",
-      phone: 8889990000
-    },
-    {
-      id: 28,
-      firstName: "Zachary",
-      lastName: "Harris",
-      email: "zachary.harris@email.com",
-      phone: 1112223333
-    },
-    {
-      id: 29,
-      firstName: "Ava",
-      lastName: "Martin",
-      email: "ava.martin@email.com",
-      phone: 4445556666
-    },
-    {
-      id: 30,
-      firstName: "Benjamin",
-      lastName: "Thompson",
-      email: "benjamin.thompson@email.com",
-      phone: 7778889999
-    },
-    {
-      id: 31,
-      firstName: "Cora",
-      lastName: "Garcia",
-      email: "cora.garcia@email.com",
-      phone: 2223334444
-    },
-    {
-      id: 32,
-      firstName: "Dylan",
-      lastName: "Lee",
-      email: "dylan.lee@email.com",
-      phone: 5556667777
-    },
-    {
-      id: 33,
-      firstName: "Ella",
-      lastName: "Davis",
-      email: "ella.davis@email.com",
-      phone: 8889990000
-    },
-    {
-      id: 34,
-      firstName: "Finn",
-      lastName: "Wilson",
-      email: "finn.wilson@email.com",
-      phone: 1112223333
-    },
-    {
-      id: 35,
-      firstName: "Greta",
-      lastName: "Anderson",
-      email: "greta.anderson@email.com",
-      phone: 4445556666
-    },
-    {
-      id: 36,
-      firstName: "Hank",
-      lastName: "Taylor",
-      email: "hank.taylor@email.com",
-      phone: 7778889999
-    },
-    {
-      id: 37,
-      firstName: "Ivy",
-      lastName: "Moore",
-      email: "ivy.moore@email.com",
-      phone: 2223334444
-    },
-    {
-      id: 38,
-      firstName: "Jack",
-      lastName: "Jackson",
-      email: "jack.jackson@email.com",
-      phone: 5556667777
-    },
-    {
-      id: 39,
-      firstName: "Kelly",
-      lastName: "White",
-      email: "kelly.white@email.com",
-      phone: 8889990000
-    },
-    {
-      id: 40,
-      firstName: "Liam",
-      lastName: "Harris",
-      email: "liam.harris@email.com",
-      phone: 1112223333
-    },
-    {
-      id: 41,
-      firstName: "Mia",
-      lastName: "Martin",
-      email: "mia.martin@email.com",
-      phone: 4445556666
-    },
-    {
-      id: 42,
-      firstName: "Noah",
-      lastName: "Thompson",
-      email: "noah.thompson@email.com",
-      phone: 7778889999
-    },
-    {
-      id: 43,
-      firstName: "Olivia",
-      lastName: "Garcia",
-      email: "olivia.garcia@email.com",
-      phone: 2223334444
-    },
-    {
-      id: 44,
-      firstName: "Peter",
-      lastName: "Lee",
-      email: "peter.lee@email.com",
-      phone: 5556667777
-    },
-    {
-      id: 45,
-      firstName: "Quinn",
-      lastName: "Davis",
-      email: "quinn.davis@email.com",
-      phone: 8889990000
-    },
-    {
-      id: 46,
-      firstName: "Rachel",
-      lastName: "Wilson",
-      email: "rachel.wilson@email.com",
-      phone: 1112223333
-    },
-    {
-      id: 47,
-      firstName: "Sam",
-      lastName: "Anderson",
-      email: "sam.anderson@email.com",
-      phone: 4445556666
-    },
-    {
-      id: 48,
-      firstName: "Taylor",
-      lastName: "Taylor",
-      email: "taylor.taylor@email.com",
-      phone: 7778889999
-    },
-    {
-      id: 49,
-      firstName: "Uma",
-      lastName: "Moore",
-      email: "uma.moore@email.com",
-      phone: 2223334444
-    },
-    {
-      id: 50,
-      firstName: "Victor",
-      lastName: "Jackson",
-      email: "victor.jackson@email.com",
-      phone: 5556667777
-    },
-    {
-      id: 51,
-      firstName: "Walter",
-      lastName: "White",
-      email: "walter.white@email.com",
-      phone: 8889990000
-    },
-    {
-      id: 52,
-      firstName: "Xavier",
-      lastName: "Harris",
-      email: "xavier.harris@email.com",
-      phone: 1112223333
-    },
-    {
-      id: 53,
-      firstName: "Yvonne",
-      lastName: "Martin",
-      email: "yvonne.martin@email.com",
-      phone: 4445556666
-    },
-    {
-      id: 54,
-      firstName: "Zachary",
-      lastName: "Thompson",
-      email: "zachary.thompson@email.com",
-      phone: 7778889999
-    },
-    {
-      id: 55,
-      firstName: "Ava",
-      lastName: "Garcia",
-      email: "ava.garcia@email.com",
-      phone: 2223334444
-    },
-    {
-      id: 56,
-      firstName: "Benjamin",
-      lastName: "Lee",
-      email: "benjamin.lee@email.com",
-      phone: 5556667777
-    },
-    {
-      id: 57,
-      firstName: "Cora",
-      lastName: "Davis",
-      email: "cora.davis@email.com",
-      phone: 8889990000
-    },
-    {
-      id: 58,
-      firstName: "Dylan",
-      lastName: "Wilson",
-      email: "dylan.wilson@email.com",
-      phone: 1112223333
-    },
-    {
-      id: 59,
-      firstName: "Ella",
-      lastName: "Anderson",
-      email: "ella.anderson@email.com",
-      phone: 4445556666
-    },
-    {
-      id: 60,
-      firstName: "Finn",
-      lastName: "Taylor",
-      email: "finn.taylor@email.com",
-      phone: 7778889999
-    },
-    {
-      id: 61,
-      firstName: "Greta",
-      lastName: "Moore",
-      email: "greta.moore@email.com",
-      phone: 2223334444
-    },
-    {
-      id: 62,
-      firstName: "Hank",
-      lastName: "Jackson",
-      email: "hank.jackson@email.com",
-      phone: 5556667777
-    },
-    {
-      id: 63,
-      firstName: "Ivy",
-      lastName: "White",
-      email: "ivy.white@email.com",
-      phone: 8889990000
-    },
-    {
-      id: 64,
-      firstName: "Jack",
-      lastName: "Harris",
-      email: "jack.harris@email.com",
-      phone: 1112223333
-    },
-    {
-      id: 65,
-      firstName: "Kelly",
-      lastName: "Martin",
-      email: "kelly.martin@email.com",
-      phone: 4445556666
-    },
-    {
-      id: 66,
-      firstName: "Liam",
-      lastName: "Thompson",
-      email: "liam.thompson@email.com",
-      phone: 7778889999
-    },
-    {
-      id: 67,
-      firstName: "Mia",
-      lastName: "Garcia",
-      email: "mia.garcia@email.com",
-      phone: 2223334444
-    },
-    {
-      id: 68,
-      firstName: "Noah",
-      lastName: "Lee",
-      email: "noah.lee@email.com",
-      phone: 5556667777
-    },
-    {
-      id: 69,
-      firstName: "Olivia",
-      lastName: "Davis",
-      email: "olivia.davis@email.com",
-      phone: 8889990000
-    },
-    {
-      id: 70,
-      firstName: "Peter",
-      lastName: "Wilson",
-      email: "peter.wilson@email.com",
-      phone: 1112223333
-    },
-    {
-      id: 71,
-      firstName: "Quinn",
-      lastName: "Anderson",
-      email: "quinn.anderson@email.com",
-      phone: 4445556666
-    },
-    {
-      id: 72,
-      firstName: "Rachel",
-      lastName: "Taylor",
-      email: "rachel.taylor@email.com",
-      phone: 7778889999
-    },
-    {
-      id: 73,
-      firstName: "Sam",
-      lastName: "Moore",
-      email: "sam.moore@email.com",
-      phone: 2223334444
-    },
-    {
-      id: 74,
-      firstName: "Taylor",
-      lastName: "Jackson",
-      email: "taylor.jackson@email.com",
-      phone: 5556667777
-    },
-    {
-      id: 75,
-      firstName: "Uma",
-      lastName: "White",
-      email: "uma.white@email.com",
-      phone: 8889990000
-    },
-    {
-      id: 76,
-      firstName: "Victor",
-      lastName: "Harris",
-      email: "victor.harris@email.com",
-      phone: 1112223333
-    },
-    {
-      id: 77,
-      firstName: "Walter",
-      lastName: "Martin",
-      email: "walter.martin@email.com",
-      phone: 4445556666
-    },
-    {
-      id: 78,
-      firstName: "Xavier",
-      lastName: "Thompson",
-      email: "xavier.thompson@email.com",
-      phone: 7778889999
-    },
-    {
-      id: 79,
-      firstName: "Yvonne",
-      lastName: "Garcia",
-      email: "yvonne.garcia@email.com",
-      phone: 2223334444
-    },
-    {
-      id: 80,
-      firstName: "Zachary",
-      lastName: "Lee",
-      email: "zachary.lee@email.com",
-      phone: 5556667777
-    },
+    // {
+    //   id: 24,
+    //   firstName: "Victor",
+    //   lastName: "Taylor",
+    //   email: "victor.taylor@email.com",
+    //   phone: 7778889999
+    // },
+    // {
+    //   id: 25,
+    //   firstName: "Wendy",
+    //   lastName: "Moore",
+    //   email: "wendy.moore@email.com",
+    //   phone: 2223334444
+    // },
+    // {
+    //   id: 26,
+    //   firstName: "Xavier",
+    //   lastName: "Jackson",
+    //   email: "xavier.jackson@email.com",
+    //   phone: 5556667777
+    // },
+    // {
+    //   id: 27,
+    //   firstName: "Yvonne",
+    //   lastName: "White",
+    //   email: "yvonne.white@email.com",
+    //   phone: 8889990000
+    // },
+    // {
+    //   id: 28,
+    //   firstName: "Zachary",
+    //   lastName: "Harris",
+    //   email: "zachary.harris@email.com",
+    //   phone: 1112223333
+    // },
+    // {
+    //   id: 29,
+    //   firstName: "Ava",
+    //   lastName: "Martin",
+    //   email: "ava.martin@email.com",
+    //   phone: 4445556666
+    // },
+    // {
+    //   id: 30,
+    //   firstName: "Benjamin",
+    //   lastName: "Thompson",
+    //   email: "benjamin.thompson@email.com",
+    //   phone: 7778889999
+    // },
+    // {
+    //   id: 31,
+    //   firstName: "Cora",
+    //   lastName: "Garcia",
+    //   email: "cora.garcia@email.com",
+    //   phone: 2223334444
+    // },
+    // {
+    //   id: 32,
+    //   firstName: "Dylan",
+    //   lastName: "Lee",
+    //   email: "dylan.lee@email.com",
+    //   phone: 5556667777
+    // },
+    // {
+    //   id: 33,
+    //   firstName: "Ella",
+    //   lastName: "Davis",
+    //   email: "ella.davis@email.com",
+    //   phone: 8889990000
+    // },
+    // {
+    //   id: 34,
+    //   firstName: "Finn",
+    //   lastName: "Wilson",
+    //   email: "finn.wilson@email.com",
+    //   phone: 1112223333
+    // },
+    // {
+    //   id: 35,
+    //   firstName: "Greta",
+    //   lastName: "Anderson",
+    //   email: "greta.anderson@email.com",
+    //   phone: 4445556666
+    // },
+    // {
+    //   id: 36,
+    //   firstName: "Hank",
+    //   lastName: "Taylor",
+    //   email: "hank.taylor@email.com",
+    //   phone: 7778889999
+    // },
+    // {
+    //   id: 37,
+    //   firstName: "Ivy",
+    //   lastName: "Moore",
+    //   email: "ivy.moore@email.com",
+    //   phone: 2223334444
+    // },
+    // {
+    //   id: 38,
+    //   firstName: "Jack",
+    //   lastName: "Jackson",
+    //   email: "jack.jackson@email.com",
+    //   phone: 5556667777
+    // },
+    // {
+    //   id: 39,
+    //   firstName: "Kelly",
+    //   lastName: "White",
+    //   email: "kelly.white@email.com",
+    //   phone: 8889990000
+    // },
+    // {
+    //   id: 40,
+    //   firstName: "Liam",
+    //   lastName: "Harris",
+    //   email: "liam.harris@email.com",
+    //   phone: 1112223333
+    // },
+    // {
+    //   id: 41,
+    //   firstName: "Mia",
+    //   lastName: "Martin",
+    //   email: "mia.martin@email.com",
+    //   phone: 4445556666
+    // },
+    // {
+    //   id: 42,
+    //   firstName: "Noah",
+    //   lastName: "Thompson",
+    //   email: "noah.thompson@email.com",
+    //   phone: 7778889999
+    // },
+    // {
+    //   id: 43,
+    //   firstName: "Olivia",
+    //   lastName: "Garcia",
+    //   email: "olivia.garcia@email.com",
+    //   phone: 2223334444
+    // },
+    // {
+    //   id: 44,
+    //   firstName: "Peter",
+    //   lastName: "Lee",
+    //   email: "peter.lee@email.com",
+    //   phone: 5556667777
+    // },
+    // {
+    //   id: 45,
+    //   firstName: "Quinn",
+    //   lastName: "Davis",
+    //   email: "quinn.davis@email.com",
+    //   phone: 8889990000
+    // },
+    // {
+    //   id: 46,
+    //   firstName: "Rachel",
+    //   lastName: "Wilson",
+    //   email: "rachel.wilson@email.com",
+    //   phone: 1112223333
+    // },
+    // {
+    //   id: 47,
+    //   firstName: "Sam",
+    //   lastName: "Anderson",
+    //   email: "sam.anderson@email.com",
+    //   phone: 4445556666
+    // },
+    // {
+    //   id: 48,
+    //   firstName: "Taylor",
+    //   lastName: "Taylor",
+    //   email: "taylor.taylor@email.com",
+    //   phone: 7778889999
+    // },
+    // {
+    //   id: 49,
+    //   firstName: "Uma",
+    //   lastName: "Moore",
+    //   email: "uma.moore@email.com",
+    //   phone: 2223334444
+    // },
+    // {
+    //   id: 50,
+    //   firstName: "Victor",
+    //   lastName: "Jackson",
+    //   email: "victor.jackson@email.com",
+    //   phone: 5556667777
+    // },
+    // {
+    //   id: 51,
+    //   firstName: "Walter",
+    //   lastName: "White",
+    //   email: "walter.white@email.com",
+    //   phone: 8889990000
+    // },
+    // {
+    //   id: 52,
+    //   firstName: "Xavier",
+    //   lastName: "Harris",
+    //   email: "xavier.harris@email.com",
+    //   phone: 1112223333
+    // },
+    // {
+    //   id: 53,
+    //   firstName: "Yvonne",
+    //   lastName: "Martin",
+    //   email: "yvonne.martin@email.com",
+    //   phone: 4445556666
+    // },
+    // {
+    //   id: 54,
+    //   firstName: "Zachary",
+    //   lastName: "Thompson",
+    //   email: "zachary.thompson@email.com",
+    //   phone: 7778889999
+    // },
+    // {
+    //   id: 55,
+    //   firstName: "Ava",
+    //   lastName: "Garcia",
+    //   email: "ava.garcia@email.com",
+    //   phone: 2223334444
+    // },
+    // {
+    //   id: 56,
+    //   firstName: "Benjamin",
+    //   lastName: "Lee",
+    //   email: "benjamin.lee@email.com",
+    //   phone: 5556667777
+    // },
+    // {
+    //   id: 57,
+    //   firstName: "Cora",
+    //   lastName: "Davis",
+    //   email: "cora.davis@email.com",
+    //   phone: 8889990000
+    // },
+    // {
+    //   id: 58,
+    //   firstName: "Dylan",
+    //   lastName: "Wilson",
+    //   email: "dylan.wilson@email.com",
+    //   phone: 1112223333
+    // },
+    // {
+    //   id: 59,
+    //   firstName: "Ella",
+    //   lastName: "Anderson",
+    //   email: "ella.anderson@email.com",
+    //   phone: 4445556666
+    // },
+    // {
+    //   id: 60,
+    //   firstName: "Finn",
+    //   lastName: "Taylor",
+    //   email: "finn.taylor@email.com",
+    //   phone: 7778889999
+    // },
+    // {
+    //   id: 61,
+    //   firstName: "Greta",
+    //   lastName: "Moore",
+    //   email: "greta.moore@email.com",
+    //   phone: 2223334444
+    // },
+    // {
+    //   id: 62,
+    //   firstName: "Hank",
+    //   lastName: "Jackson",
+    //   email: "hank.jackson@email.com",
+    //   phone: 5556667777
+    // },
+    // {
+    //   id: 63,
+    //   firstName: "Ivy",
+    //   lastName: "White",
+    //   email: "ivy.white@email.com",
+    //   phone: 8889990000
+    // },
+    // {
+    //   id: 64,
+    //   firstName: "Jack",
+    //   lastName: "Harris",
+    //   email: "jack.harris@email.com",
+    //   phone: 1112223333
+    // },
+    // {
+    //   id: 65,
+    //   firstName: "Kelly",
+    //   lastName: "Martin",
+    //   email: "kelly.martin@email.com",
+    //   phone: 4445556666
+    // },
+    // {
+    //   id: 66,
+    //   firstName: "Liam",
+    //   lastName: "Thompson",
+    //   email: "liam.thompson@email.com",
+    //   phone: 7778889999
+    // },
+    // {
+    //   id: 67,
+    //   firstName: "Mia",
+    //   lastName: "Garcia",
+    //   email: "mia.garcia@email.com",
+    //   phone: 2223334444
+    // },
+    // {
+    //   id: 68,
+    //   firstName: "Noah",
+    //   lastName: "Lee",
+    //   email: "noah.lee@email.com",
+    //   phone: 5556667777
+    // },
+    // {
+    //   id: 69,
+    //   firstName: "Olivia",
+    //   lastName: "Davis",
+    //   email: "olivia.davis@email.com",
+    //   phone: 8889990000
+    // },
+    // {
+    //   id: 70,
+    //   firstName: "Peter",
+    //   lastName: "Wilson",
+    //   email: "peter.wilson@email.com",
+    //   phone: 1112223333
+    // },
+    // {
+    //   id: 71,
+    //   firstName: "Quinn",
+    //   lastName: "Anderson",
+    //   email: "quinn.anderson@email.com",
+    //   phone: 4445556666
+    // },
+    // {
+    //   id: 72,
+    //   firstName: "Rachel",
+    //   lastName: "Taylor",
+    //   email: "rachel.taylor@email.com",
+    //   phone: 7778889999
+    // },
+    // {
+    //   id: 73,
+    //   firstName: "Sam",
+    //   lastName: "Moore",
+    //   email: "sam.moore@email.com",
+    //   phone: 2223334444
+    // },
+    // {
+    //   id: 74,
+    //   firstName: "Taylor",
+    //   lastName: "Jackson",
+    //   email: "taylor.jackson@email.com",
+    //   phone: 5556667777
+    // },
+    // {
+    //   id: 75,
+    //   firstName: "Uma",
+    //   lastName: "White",
+    //   email: "uma.white@email.com",
+    //   phone: 8889990000
+    // },
+    // {
+    //   id: 76,
+    //   firstName: "Victor",
+    //   lastName: "Harris",
+    //   email: "victor.harris@email.com",
+    //   phone: 1112223333
+    // },
+    // {
+    //   id: 77,
+    //   firstName: "Walter",
+    //   lastName: "Martin",
+    //   email: "walter.martin@email.com",
+    //   phone: 4445556666
+    // },
+    // {
+    //   id: 78,
+    //   firstName: "Xavier",
+    //   lastName: "Thompson",
+    //   email: "xavier.thompson@email.com",
+    //   phone: 7778889999
+    // },
+    // {
+    //   id: 79,
+    //   firstName: "Yvonne",
+    //   lastName: "Garcia",
+    //   email: "yvonne.garcia@email.com",
+    //   phone: 2223334444
+    // },
+    // {
+    //   id: 80,
+    //   firstName: "Zachary",
+    //   lastName: "Lee",
+    //   email: "zachary.lee@email.com",
+    //   phone: 5556667777
+    // },
     // {
     //   id: 81,
     //   firstName: "Ava",
