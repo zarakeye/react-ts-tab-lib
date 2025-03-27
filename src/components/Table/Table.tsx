@@ -4,10 +4,8 @@ import { Dropdown, DropdownItem, DropdownMenu, DropdownTrigger } from "@heroui/d
 import { type Selection } from '@heroui/react';
 import * as React from 'react';
 import { type ChangeEvent, JSX, type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
-import '../../index.css';
 import { v4 as uuidv4 } from 'uuid';
-import { a } from 'vitest/dist/chunks/suite.d.FvehnV49.js';
-import { text } from 'stream/consumers';
+import '../../index.css';
 
 export type DataType = 'string' | 'number' | 'date' | 'boolean' | 'custom';
 export type OrderType = 'asc' | 'desc';
