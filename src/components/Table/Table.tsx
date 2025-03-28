@@ -264,6 +264,8 @@ function Table <T extends Record<string, any>>({
             return a.value - b.value;
           } else if (propertyType === 'date') {
             return a.value.getTime() - b.value.getTime();
+          } else if (propertyType === 'boolean') {
+            return b.value - a.value;
           } else {
             return 0;
           }
@@ -274,6 +276,8 @@ function Table <T extends Record<string, any>>({
             return b.value - a.value;
           } else if (propertyType === 'date') {
             return b.value.getTime() - a.value.getTime();
+          } else if (propertyType === 'boolean') {
+            return a.value - b.value;
           } else {
             return 0;
           }
