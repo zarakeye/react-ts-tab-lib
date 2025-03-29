@@ -116,7 +116,7 @@ export type RowsClassNames = {
   textColor?: string;
 }
 
-export type ClassNames = {
+export type StyleClassNames = {
   tableBackgroundColor?: string;
   tableBorders?: string;
   tableBordersHover?: string;
@@ -138,7 +138,7 @@ export type TableProps<T> = {
   rows: T[];
   onRowHover?: (row: T | null) => void;
   onRowClick?: (row: T | null) => void;
-  classNames?: ClassNames;
+  styleClassNames?: StyleClassNames;
   rangeLengthOptions?: number[] | undefined;
   defaultOrder?: ActiveOrderType<T> | null;
   textContent?: TextContentType | null;
@@ -226,7 +226,7 @@ function Table <T extends Record<string, any>>({
   rows = [],
   onRowHover,
   onRowClick,
-  classNames,
+  styleClassNames,
   rangeLengthOptions = [10, 20, 50, 100],
   defaultOrder,
   textContent
@@ -385,8 +385,8 @@ function Table <T extends Record<string, any>>({
       label:  <span
                 key={option}
                 className={`
-                  ${classNames?.rangeLengthOptions?.menuTextColor ?? 'text-white'}
-                  ${classNames?.rangeLengthOptions?.menuBackgroundColor ?? 'bg-gray-800 hover:bg-gray-700'}
+                  ${styleClassNames?.rangeLengthOptions?.menuTextColor ?? 'text-white'}
+                  ${styleClassNames?.rangeLengthOptions?.menuBackgroundColor ?? 'bg-gray-800 hover:bg-gray-700'}
                 `}
               >
                 {`${textContent?.sampleLabelPrefix ?? 'Show '} ${option} ${textContent?.sampleLabelSuffix ?? ' entries'}`}
@@ -414,7 +414,7 @@ function Table <T extends Record<string, any>>({
 
   return (
     <div className={`my-5`}>
-      <div className={`flex flex-col justify-between items-center my-5 gap-y-3.5 ${classNames?.rangeOptionsAndSearchBarArea ?? ''}`}>
+      <div className={`flex flex-col justify-between items-center my-5 gap-y-3.5 ${styleClassNames?.rangeOptionsAndSearchBarArea ?? ''}`}>
         <div>
           <label htmlFor="rangeLength" className='sr-only'>Displayed entries</label>
           <Dropdown>
@@ -422,12 +422,12 @@ function Table <T extends Record<string, any>>({
               <Button
                 variant='bordered'
                 className={`
-                  ${classNames?.rangeLengthOptions?.buttonBorder ?? 'border-4'}
-                  ${classNames?.rangeLengthOptions?.buttonBorderColor ?? 'border-gray-300'}
-                  ${classNames?.rangeLengthOptions?.buttonRounded ?? 'rounded-[20px]'}
-                  ${classNames?.rangeLengthOptions?.buttonText ?? 'text-center text-white'} 
-                  ${classNames?.rangeLengthOptions?.buttonBackgroundColor ?? 'bg-gray-800 hover:bg-gray-700'} 
-                  ${classNames?.rangeLengthOptions?.buttonPadding ?? 'px-[10px]'}`
+                  ${styleClassNames?.rangeLengthOptions?.buttonBorder ?? 'border-4'}
+                  ${styleClassNames?.rangeLengthOptions?.buttonBorderColor ?? 'border-gray-300'}
+                  ${styleClassNames?.rangeLengthOptions?.buttonRounded ?? 'rounded-[20px]'}
+                  ${styleClassNames?.rangeLengthOptions?.buttonText ?? 'text-center text-white'} 
+                  ${styleClassNames?.rangeLengthOptions?.buttonBackgroundColor ?? 'bg-gray-800 hover:bg-gray-700'} 
+                  ${styleClassNames?.rangeLengthOptions?.buttonPadding ?? 'px-[10px]'}`
                 }
               >
                 <span >
@@ -451,12 +451,12 @@ function Table <T extends Record<string, any>>({
                 handleRangeLengthChange(e.currentKey)
               }}
               className={`
-                ${classNames?.rangeLengthOptions?.menuBorder ?? 'border-4'}
-                ${classNames?.rangeLengthOptions?.menuBackgroundColor ?? 'border-gray-300'}
-                ${classNames?.rangeLengthOptions?.menuRounded ?? 'rounded-[20px]'}
-                ${classNames?.rangeLengthOptions?.menuPadding ?? 'p-[10px]'}
-                ${classNames?.rangeLengthOptions?.menuTextColor ?? 'text-white'}
-                ${classNames?.rangeLengthOptions?.menuBackgroundColor ?? 'bg-gray-800 hover:bg-gray-600'}
+                ${styleClassNames?.rangeLengthOptions?.menuBorder ?? 'border-4'}
+                ${styleClassNames?.rangeLengthOptions?.menuBackgroundColor ?? 'border-gray-300'}
+                ${styleClassNames?.rangeLengthOptions?.menuRounded ?? 'rounded-[20px]'}
+                ${styleClassNames?.rangeLengthOptions?.menuPadding ?? 'p-[10px]'}
+                ${styleClassNames?.rangeLengthOptions?.menuTextColor ?? 'text-white'}
+                ${styleClassNames?.rangeLengthOptions?.menuBackgroundColor ?? 'bg-gray-800 hover:bg-gray-600'}
               `}
             >
               {rangeLengthOptionsTags.map(option => (
@@ -471,7 +471,7 @@ function Table <T extends Record<string, any>>({
         <div>
           <label
             htmlFor="search"
-            className={classNames?.searchBar?.label ?? 'mr-2.5'}
+            className={styleClassNames?.searchBar?.label ?? 'mr-2.5'}
           >
             {textContent?.searchLabel ?? 'Search'}
           </label>
@@ -482,14 +482,14 @@ function Table <T extends Record<string, any>>({
             id="search"
             placeholder={textContent?.searchPlaceholder ?? ''}
             className={`
-              ${classNames?.searchBar?.inputPadding ?? 'px-[10px] py-[5px]'}
-              ${classNames?.searchBar?.inputBackgroundColor ?? 'bg-white'}
-              ${classNames?.searchBar?.inputMarginL ?? 'ml-[15px]'}
-              ${classNames?.searchBar?.inputBorder ?? 'border-3'}
-              ${classNames?.searchBar?.inputBorderColor ?? 'border-gray-300 hover:border-gray-400'}
-              ${classNames?.searchBar?.inputRounded ?? 'rounded-[20px]'}
-              ${classNames?.searchBar?.inputFocusOutLine ?? 'focus:outline-sky-400'}
-              ${classNames?.searchBar?.inputTextColor ?? 'text-black'}
+              ${styleClassNames?.searchBar?.inputPadding ?? 'px-[10px] py-[5px]'}
+              ${styleClassNames?.searchBar?.inputBackgroundColor ?? 'bg-white'}
+              ${styleClassNames?.searchBar?.inputMarginL ?? 'ml-[15px]'}
+              ${styleClassNames?.searchBar?.inputBorder ?? 'border-3'}
+              ${styleClassNames?.searchBar?.inputBorderColor ?? 'border-gray-300 hover:border-gray-400'}
+              ${styleClassNames?.searchBar?.inputRounded ?? 'rounded-[20px]'}
+              ${styleClassNames?.searchBar?.inputFocusOutLine ?? 'focus:outline-sky-400'}
+              ${styleClassNames?.searchBar?.inputTextColor ?? 'text-black'}
             `}
             onChange={(e) => handleSearchInput(e)}
           />
@@ -498,11 +498,11 @@ function Table <T extends Record<string, any>>({
       
       <div
         className={`
-          ${classNames?.tableBorders ?? 'border-4 border-gray-300'}
-          ${classNames?.tableRounded ?? 'rounded-[23px]'}
-          ${ classNames?.tablePaddings ?? 'px-[5px] pt-[5px] pb-[15px]'}
-          ${ classNames?.tableMargins ?? ''}
-          ${classNames?.tableBackgroundColor ?? ''}
+          ${styleClassNames?.tableBorders ?? 'border-4 border-gray-300'}
+          ${styleClassNames?.tableRounded ?? 'rounded-[23px]'}
+          ${ styleClassNames?.tablePaddings ?? 'px-[5px] pt-[5px] pb-[15px]'}
+          ${ styleClassNames?.tableMargins ?? ''}
+          ${styleClassNames?.tableBackgroundColor ?? ''}
         `}
       >
         <table className={`w-full`} role='table'>
@@ -525,18 +525,18 @@ function Table <T extends Record<string, any>>({
                     key={index}
                     className={`
                       flex justify-between items-center
-                      ${classNames?.tableHeaders?.gap ?? 'gap-2.5'}
-                      ${classNames?.tableHeaders?.padding ?? 'py-[5px]'}
-                      ${classNames?.tableHeaders?.margin ?? 'mb-[10px]'}
-                      ${classNames?.tableHeaders?.textColor ?? 'text-white'}
-                      ${classNames?.tableHeaders?.backgroundColor ?? 'bg-gray-800 hover:bg-gray-700'} 
-                      ${classNames?.tableHeaders?.borderY ?? 'border-y-4'}
-                      ${classNames?.tableHeaders?.borderColor ?? 'border-gray-300'}
+                      ${styleClassNames?.tableHeaders?.gap ?? 'gap-2.5'}
+                      ${styleClassNames?.tableHeaders?.padding ?? 'py-[5px]'}
+                      ${styleClassNames?.tableHeaders?.margin ?? 'mb-[10px]'}
+                      ${styleClassNames?.tableHeaders?.textColor ?? 'text-white'}
+                      ${styleClassNames?.tableHeaders?.backgroundColor ?? 'bg-gray-800 hover:bg-gray-700'} 
+                      ${styleClassNames?.tableHeaders?.borderY ?? 'border-y-4'}
+                      ${styleClassNames?.tableHeaders?.borderColor ?? 'border-gray-300'}
                       ${columnsWidth[index] ? `w-[${columnsWidth[index]}px]` : ''}
-                      ${index === 0 ? (classNames?.tableHeaders?.borderL ?? 'border-l-4') : ''}
-                      ${index === 0 ? classNames?.tableHeaders?.roundedL ?? 'rounded-tl-[20px] rounded-bl-[20px]': ''}
-                      ${index === columns.length - 1 ? classNames?.tableHeaders?.borderR ?? 'border-r-4' : ''}
-                      ${index === columns.length - 1 ? classNames?.tableHeaders?.roundedR ?? 'rounded-tr-[20px] rounded-br-[20px]' : ''}
+                      ${index === 0 ? (styleClassNames?.tableHeaders?.borderL ?? 'border-l-4') : ''}
+                      ${index === 0 ? styleClassNames?.tableHeaders?.roundedL ?? 'rounded-tl-[20px] rounded-bl-[20px]': ''}
+                      ${index === columns.length - 1 ? styleClassNames?.tableHeaders?.borderR ?? 'border-r-4' : ''}
+                      ${index === columns.length - 1 ? styleClassNames?.tableHeaders?.roundedR ?? 'rounded-tr-[20px] rounded-br-[20px]' : ''}
                     `}
                     onClick={e => handleOrderChange(e, key.property)}
                   >
@@ -560,7 +560,7 @@ function Table <T extends Record<string, any>>({
                             `}
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 320 512"
-                            fill={classNames?.sortIndicatorColor ?? '#FFF'}
+                            fill={styleClassNames?.sortIndicatorColor ?? '#FFF'}
                           >
                             <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/>
                           </svg>
@@ -579,7 +579,7 @@ function Table <T extends Record<string, any>>({
                 data-row
                 key={uuidv4()}
                 className={`  
-                  ${classNames?.rows?.paddingB ?? ''}
+                  ${styleClassNames?.rows?.paddingB ?? ''}
                 `}
                 ref={rowRef}
               >
@@ -588,15 +588,15 @@ function Table <T extends Record<string, any>>({
                   role='cell'
                   colSpan={columns.length}
                   className={`
-                    ${classNames?.rows?.paddingT ?? 'mt-[10px]'}
+                    ${styleClassNames?.rows?.paddingT ?? 'mt-[10px]'}
                     ${'text-center truncate'}
-                    ${classNames?.rows?.paddingX ?? 'px-[15px]'}
+                    ${styleClassNames?.rows?.paddingX ?? 'px-[15px]'}
                   `}
                 >
                     <div
                       className={`
-                        ${classNames?.rows?.oddRowBackgroundColor ?? 'bg-gray-500'}
-                        ${classNames?.rows?.textColor ?? ''}
+                        ${styleClassNames?.rows?.oddRowBackgroundColor ?? 'bg-gray-500'}
+                        ${styleClassNames?.rows?.textColor ?? ''}
                       `}
                     >
                       {textContent?.emptyTableText ?? 'No data available in table'}
@@ -629,8 +629,8 @@ function Table <T extends Record<string, any>>({
                   }
                 }}
                 className={`
-                  ${classNames?.rows?.height ?? 'h-[30px]'}
-                  ${classNames?.rows?.paddingB ?? 'last:pt-[15px]'}
+                  ${styleClassNames?.rows?.height ?? 'h-[30px]'}
+                  ${styleClassNames?.rows?.paddingB ?? 'last:pt-[15px]'}
                 `}
               >
                 {columns.map((column, colIndex) => (
@@ -640,26 +640,26 @@ function Table <T extends Record<string, any>>({
                       key={uuidv4()}
                       role='cell'
                       className={`
-                        ${classNames?.cells ?? 'whitespace-nowrap'} py-[2.5px]
+                        ${styleClassNames?.cells ?? 'whitespace-nowrap'} py-[2.5px]
                       `}
                     >
                       <div
                         
                         className={`
                           flex justify-between items-center px-[10px] py-[5px] h-full transition-colors duration-200
-                          ${classNames?.rows?.textColor ?? ''}
+                          ${styleClassNames?.rows?.textColor ?? ''}
                           ${
                             rowIndex % 2 === 0
-                              ? classNames?.rows?.oddRowBackgroundColor ?? 'bg-gray-500'
-                              : classNames?.rows?.evenRowBackgroundColor ?? 'bg-gray-600'
+                              ? styleClassNames?.rows?.oddRowBackgroundColor ?? 'bg-gray-500'
+                              : styleClassNames?.rows?.evenRowBackgroundColor ?? 'bg-gray-600'
                           }
                           ${columnsWidth[colIndex] ? `w-[${columnsWidth[colIndex]}px]` : ''}
                           ${colIndex === 0
-                            ? classNames?.rows?.marginL ?? 'ml-[15px]'
+                            ? styleClassNames?.rows?.marginL ?? 'ml-[15px]'
                             : ''
                           }
                           ${colIndex === columns.length - 1
-                            ? classNames?.rows?.marginR ?? 'mr-[15px]'
+                            ? styleClassNames?.rows?.marginR ?? 'mr-[15px]'
                             : ''
                           }
                         `}
@@ -711,11 +711,11 @@ function Table <T extends Record<string, any>>({
         <div
           className={`
             flex items-center
-            ${classNames?.pagination?.paginationBlockHover ?? ''}
-            ${ classNames?.pagination?.rounded ?? 'rounded-[20px]'}
-            ${ classNames?.pagination?.border ?? 'border-2'}
-            ${classNames?.pagination?.buttonBorderColor ?? 'border-gray-300'}
-            ${classNames?.pagination?.buttonBackgroundColor ?? 'bg-gray-800'}
+            ${styleClassNames?.pagination?.paginationBlockHover ?? ''}
+            ${ styleClassNames?.pagination?.rounded ?? 'rounded-[20px]'}
+            ${ styleClassNames?.pagination?.border ?? 'border-2'}
+            ${styleClassNames?.pagination?.buttonBorderColor ?? 'border-gray-300'}
+            ${styleClassNames?.pagination?.buttonBackgroundColor ?? 'bg-gray-800'}
           `}
         >
           {currentPage - 1 >= 1 && (
@@ -725,14 +725,14 @@ function Table <T extends Record<string, any>>({
               onClick={() => setCurrentPage(currentPage - 1)}
               className={`
                 disabled:opacity-50 cursor-pointer
-                ${classNames?.pagination?.previousButtonPadding ?? 'pl-[20px] pr-3'}
-                ${classNames?.pagination?.previousButtonRoundedL ?? 'rounded-l-[20px]'}
-                ${classNames?.pagination?.textColor ?? 'text-white'}
-                ${classNames?.pagination?.buttonBackgroundColorHover ?? 'hover:bg-gray-500 py-[9px]'}
+                ${styleClassNames?.pagination?.previousButtonPadding ?? 'pl-[20px] pr-3'}
+                ${styleClassNames?.pagination?.previousButtonRoundedL ?? 'rounded-l-[20px]'}
+                ${styleClassNames?.pagination?.textColor ?? 'text-white'}
+                ${styleClassNames?.pagination?.buttonBackgroundColorHover ?? 'hover:bg-gray-500 py-[9px]'}
               `}
               aria-label='Previous page'
             >
-              <svg className='rotate-180 h-[15px]' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill={classNames?.pagination?.navButtonsColor ?? '#fff'}>
+              <svg className='rotate-180 h-[15px]' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill={styleClassNames?.pagination?.navButtonsColor ?? '#fff'}>
                 <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/>
               </svg>
             </button>
@@ -745,8 +745,8 @@ function Table <T extends Record<string, any>>({
                 onClick={() => setCurrentPage(page)}
                 className={`px-3 py-[5px] ${
                   page === currentPage
-                    ? classNames?.pagination?.currentPageButton ?? 'bg-blue-500 text-white first:rounded-l-[20px] last:rounded-r-[20px]'
-                    : classNames?.pagination?.otherpages ?? 'text-white hover:bg-gray-500 first:rounded-l-[20px] last:rounded-r-[20px] cursor-pointer'
+                    ? styleClassNames?.pagination?.currentPageButton ?? 'bg-blue-500 text-white first:rounded-l-[20px] last:rounded-r-[20px]'
+                    : styleClassNames?.pagination?.otherpages ?? 'text-white hover:bg-gray-500 first:rounded-l-[20px] last:rounded-r-[20px] cursor-pointer'
                 }`}
                 aria-current={page === currentPage ? 'page' : undefined}
               >
@@ -770,13 +770,13 @@ function Table <T extends Record<string, any>>({
               onClick={() => setCurrentPage(currentPage + 1)}
               className={`
                 disabled:opacity-50  cursor-pointer
-                ${classNames?.pagination?.nextButtonPadding ?? 'pl-3 pr-[20px]'}
-                ${classNames?.pagination?.nextButtonRoundedR ?? 'rounded-r-[20px]'}
-                ${classNames?.pagination?.textColor ?? 'text-white'}
-                ${classNames?.pagination?.buttonBackgroundColorHover ?? 'hover:bg-gray-500 py-[9px]'}
+                ${styleClassNames?.pagination?.nextButtonPadding ?? 'pl-3 pr-[20px]'}
+                ${styleClassNames?.pagination?.nextButtonRoundedR ?? 'rounded-r-[20px]'}
+                ${styleClassNames?.pagination?.textColor ?? 'text-white'}
+                ${styleClassNames?.pagination?.buttonBackgroundColorHover ?? 'hover:bg-gray-500 py-[9px]'}
               `}
             >
-              <svg className='h-[15px]' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill={classNames?.pagination?.navButtonsColor ?? '#fff'}>
+              <svg className='h-[15px]' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill={styleClassNames?.pagination?.navButtonsColor ?? '#fff'}>
                 <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/>
               </svg>
             </button>
