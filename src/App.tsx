@@ -787,7 +787,7 @@ function App() {
           order: 'asc'
         }
       }
-      classNames={{
+      styleClassNames={{
         rows: {
           textColor: 'text-white',
         }
