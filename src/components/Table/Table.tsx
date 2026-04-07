@@ -417,374 +417,376 @@ function Table <T extends Record<string, any>>({
   )
 
   return (
-    <div className={`my-5`}>
-      <div className={`flex flex-col justify-between items-center my-5 gap-y-3.5 ${styleClassNames?.rangeOptionsAndSearchBarArea ?? ''}`}>
-        <div>
-          <label htmlFor="rangeLength" className='sr-only'>Displayed entries</label>
-          <Dropdown>
-            <DropdownTrigger>
-              <Button
-                variant='bordered'
-                className={`
-                  ${styleClassNames?.rangeLengthOptions?.buttonBorder ?? 'border-4'}
-                  ${styleClassNames?.rangeLengthOptions?.buttonBorderColor ?? 'border-gray-300'}
-                  ${styleClassNames?.rangeLengthOptions?.buttonRounded ?? 'rounded-[20px]'}
-                  ${styleClassNames?.rangeLengthOptions?.buttonText ?? 'text-center text-white'} 
-                  ${styleClassNames?.rangeLengthOptions?.buttonBackgroundColor ?? 'bg-gray-800 hover:bg-gray-700'} 
-                  ${styleClassNames?.rangeLengthOptions?.buttonPadding ?? 'px-[10px]'}`
-                }
-              >
-                <span >
-                  {`${textContent?.sampleLabelPrefix ?? 'Show'} ${selectedValue} ${textContent?.sampleLabelSuffix ?? 'entries'}`}
-                  <ChevronDownIcon 
-                    className="pl-[10px] inline-block h-5 w-[30px] text-white ui-open:rotate-180 transition-transform"
-                    aria-hidden="true"
-                  />
-                </span>
-              </Button>
-            </DropdownTrigger>
-            <DropdownMenu
-              disallowEmptySelection
-              aria-labelledby="Sample Length"
-              selectedKeys={selectedKeys}
-              selectionMode='single'
-              variant='flat'
-              onSelectionChange={e => {
-                if (!e.currentKey) return
-                setSelectedKeys(new Set([e.currentKey]))
-                handleRangeLengthChange(e.currentKey)
-              }}
-              className={`
-                ${styleClassNames?.rangeLengthOptions?.menuBorder ?? 'border-4'}
-                ${styleClassNames?.rangeLengthOptions?.menuBackgroundColor ?? 'border-gray-300'}
-                ${styleClassNames?.rangeLengthOptions?.menuRounded ?? 'rounded-[20px]'}
-                ${styleClassNames?.rangeLengthOptions?.menuPadding ?? 'p-[10px]'}
-                ${styleClassNames?.rangeLengthOptions?.menuTextColor ?? 'text-white'}
-                ${styleClassNames?.rangeLengthOptions?.menuBackgroundColor ?? 'bg-gray-800 hover:bg-gray-600'}
-              `}
-            >
-              {rangeLengthOptionsTags.map(option => (
-                <DropdownItem key={option.value}>
-                  {`${textContent?.sampleLabelPrefix ?? 'Show'} ${option.value} ${textContent?.sampleLabelSuffix ?? 'entries'}`}
-                </DropdownItem>
-              ))}
-            </DropdownMenu>
-          </Dropdown>
-        </div>
-
-        <div>
-          <label
-            htmlFor="search"
-            className={styleClassNames?.searchBar?.label ?? 'mr-2.5'}
-          >
-            {textContent?.searchLabel ?? 'Search'}
-          </label>
-
-          <input
-            type="text"
-            name="search"
-            id="search"
-            placeholder={textContent?.searchPlaceholder ?? ''}
-            className={`
-              ${styleClassNames?.searchBar?.inputPadding ?? 'px-[10px] py-[5px]'}
-              ${styleClassNames?.searchBar?.inputBackgroundColor ?? 'bg-white'}
-              ${styleClassNames?.searchBar?.inputMarginL ?? 'ml-[15px]'}
-              ${styleClassNames?.searchBar?.inputBorder ?? 'border-3'}
-              ${styleClassNames?.searchBar?.inputBorderColor ?? 'border-gray-300 hover:border-gray-400'}
-              ${styleClassNames?.searchBar?.inputRounded ?? 'rounded-[20px]'}
-              ${styleClassNames?.searchBar?.inputFocusOutLine ?? 'focus:outline-sky-400'}
-              ${styleClassNames?.searchBar?.inputTextColor ?? 'text-black'}
-            `}
-            onChange={(e) => handleSearchInput(e)}
-          />
-        </div>
-      </div>
-      
-      <div
-        className={`
-          ${styleClassNames?.tableBorders ?? 'border-4 border-gray-300'}
-          ${styleClassNames?.tableRounded ?? 'rounded-[23px]'}
-          ${ styleClassNames?.tablePaddings ?? 'px-[5px] pt-[5px] pb-[15px]'}
-          ${ styleClassNames?.tableMargins ?? ''}
-          ${styleClassNames?.tableBackgroundColor ?? ''}
-        `}
-      >
-        <table className={`w-full`} role='table'>
-          <thead>
-            <tr
-              role='row'
-              key={uuidv4()}
-              className={`sticky top-0 z-10`}
-            >
-              {columns.map((key, index) => (
-                <th
-                  key={uuidv4()}
-                  role='columnheader'
-                  className="cursor-pointer"
-                  ref={columnHeaderRef}
+    <div className='table-root'>
+      <div className={`my-5`}>
+        <div className={`flex flex-col justify-between items-center my-5 gap-y-3.5 ${styleClassNames?.rangeOptionsAndSearchBarArea ?? ''}`}>
+          <div>
+            <label htmlFor="rangeLength" className='sr-only'>Displayed entries</label>
+            <Dropdown>
+              <DropdownTrigger>
+                <Button
+                  variant='bordered'
+                  className={`
+                    ${styleClassNames?.rangeLengthOptions?.buttonBorder ?? 'border-4'}
+                    ${styleClassNames?.rangeLengthOptions?.buttonBorderColor ?? 'border-gray-300'}
+                    ${styleClassNames?.rangeLengthOptions?.buttonRounded ?? 'rounded-[20px]'}
+                    ${styleClassNames?.rangeLengthOptions?.buttonText ?? 'text-center text-white'} 
+                    ${styleClassNames?.rangeLengthOptions?.buttonBackgroundColor ?? 'bg-gray-800 hover:bg-gray-700'} 
+                    ${styleClassNames?.rangeLengthOptions?.buttonPadding ?? 'px-[10px]'}`
+                  }
                 >
-                  <div
-                    aria-label={`Sort by ${key.displayName}`}
-                    role='button'
-                    key={index}
-                    className={`
-                      flex justify-between items-center
-                      ${styleClassNames?.tableHeaders?.gap ?? 'gap-2.5'}
-                      ${styleClassNames?.tableHeaders?.padding ?? 'py-[5px]'}
-                      ${styleClassNames?.tableHeaders?.margin ?? 'mb-[10px]'}
-                      ${styleClassNames?.tableHeaders?.textColor ?? 'text-white'}
-                      ${styleClassNames?.tableHeaders?.backgroundColor ?? 'bg-gray-800 hover:bg-gray-700'} 
-                      ${styleClassNames?.tableHeaders?.borderY ?? 'border-y-4'}
-                      ${styleClassNames?.tableHeaders?.borderColor ?? 'border-gray-300'}
-                      ${columnsWidth[index] ? `w-[${columnsWidth[index]}px]` : ''}
-                      ${index === 0 ? (styleClassNames?.tableHeaders?.borderL ?? 'border-l-4') : ''}
-                      ${index === 0 ? styleClassNames?.tableHeaders?.roundedL ?? 'rounded-tl-[20px] rounded-bl-[20px]': ''}
-                      ${index === columns.length - 1 ? styleClassNames?.tableHeaders?.borderR ?? 'border-r-4' : ''}
-                      ${index === columns.length - 1 ? styleClassNames?.tableHeaders?.roundedR ?? 'rounded-tr-[20px] rounded-br-[20px]' : ''}
-                    `}
-                    onClick={e => handleOrderChange(e, key.property)}
+                  <span >
+                    {`${textContent?.sampleLabelPrefix ?? 'Show'} ${selectedValue} ${textContent?.sampleLabelSuffix ?? 'entries'}`}
+                    <ChevronDownIcon 
+                      className="pl-[10px] inline-block h-5 w-[30px] text-white ui-open:rotate-180 transition-transform"
+                      aria-hidden="true"
+                    />
+                  </span>
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                disallowEmptySelection
+                aria-labelledby="Sample Length"
+                selectedKeys={selectedKeys}
+                selectionMode='single'
+                variant='flat'
+                onSelectionChange={e => {
+                  if (!e.currentKey) return
+                  setSelectedKeys(new Set([e.currentKey]))
+                  handleRangeLengthChange(e.currentKey)
+                }}
+                className={`
+                  ${styleClassNames?.rangeLengthOptions?.menuBorder ?? 'border-4'}
+                  ${styleClassNames?.rangeLengthOptions?.menuBackgroundColor ?? 'border-gray-300'}
+                  ${styleClassNames?.rangeLengthOptions?.menuRounded ?? 'rounded-[20px]'}
+                  ${styleClassNames?.rangeLengthOptions?.menuPadding ?? 'p-[10px]'}
+                  ${styleClassNames?.rangeLengthOptions?.menuTextColor ?? 'text-white'}
+                  ${styleClassNames?.rangeLengthOptions?.menuBackgroundColor ?? 'bg-gray-800 hover:bg-gray-600'}
+                `}
+              >
+                {rangeLengthOptionsTags.map(option => (
+                  <DropdownItem key={option.value}>
+                    {`${textContent?.sampleLabelPrefix ?? 'Show'} ${option.value} ${textContent?.sampleLabelSuffix ?? 'entries'}`}
+                  </DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
+          </div>
+
+          <div>
+            <label
+              htmlFor="search"
+              className={styleClassNames?.searchBar?.label ?? 'mr-2.5'}
+            >
+              {textContent?.searchLabel ?? 'Search'}
+            </label>
+
+            <input
+              type="text"
+              name="search"
+              id="search"
+              placeholder={textContent?.searchPlaceholder ?? ''}
+              className={`
+                ${styleClassNames?.searchBar?.inputPadding ?? 'px-[10px] py-[5px]'}
+                ${styleClassNames?.searchBar?.inputBackgroundColor ?? 'bg-white'}
+                ${styleClassNames?.searchBar?.inputMarginL ?? 'ml-[15px]'}
+                ${styleClassNames?.searchBar?.inputBorder ?? 'border-3'}
+                ${styleClassNames?.searchBar?.inputBorderColor ?? 'border-gray-300 hover:border-gray-400'}
+                ${styleClassNames?.searchBar?.inputRounded ?? 'rounded-[20px]'}
+                ${styleClassNames?.searchBar?.inputFocusOutLine ?? 'focus:outline-sky-400'}
+                ${styleClassNames?.searchBar?.inputTextColor ?? 'text-black'}
+              `}
+              onChange={(e) => handleSearchInput(e)}
+            />
+          </div>
+        </div>
+        
+        <div
+          className={`
+            ${styleClassNames?.tableBorders ?? 'border-4 border-gray-300'}
+            ${styleClassNames?.tableRounded ?? 'rounded-[23px]'}
+            ${ styleClassNames?.tablePaddings ?? 'px-[5px] pt-[5px] pb-[15px]'}
+            ${ styleClassNames?.tableMargins ?? ''}
+            ${styleClassNames?.tableBackgroundColor ?? ''}
+          `}
+        >
+          <table className={`w-full`} role='table'>
+            <thead>
+              <tr
+                role='row'
+                key={uuidv4()}
+                className={`sticky top-0 z-10`}
+              >
+                {columns.map((key, index) => (
+                  <th
+                    key={uuidv4()}
+                    role='columnheader'
+                    className="cursor-pointer"
+                    ref={columnHeaderRef}
                   >
-                    <div className={`flex items-center justify-between w-[100%] pl-[18px] pr-[5px]`}>
-                      <div className='flex-1 text-center overflow-hidden mr-[10px]'>
-                        <p
-                          ref={columnNameRef}
-                          className='whitespace-nowrap'
-                        >
-                          {key.displayName ? key.displayName : String(key.property)}
-                        </p>
-                      </div>
-                      <div>
-                        <div
-                          className={`flex items-center justify-center w-[12px] h-[12px] mr-[10px]`}
-                        >
-                          <svg
-                            className={`
-                              ${!(activeOrder?.property === key.property)? 'hidden' : ''}
-                              ${activeOrder?.property === key.property && activeOrder?.order !== 'asc' ? 'rotate-90' : '-rotate-90'}
-                            `}
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 320 512"
-                            fill={styleClassNames?.sortIndicatorColor ?? '#FFF'}
+                    <div
+                      aria-label={`Sort by ${key.displayName}`}
+                      role='button'
+                      key={index}
+                      className={`
+                        flex justify-between items-center
+                        ${styleClassNames?.tableHeaders?.gap ?? 'gap-2.5'}
+                        ${styleClassNames?.tableHeaders?.padding ?? 'py-[5px]'}
+                        ${styleClassNames?.tableHeaders?.margin ?? 'mb-[10px]'}
+                        ${styleClassNames?.tableHeaders?.textColor ?? 'text-white'}
+                        ${styleClassNames?.tableHeaders?.backgroundColor ?? 'bg-gray-800 hover:bg-gray-700'} 
+                        ${styleClassNames?.tableHeaders?.borderY ?? 'border-y-4'}
+                        ${styleClassNames?.tableHeaders?.borderColor ?? 'border-gray-300'}
+                        ${columnsWidth[index] ? `w-[${columnsWidth[index]}px]` : ''}
+                        ${index === 0 ? (styleClassNames?.tableHeaders?.borderL ?? 'border-l-4') : ''}
+                        ${index === 0 ? styleClassNames?.tableHeaders?.roundedL ?? 'rounded-tl-[20px] rounded-bl-[20px]': ''}
+                        ${index === columns.length - 1 ? styleClassNames?.tableHeaders?.borderR ?? 'border-r-4' : ''}
+                        ${index === columns.length - 1 ? styleClassNames?.tableHeaders?.roundedR ?? 'rounded-tr-[20px] rounded-br-[20px]' : ''}
+                      `}
+                      onClick={e => handleOrderChange(e, key.property)}
+                    >
+                      <div className={`flex items-center justify-between w-[100%] pl-[18px] pr-[5px]`}>
+                        <div className='flex-1 text-center overflow-hidden mr-[10px]'>
+                          <p
+                            ref={columnNameRef}
+                            className='whitespace-nowrap'
                           >
-                            <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/>
-                          </svg>
+                            {key.displayName ? key.displayName : String(key.property)}
+                          </p>
+                        </div>
+                        <div>
+                          <div
+                            className={`flex items-center justify-center w-[12px] h-[12px] mr-[10px]`}
+                          >
+                            <svg
+                              className={`
+                                ${!(activeOrder?.property === key.property)? 'hidden' : ''}
+                                ${activeOrder?.property === key.property && activeOrder?.order !== 'asc' ? 'rotate-90' : '-rotate-90'}
+                              `}
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 320 512"
+                              fill={styleClassNames?.sortIndicatorColor ?? '#FFF'}
+                            >
+                              <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/>
+                            </svg>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </th>)
-              )}
-            </tr>
-          </thead>
-          <tbody className='pb-[2.5] overflow-y-auto '>
-            {displayedRange.length === 0 && (
-              <tr
-                role='row'
-                data-row
-                key={uuidv4()}
-                className={`  
-                  ${styleClassNames?.rows?.paddingB ?? ''}
-                `}
-                ref={rowRef}
-              >
-                <td
-                  key={uuidv4()}
-                  role='cell'
-                  colSpan={columns.length}
-                  className={`
-                    ${styleClassNames?.rows?.paddingT ?? 'mt-[10px]'}
-                    ${'text-center truncate'}
-                    ${styleClassNames?.rows?.paddingX ?? 'px-[15px]'}
-                  `}
-                >
-                    <div
-                      className={`
-                        ${styleClassNames?.rows?.oddRowBackgroundColor ?? 'bg-gray-500'}
-                        ${styleClassNames?.rows?.textColor ?? ''}
-                      `}
-                    >
-                      {textContent?.emptyTableText ?? 'No data available in table'}
-                    </div>
-                </td>
+                  </th>)
+                )}
               </tr>
-            )}
-
-            {displayedRange.length > 0 && displayedRange.map((row: T, rowIndex: number): ReactNode => (
-              <tr
-                key={uuidv4()}
-                ref={rowRef}
-                role='row'
-                data-row
-                onMouseEnter={() => {
-                  setHoveredRow(row);
-                  if (onRowHover) {
-                    onRowHover(row);
-                  }
-                }}
-                onMouseLeave={() => {
-                  setHoveredRow(null);
-                  if (onRowHover) {
-                    onRowHover(null);
-                  }
-                }}
-                onClick={() => {
-                  if (onRowClick) {
-                    onRowClick(row);
-                  }
-                }}
-                className={`
-                  ${styleClassNames?.rows?.height ?? 'h-[30px]'}
-                  ${styleClassNames?.rows?.paddingB ?? 'last:pt-[15px]'}
-                `}
-              >
-                {columns.map((column, colIndex) => (
-                  Object.keys(row).includes(String(column.property)) && (
-                    <td
-                      title={row.id ? `id: ${row.id}` : ''}
-                      key={uuidv4()}
-                      role='cell'
-                      className={`
-                        ${styleClassNames?.cells ?? 'whitespace-nowrap'} py-[2.5px]
-                      `}
-                    >
+            </thead>
+            <tbody className='pb-[2.5] overflow-y-auto '>
+              {displayedRange.length === 0 && (
+                <tr
+                  role='row'
+                  data-row
+                  key={uuidv4()}
+                  className={`  
+                    ${styleClassNames?.rows?.paddingB ?? ''}
+                  `}
+                  ref={rowRef}
+                >
+                  <td
+                    key={uuidv4()}
+                    role='cell'
+                    colSpan={columns.length}
+                    className={`
+                      ${styleClassNames?.rows?.paddingT ?? 'mt-[10px]'}
+                      ${'text-center truncate'}
+                      ${styleClassNames?.rows?.paddingX ?? 'px-[15px]'}
+                    `}
+                  >
                       <div
-                        
                         className={`
-                          flex justify-between items-center px-[10px] py-[5px] h-full transition-colors duration-200
+                          ${styleClassNames?.rows?.oddRowBackgroundColor ?? 'bg-gray-500'}
                           ${styleClassNames?.rows?.textColor ?? ''}
-                          ${
-                            rowIndex % 2 === 0
-                              ? styleClassNames?.rows?.oddRowBackgroundColor ?? 'bg-gray-500'
-                              : styleClassNames?.rows?.evenRowBackgroundColor ?? 'bg-gray-600'
-                          }
-                          ${columnsWidth[colIndex] ? `w-[${columnsWidth[colIndex]}px]` : ''}
-                          ${colIndex === 0
-                            ? styleClassNames?.rows?.marginL ?? 'ml-[15px]'
-                            : ''
-                          }
-                          ${colIndex === columns.length - 1
-                            ? styleClassNames?.rows?.marginR ?? 'mr-[15px]'
-                            : ''
-                          }
                         `}
                       >
-                        {column.render
-                          ? column.render(row[column.property])
-                          : row[column.property] as ReactNode
-                        }
+                        {textContent?.emptyTableText ?? 'No data available in table'}
                       </div>
-                    </td>
-                  )))
-                }
-              </tr>
-            ))
-            }
-          </tbody>
-        </table>
-      </div>
+                  </td>
+                </tr>
+              )}
 
-      <div
-        hidden={pagesNumbers.length < 2}
-        className={`flex flex-col lg:flex-row gap-y-3.5 justify-between items-center mt-5`}
-      >
-        <p className='inline-block'>
-          {allRows.length > Math.min(rangeLength * currentPage, allRows.length)
-            ? (
-                <span>
-                  {textContent?.rangeInfoText?.showEntries_altText ?? 'Showing entries'}
-                  <span className='font-bold'>{rangeLength * (currentPage - 1) + 1}</span>
-                  {textContent?.rangeInfoText?.to_altText ?? 'to'}
-                  <span className='font-bold'>{Math.min(rangeLength * currentPage, allRows.length)}</span>
-                  {textContent?.rangeInfoText?.of_altText ?? 'of'}
-                  <span className='font-bold'>{allRows.length}</span>
-                  {textContent?.rangeInfoText?.entries_altText ?? 'entries'}
-                </span>
-              )
-            : (
-                <span>
-                  {textContent?.rangeInfoText?.showEntries_altText ?? 'Showing entries'}
-                  <span className='font-bold'>{rangeLength * (currentPage - 1) + 1}</span>
-                  {textContent?.rangeInfoText?.to_altText ?? 'to'}
-                  <span className='font-bold'>{allRows.length}</span>
-                  {textContent?.rangeInfoText?.entries_altText ?? 'entries'}
-                </span>
-              )
-            }
-        </p>
+              {displayedRange.length > 0 && displayedRange.map((row: T, rowIndex: number): ReactNode => (
+                <tr
+                  key={uuidv4()}
+                  ref={rowRef}
+                  role='row'
+                  data-row
+                  onMouseEnter={() => {
+                    setHoveredRow(row);
+                    if (onRowHover) {
+                      onRowHover(row);
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    setHoveredRow(null);
+                    if (onRowHover) {
+                      onRowHover(null);
+                    }
+                  }}
+                  onClick={() => {
+                    if (onRowClick) {
+                      onRowClick(row);
+                    }
+                  }}
+                  className={`
+                    ${styleClassNames?.rows?.height ?? 'h-[30px]'}
+                    ${styleClassNames?.rows?.paddingB ?? 'last:pt-[15px]'}
+                  `}
+                >
+                  {columns.map((column, colIndex) => (
+                    Object.keys(row).includes(String(column.property)) && (
+                      <td
+                        title={row.id ? `id: ${row.id}` : ''}
+                        key={uuidv4()}
+                        role='cell'
+                        className={`
+                          ${styleClassNames?.cells ?? 'whitespace-nowrap'} py-[2.5px]
+                        `}
+                      >
+                        <div
+                          
+                          className={`
+                            flex justify-between items-center px-[10px] py-[5px] h-full transition-colors duration-200
+                            ${styleClassNames?.rows?.textColor ?? ''}
+                            ${
+                              rowIndex % 2 === 0
+                                ? styleClassNames?.rows?.oddRowBackgroundColor ?? 'bg-gray-500'
+                                : styleClassNames?.rows?.evenRowBackgroundColor ?? 'bg-gray-600'
+                            }
+                            ${columnsWidth[colIndex] ? `w-[${columnsWidth[colIndex]}px]` : ''}
+                            ${colIndex === 0
+                              ? styleClassNames?.rows?.marginL ?? 'ml-[15px]'
+                              : ''
+                            }
+                            ${colIndex === columns.length - 1
+                              ? styleClassNames?.rows?.marginR ?? 'mr-[15px]'
+                              : ''
+                            }
+                          `}
+                        >
+                          {column.render
+                            ? column.render(row[column.property])
+                            : row[column.property] as ReactNode
+                          }
+                        </div>
+                      </td>
+                    )))
+                  }
+                </tr>
+              ))
+              }
+            </tbody>
+          </table>
+        </div>
 
         <div
-          className={`
-            flex items-center
-            ${styleClassNames?.pagination?.paginationBlockHover ?? ''}
-            ${ styleClassNames?.pagination?.rounded ?? 'rounded-[20px]'}
-            ${ styleClassNames?.pagination?.border ?? 'border-2'}
-            ${styleClassNames?.pagination?.buttonBorderColor ?? 'border-gray-300'}
-            ${styleClassNames?.pagination?.buttonBackgroundColor ?? 'bg-gray-800'}
-          `}
+          hidden={pagesNumbers.length < 2}
+          className={`flex flex-col lg:flex-row gap-y-3.5 justify-between items-center mt-5`}
         >
-          {currentPage - 1 >= 1 && (
-            <button
-              type='button'
-              role='previousButton'
-              onClick={() => setCurrentPage(currentPage - 1)}
-              className={`
-                disabled:opacity-50 cursor-pointer
-                ${styleClassNames?.pagination?.previousButtonPadding ?? 'pl-[20px] pr-3'}
-                ${styleClassNames?.pagination?.previousButtonRoundedL ?? 'rounded-l-[20px]'}
-                ${styleClassNames?.pagination?.textColor ?? 'text-white'}
-                ${styleClassNames?.pagination?.buttonBackgroundColorHover ?? 'hover:bg-gray-500 py-[9px]'}
-              `}
-              aria-label='Previous page'
-            >
-              <svg className='rotate-180 h-[15px]' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill={styleClassNames?.pagination?.navButtonsColor ?? '#fff'}>
-                <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/>
-              </svg>
-            </button>
-          )}     
+          <p className='inline-block'>
+            {allRows.length > Math.min(rangeLength * currentPage, allRows.length)
+              ? (
+                  <span>
+                    {textContent?.rangeInfoText?.showEntries_altText ?? 'Showing entries'}
+                    <span className='font-bold'>{rangeLength * (currentPage - 1) + 1}</span>
+                    {textContent?.rangeInfoText?.to_altText ?? 'to'}
+                    <span className='font-bold'>{Math.min(rangeLength * currentPage, allRows.length)}</span>
+                    {textContent?.rangeInfoText?.of_altText ?? 'of'}
+                    <span className='font-bold'>{allRows.length}</span>
+                    {textContent?.rangeInfoText?.entries_altText ?? 'entries'}
+                  </span>
+                )
+              : (
+                  <span>
+                    {textContent?.rangeInfoText?.showEntries_altText ?? 'Showing entries'}
+                    <span className='font-bold'>{rangeLength * (currentPage - 1) + 1}</span>
+                    {textContent?.rangeInfoText?.to_altText ?? 'to'}
+                    <span className='font-bold'>{allRows.length}</span>
+                    {textContent?.rangeInfoText?.entries_altText ?? 'entries'}
+                  </span>
+                )
+              }
+          </p>
 
-          {pagesNumbers.map((page, index) =>
-            typeof page === 'number' ? (
+          <div
+            className={`
+              flex items-center
+              ${styleClassNames?.pagination?.paginationBlockHover ?? ''}
+              ${ styleClassNames?.pagination?.rounded ?? 'rounded-[20px]'}
+              ${ styleClassNames?.pagination?.border ?? 'border-2'}
+              ${styleClassNames?.pagination?.buttonBorderColor ?? 'border-gray-300'}
+              ${styleClassNames?.pagination?.buttonBackgroundColor ?? 'bg-gray-800'}
+            `}
+          >
+            {currentPage - 1 >= 1 && (
               <button
-                key={index}
-                onClick={() => setCurrentPage(page)}
-                className={`px-3 py-[5px] ${
-                  page === currentPage
-                    ? styleClassNames?.pagination?.currentPageButton ?? 'bg-blue-500 text-white first:rounded-l-[20px] last:rounded-r-[20px]'
-                    : styleClassNames?.pagination?.otherpages ?? 'text-white hover:bg-gray-500 first:rounded-l-[20px] last:rounded-r-[20px] cursor-pointer'
-                }`}
-                aria-current={page === currentPage ? 'page' : undefined}
+                type='button'
+                role='previousButton'
+                onClick={() => setCurrentPage(currentPage - 1)}
+                className={`
+                  disabled:opacity-50 cursor-pointer
+                  ${styleClassNames?.pagination?.previousButtonPadding ?? 'pl-[20px] pr-3'}
+                  ${styleClassNames?.pagination?.previousButtonRoundedL ?? 'rounded-l-[20px]'}
+                  ${styleClassNames?.pagination?.textColor ?? 'text-white'}
+                  ${styleClassNames?.pagination?.buttonBackgroundColorHover ?? 'hover:bg-gray-500 py-[9px]'}
+                `}
+                aria-label='Previous page'
               >
-                {page}
+                <svg className='rotate-180 h-[15px]' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill={styleClassNames?.pagination?.navButtonsColor ?? '#fff'}>
+                  <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/>
+                </svg>
               </button>
-            ) : (
-              <div
-                key={index}
-                className='flex items-start justify-start '>
-                <span key={index} className='px-2 pb-2 text-white align-top'>
-                  ...
-                </span>
-              </div>
-            )
-          )}
+            )}     
 
-          {currentPage + 1 <= pagesNumber && (
-            <button
-              role='nextButton'
-              aria-label='Next page'
-              onClick={() => setCurrentPage(currentPage + 1)}
-              className={`
-                disabled:opacity-50  cursor-pointer
-                ${styleClassNames?.pagination?.nextButtonPadding ?? 'pl-3 pr-[20px]'}
-                ${styleClassNames?.pagination?.nextButtonRoundedR ?? 'rounded-r-[20px]'}
-                ${styleClassNames?.pagination?.textColor ?? 'text-white'}
-                ${styleClassNames?.pagination?.buttonBackgroundColorHover ?? 'hover:bg-gray-500 py-[9px]'}
-              `}
-            >
-              <svg className='h-[15px]' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill={styleClassNames?.pagination?.navButtonsColor ?? '#fff'}>
-                <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/>
-              </svg>
-            </button>
-          )}
+            {pagesNumbers.map((page, index) =>
+              typeof page === 'number' ? (
+                <button
+                  key={index}
+                  onClick={() => setCurrentPage(page)}
+                  className={`px-3 py-[5px] ${
+                    page === currentPage
+                      ? styleClassNames?.pagination?.currentPageButton ?? 'bg-blue-500 text-white first:rounded-l-[20px] last:rounded-r-[20px]'
+                      : styleClassNames?.pagination?.otherpages ?? 'text-white hover:bg-gray-500 first:rounded-l-[20px] last:rounded-r-[20px] cursor-pointer'
+                  }`}
+                  aria-current={page === currentPage ? 'page' : undefined}
+                >
+                  {page}
+                </button>
+              ) : (
+                <div
+                  key={index}
+                  className='flex items-start justify-start '>
+                  <span key={index} className='px-2 pb-2 text-white align-top'>
+                    ...
+                  </span>
+                </div>
+              )
+            )}
+
+            {currentPage + 1 <= pagesNumber && (
+              <button
+                role='nextButton'
+                aria-label='Next page'
+                onClick={() => setCurrentPage(currentPage + 1)}
+                className={`
+                  disabled:opacity-50  cursor-pointer
+                  ${styleClassNames?.pagination?.nextButtonPadding ?? 'pl-3 pr-[20px]'}
+                  ${styleClassNames?.pagination?.nextButtonRoundedR ?? 'rounded-r-[20px]'}
+                  ${styleClassNames?.pagination?.textColor ?? 'text-white'}
+                  ${styleClassNames?.pagination?.buttonBackgroundColorHover ?? 'hover:bg-gray-500 py-[9px]'}
+                `}
+              >
+                <svg className='h-[15px]' xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" fill={styleClassNames?.pagination?.navButtonsColor ?? '#fff'}>
+                  <path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/>
+                </svg>
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

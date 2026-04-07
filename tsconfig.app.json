@@ -23,6 +23,7 @@
     /* Enable declaration files */
     "declaration": true,
     "emitDeclarationOnly": false,
+    "rootDir": "./src",
     "declarationDir": "./dist",
     "outDir": "./dist"
   },

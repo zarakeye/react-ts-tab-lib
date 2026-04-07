@@ -1,6 +1,6 @@
-@import 'tailwindcss';
+/* @import 'tailwindcss'; */
 
-[data-row]:hover div {
+.table-root [data-row]:hover div {
   background-color: #e8e8e8 !important;
   color: #000 !important;
 }
