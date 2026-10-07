@@ -269,3 +269,47 @@ describe('Table Component', () => {
     
   });
 });
+describe('Table — rows received after the first render', () => {
+  const base: User[] = [
+    { id: 1, firstName: 'John', lastName: 'Doe', email: 'j@e.com', phone: 1 },
+    { id: 2, firstName: 'Jane', lastName: 'Smith', email: 'ja@e.com', phone: 2 },
+  ];
+
+  it('displays rows added by the parent (data refetched after a creation)', () => {
+    const { rerender } = render(<Table columns={columns} rows={base} />);
+    expect(screen.queryByText('Zoé')).toBeNull();
+    rerender(<Table columns={columns} rows={[...base, { id: 3, firstName: 'Zoé', lastName: 'Martin', email: 'z@e.com', phone: 3 }]} />);
+    expect(screen.getByText('Zoé')).toBeTruthy();
+  });
+
+  it('starts empty, then shows the rows once loaded', () => {
+    const { rerender } = render(<Table columns={columns} rows={[]} />);
+    rerender(<Table columns={columns} rows={base} />);
+    expect(screen.getByText('John')).toBeTruthy();
+    expect(screen.getByText('Jane')).toBeTruthy();
+  });
+
+  it('removes rows deleted by the parent', () => {
+    const { rerender } = render(<Table columns={columns} rows={base} />);
+    rerender(<Table columns={columns} rows={[base[1]]} />);
+    expect(screen.queryByText('John')).toBeNull();
+    expect(screen.getByText('Jane')).toBeTruthy();
+  });
+
+  it('keeps the active search applied to the new rows', () => {
+    const { container, rerender } = render(<Table columns={columns} rows={base} />);
+    const input = container.querySelector('input[type="text"], input[type="search"], input:not([type])') as HTMLInputElement;
+    fireEvent.change(input, { target: { value: 'smi' } });
+    expect(screen.queryByText('John')).toBeNull();
+    rerender(<Table columns={columns} rows={[...base, { id: 3, firstName: 'Paul', lastName: 'Smithson', email: 'p@e.com', phone: 3 }]} />);
+    expect(screen.getByText('Paul')).toBeTruthy();
+    expect(screen.queryByText('John')).toBeNull();
+  });
+
+  it('sorts the new rows with the active order', () => {
+    const { container, rerender } = render(<Table columns={columns} rows={base} />);
+    rerender(<Table columns={columns} rows={[...base, { id: 3, firstName: 'Adam', lastName: 'Z', email: 'a@e.com', phone: 3 }]} />);
+    const firstCells = Array.from(container.querySelectorAll('tbody tr')).map(tr => tr.querySelector('td')?.textContent?.trim());
+    expect(firstCells.slice(0, 3)).toEqual(['Adam', 'Jane', 'John']);
+  });
+});

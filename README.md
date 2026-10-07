@@ -90,6 +90,22 @@ export default App;
 
 ## Use cases
 
+### To display data loaded or refreshed after the first render
+
+`rows` can change at any time: the table always reflects the latest array it receives. Data fetched asynchronously, refetched after a creation or a deletion, or filtered by the parent is displayed as soon as it arrives, with no `key` trick and no remount. The active order, the search input and the selected range are kept, and the current page is brought back into range if the list gets shorter.
+
+```tsx
+const { data } = useQuery({ queryKey: ['users'], queryFn: fetchUsers });
+
+<Table<User> columns={columns} rows={data ?? []} />
+```
+
+> Before 1.9.5, `rows` was only read on the first render: updates were ignored unless the component was remounted (for example with `key={dataUpdatedAt}`). That workaround is no longer needed and can be removed.
+
+### To search entries
+
+The search bar matches its input, case-insensitively, against the values of the **displayed columns** only. The search applies to rows received later as well, and its results follow the active order.
+
 ### To change the default order
 
     Add a `defaultOrder` prop to precise the property and the order. Let's define lastName and descending order :
@@ -214,7 +230,7 @@ Class names satisfies Tailwiind.
 
 | Props                  | DescriptionType                                              | Type                                | Properties                   | Property type           | Required | Default value                 |
 | :--------------------- | ------------------------------------------------------------ | ----------------------------------- | ---------------------------- | ----------------------- | -------- | ----------------------------- |
-| rows                   | Array of all the User entries you populate your table with   | User []                             |                              |                         | True     |                               |
+| rows                   | Array of all the User entries you populate your table with; may change at any time, the table follows | User []                             |                              |                         | True     |                               |
 | columns                | Array of which keys of User type you want for your columns   | Array(keyof User)                   |                              |                         | True     |                               |
 | defaultOrder           | Object defining the column to order by default and the order |                                     |                              | ActiveOrderType `<T>` | False    |                               |
 | textContent            | Obejct containing the customized texts                       |                                     |                              | TextContentType         | False    |                               |
@@ -307,3 +323,14 @@ Class names satisfies Tailwiind.
 | nextButtonRoundedR         |             | string | 'rounded-r-[20px]'  |
 | buttonBackgroundColorHover |             | string | 'hover:bg-gray-500' |
 | navButtonsColor            |             | string | '#fff'              |
+
+## Changelog
+
+### 1.9.5
+
+- **Fix:** the table now follows the `rows` prop after the first render (data loaded later, refetched, added or deleted). Displayed rows are derived from the props instead of being copied into state once.
+- **Fix:** the search and the active order apply to rows received after the first render; search results are sorted.
+- **Fix:** the current page is kept in range when the list gets shorter.
+- **Fix:** `null` or `undefined` values no longer break the search or the sort.
+- **Fix:** no more crash when measuring column widths on a table without rows.
+- **Fix:** removed a `console.log` that ran on every render.

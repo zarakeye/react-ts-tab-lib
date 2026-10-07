@@ -233,17 +233,14 @@ function Table <T extends Record<string, any>>({
 }: TableProps<T>): JSX.Element {
   type DisplayedRange_Type = typeof rangeLengthOptions[number];
   const [rangeLength, setRangeLength] = useState<DisplayedRange_Type>(rangeLengthOptions[0]); // Max number of displayed rows at once
-  const [allRows, setAllRows] = useState<T[]>(rows);
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [pagesNumber, setPagesNumber] = useState<number>(1);
-  const [displayedRange, setDisplayedRange] = useState<T[]>([]); // Rows currently displayed (on the current page)
   const [activeOrder, setActiveOrder] = useState<{ property: keyof T; order: OrderType }>({
     property: defaultOrder?.property ?? columns[0].property satisfies keyof T,
     order: defaultOrder?.order ?? 'asc'
   });
   const [columnsWidth, setColumnsWidth] = useState<number[]>([]);
-  const [hoveredRow, setHoveredRow] = useState<T | null>(null);
-  console.log(hoveredRow);
+  const [, setHoveredRow] = useState<T | null>(null);
   const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([10]));
 
   const columnHeaderRef = useRef<HTMLTableCellElement>(null);
@@ -251,46 +248,33 @@ function Table <T extends Record<string, any>>({
   const rowRef = useRef<HTMLTableRowElement>(null);
   
   /**
-   * Order all rows based on the active order and the property type
+   * Rows matching the search input, sorted by the active order.
+   * DERIVED from the `rows` prop on every render (never copied into state): when the parent
+   * passes new rows (data refetched after a creation, a deletion…), the table follows.
    */
-  useEffect(() => {
-    const propertyType = columns.find((column) => column.property === activeOrder.property)?.type;
-    const sortedRows = allRows.map(row => ({ row, value: row[activeOrder.property]}))
-      .sort((a, b) => {
-        if (activeOrder.order === 'asc') {
-          if (propertyType === 'string') {
-            return a.value.localeCompare(b.value);
-          } else if (propertyType === 'number') {
-            return a.value - b.value;
-          } else if (propertyType === 'date') {
-            const aDate = new Date(a.value);
-            const bDate = new Date(b.value);
-            return aDate.getTime() - bDate.getTime();
-          } else if (propertyType === 'boolean') {
-            return b.value - a.value;
-          } else {
-            return 0;
-          }
-        } else {
-          if (propertyType === 'string') {
-            return b.value.localeCompare(a.value);
-          } else if (propertyType === 'number') {
-            return b.value - a.value;
-          } else if (propertyType === 'date') {
-            const aDate = new Date(a.value);
-            const bDate = new Date(b.value);
-            return bDate.getTime() - aDate.getTime();
-          } else if (propertyType === 'boolean') {
-            return a.value - b.value;
-          } else {
-            return 0;
-          }
-        }
-      });
+  const allRows = useMemo<T[]>(() => {
+    const term = searchTerm.trim().toLowerCase();
+    const displayedProperties = columns.map(column => column.property);
+    const filtered = term === ''
+      ? rows
+      : rows.filter(row => displayedProperties
+          .map(property => String(row[property] ?? '').toLowerCase().trim())
+          .join(' ')
+          .includes(term));
 
-    setAllRows(sortedRows.map((tuple) => tuple.row));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[ activeOrder]);
+    const propertyType = columns.find((column) => column.property === activeOrder.property)?.type;
+    const direction = activeOrder.order === 'asc' ? 1 : -1;
+    const compare = (a: T, b: T): number => {
+      const av = a[activeOrder.property];
+      const bv = b[activeOrder.property];
+      if (propertyType === 'string') return String(av ?? '').localeCompare(String(bv ?? ''));
+      if (propertyType === 'number') return Number(av) - Number(bv);
+      if (propertyType === 'date') return new Date(av).getTime() - new Date(bv).getTime();
+      if (propertyType === 'boolean') return Number(bv) - Number(av);
+      return 0;
+    };
+    return [...filtered].sort((a, b) => direction * compare(a, b));
+  }, [rows, columns, searchTerm, activeOrder]);
  
   /**
    * Toggles the order between ascending and descending order when the user clicks on a table header.
@@ -327,56 +311,27 @@ function Table <T extends Record<string, any>>({
    *
    * @param e - The change event triggered by the search input field.
    *
-   * This function iterates over all rows, concatenates the values of each row into a single
-   * string, and checks if this string includes the trimmed and lowercased value from the
-   * search input. If it does, the row is added to the rowsMatchingWithSearchInput. Updates the state
-   * with the filtered rows.
+   * Stores the search term; the matching itself is done by `allRows` (displayed columns only,
+   * case-insensitive), so it also applies to rows received later.
    */
   const handleSearchInput = (e: ChangeEvent<HTMLInputElement>) => {
-    const rowsMatchingWithSearchInput: T[] = [];
-
-    const displayedProperties = columns.map(column => column.property);
-
-    rows.forEach(row => {
-      let mergedRow = '';
-
-      Object.keys(row).forEach(key => {
-        if (rowsMatchingWithSearchInput.includes(row)) {
-          return;
-        } else if (displayedProperties.includes(key)) {
-          mergedRow += row[key].toString().toLowerCase().trim().concat(' ');
-        }
-      })
-      
-      if (mergedRow.trim().includes(e.target.value.trim().toLowerCase())) {
-        rowsMatchingWithSearchInput.push(row);
-      }
-    });
-
-    setAllRows(rowsMatchingWithSearchInput);
+    setSearchTerm(e.target.value);
     setCurrentPage(1);
   }
 
-  /**
-   * Updates the number of pages when the number of rows or the range length changes.
-   */
-  useEffect(() => {
-    const newPagesNumber = Math.ceil(allRows.length / rangeLength);
-    if (newPagesNumber === 0) {
-      setPagesNumber(1);
-      return;
-    }
-    setPagesNumber(newPagesNumber);
-  }, [allRows.length, rangeLength]);
+  /** Number of pages (at least 1). */
+  const pagesNumber = Math.max(1, Math.ceil(allRows.length / rangeLength));
 
-  /**
-   * Updates the displayed range when the current page changes.
-   */
+  /** Keeps the current page in range when the rows shrink (deletion, refetch, search). */
   useEffect(() => {
-    const startIndex = rangeLength * (currentPage - 1);
-    const endIndex = startIndex + rangeLength;
-    setDisplayedRange(allRows.slice(startIndex, endIndex))
-  }, [allRows, currentPage, rangeLength])
+    if (currentPage > pagesNumber) setCurrentPage(pagesNumber);
+  }, [currentPage, pagesNumber]);
+
+  /** Rows displayed on the current page. */
+  const displayedRange = useMemo<T[]>(() => {
+    const startIndex = rangeLength * (Math.min(currentPage, pagesNumber) - 1);
+    return allRows.slice(startIndex, startIndex + rangeLength);
+  }, [allRows, currentPage, pagesNumber, rangeLength]);
 
   const pagesNumbers = useMemo(
     () => generatePagesNumbers(currentPage, pagesNumber),
@@ -399,7 +354,8 @@ function Table <T extends Record<string, any>>({
   ))
 
   useEffect(() => {
-    const firstRow = document.getElementsByTagName('tbody')[0].children[0];
+    const firstRow = document.getElementsByTagName('tbody')[0]?.children[0];
+    if (!firstRow) return;
     const cells = firstRow.getElementsByTagName('td');
     for (let i = 0; i < cells.length; i++) {
       setColumnsWidth(  [...columnsWidth, cells[i].offsetWidth]);
